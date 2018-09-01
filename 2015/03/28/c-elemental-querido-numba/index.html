@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="author" content="Pybonacci">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+        <title>C elemental, querido numba | Pybonacci</title>
+
+	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+	<link rel="icon" href="/favicon.ico" type="image/x-icon">
+        <link rel="alternate" type="application/atom+xml" title="Pybonacci blog atom feed" href="/feeds/all.atom.xml" />
+        <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700' rel='stylesheet' type='text/css'>
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <link rel="stylesheet" type="text/css" href="/theme/css/fontello.css"/>
+        <style>.highlight .hll { background-color: #ffffcc }
+.highlight .c { color: #60a0b0; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #007020; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #60a0b0; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #007020 } /* Comment.Preproc */
+.highlight .c1 { color: #60a0b0; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #60a0b0; background-color: #fff0f0 } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #c65d09; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #007020; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #007020; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #007020; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #007020 } /* Keyword.Pseudo */
+.highlight .kr { color: #007020; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #902000 } /* Keyword.Type */
+.highlight .m { color: #40a070 } /* Literal.Number */
+.highlight .s { color: #4070a0 } /* Literal.String */
+.highlight .na { color: #4070a0 } /* Name.Attribute */
+.highlight .nb { color: #007020 } /* Name.Builtin */
+.highlight .nc { color: #0e84b5; font-weight: bold } /* Name.Class */
+.highlight .no { color: #60add5 } /* Name.Constant */
+.highlight .nd { color: #555555; font-weight: bold } /* Name.Decorator */
+.highlight .ni { color: #d55537; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #007020 } /* Name.Exception */
+.highlight .nf { color: #06287e } /* Name.Function */
+.highlight .nl { color: #002070; font-weight: bold } /* Name.Label */
+.highlight .nn { color: #0e84b5; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #062873; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #bb60d5 } /* Name.Variable */
+.highlight .ow { color: #007020; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #40a070 } /* Literal.Number.Float */
+.highlight .mh { color: #40a070 } /* Literal.Number.Hex */
+.highlight .mi { color: #40a070 } /* Literal.Number.Integer */
+.highlight .mo { color: #40a070 } /* Literal.Number.Oct */
+.highlight .sb { color: #4070a0 } /* Literal.String.Backtick */
+.highlight .sc { color: #4070a0 } /* Literal.String.Char */
+.highlight .sd { color: #4070a0; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #4070a0 } /* Literal.String.Double */
+.highlight .se { color: #4070a0; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #4070a0 } /* Literal.String.Heredoc */
+.highlight .si { color: #70a0d0; font-style: italic } /* Literal.String.Interpol */
+.highlight .sx { color: #c65d09 } /* Literal.String.Other */
+.highlight .sr { color: #235388 } /* Literal.String.Regex */
+.highlight .s1 { color: #4070a0 } /* Literal.String.Single */
+.highlight .ss { color: #517918 } /* Literal.String.Symbol */
+.highlight .bp { color: #007020 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #bb60d5 } /* Name.Variable.Class */
+.highlight .vg { color: #bb60d5 } /* Name.Variable.Global */
+.highlight .vi { color: #bb60d5 } /* Name.Variable.Instance */
+.highlight .il { color: #40a070 } /* Literal.Number.Integer.Long */</style>
+        <style>.description-author {
+  font-size: 0.8em;
+  color: #333;
+}
+.img-author {
+  max-height: 10em;
+  max-width: 10em;
+}
+img[src$="centerme"] {
+  display: block;
+  margin: 0 auto;
+}
+body {
+  margin: 0;
+  padding: 0;
+  font: 15px 'Source Sans Pro', sans-serif;
+  line-height: 1.6em;
+  color: #222222;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+a {
+  color: #007ee5;
+  text-decoration: none;
+}
+a:hover {
+  color: #007ee5;
+  text-decoration: none;
+}
+header.main-header {
+  background: none repeat scroll 0% 0% #205F29;
+  margin-bottom: 0px;
+}
+header.main-header a {
+  color: #fff;
+}
+header.main-header .container {
+  max-width: 1000px;
+}
+header.main-header .container nav a:hover {
+  background-color: #5C881C;
+}
+header.navbar-default {
+  border-bottom: none;
+  background-color: #EFEFEF;
+}
+article {
+  margin: 0;
+}
+article header.about {
+  margin-bottom: 0px;
+  padding-bottom: 0px;
+}
+article header {
+  padding-bottom: 20px;
+}
+article header h1 {
+  margin-bottom: 2px;
+  font-weight: 700;
+  color: #000;
+}
+article header time {
+  color: #9E9E9E;
+  float: right;
+}
+article header time.left {
+  color: #9E9E9E;
+  float: left;
+}
+article div.social-links ul {
+  padding: 0px;
+}
+article div.social-links li {
+  display: inline;
+  font-size: 20px;
+}
+article div.social-links li a {
+  color: #000;
+  padding: 10px;
+}
+article div.social-links li a:hover {
+  color: #666;
+  text-decoration: none;
+}
+article p {
+  font-size: 2em;
+  margin-bottom: 20px;
+  line-height: 1.6em;
+  text-align: justify;
+}
+article p.note {
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  padding: 0.533em 0.733em;
+}
+article p.update {
+  background-color: #FEEFB3;
+  border: 1px solid #e6e68a;
+  padding: 0.533em 0.733em;
+}
+article p.alert {
+  background-color: #ffe2e2;
+  border: 1px solid #ffb2b2;
+  padding: 0.533em 0.733em;
+}
+article ul,
+article ol {
+  margin-top: 0px;
+  margin-bottom: 25px;
+}
+article li {
+  font-size: 16px;
+  line-height: 1.6em;
+}
+article a:hover {
+  text-decoration: underline;
+}
+article blockquote {
+  border-left: 2px solid #c7c7cc;
+  color: #666;
+  margin: 30px 0;
+  padding: 0 0 0 25px;
+}
+article img {
+  max-width: 100%;
+}
+article code {
+  color: #333;
+  background-color: #EEE;
+  border-radius: 0;
+  font-size: 1.1em;
+}
+article .meta {
+  margin-top: 35px;
+}
+article .meta a:hover {
+  text-decoration: none;
+}
+article .meta div {
+  display: block;
+}
+article .meta address:before,
+article .meta time:before,
+article .meta a.tag:before {
+  font-family: 'fontello';
+  margin-right: 6px;
+}
+article .meta address.author {
+  float: left;
+}
+article .meta address:before {
+  content: '\e819';
+}
+article .meta time:before {
+  content: '\f133';
+}
+article .meta div.tags {
+  clear: both;
+}
+article .meta a.tag {
+  margin: 0 10px 10px 0;
+  padding: 1px 12px;
+  display: inline-block;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.05);
+}
+article .meta a.tag:before {
+  content: '\e821';
+}
+article .meta a.tag:hover {
+  background: rgba(0, 0, 0, 0.15);
+}
+article .meta a.read_more,
+article .meta a.comments_btn {
+  font-size: 14px;
+  font-weight: 800;
+  padding: 10px 20px;
+  color: #007aa3;
+  background: #FFF;
+  border: 1px solid #007aa3;
+}
+article .meta a.read_more:hover,
+article .meta a.comments_btn:hover {
+  color: #FFF;
+  background: #007aa3;
+}
+article .meta:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+.index {
+  max-width: 700px;
+}
+.index article header h2 {
+  font-size: 36px;
+  margin-bottom: 2px;
+  font-weight: 700;
+}
+.index article header h2 a {
+  color: #333;
+}
+.index article header h2 a:hover {
+  color: #007ee5;
+  text-decoration: none;
+}
+.index .separator {
+  padding: 40px 0 0 0;
+  margin: 0 0 40px 0;
+  height: 10px;
+  border-bottom: solid 1px #CCC;
+}
+.index .pagination {
+  display: block;
+  margin-bottom: 100px;
+}
+.index .pagination .left {
+  text-align: right;
+}
+.index .pagination .right {
+  text-align: left;
+}
+.index .pagination a {
+  display: inline-block;
+  border: 2px solid #5C881C;
+  margin: 0 5px;
+  padding: 8px 20px;
+  font-weight: bold;
+  color: #5C881C;
+}
+.index .pagination a:hover {
+  color: #FFF;
+  background: #5C881C;
+}
+.post {
+  max-width: 80%;
+}
+.post h1 {
+  font-size: 42px;
+}
+.post h2:before {
+  content: "# ";
+  font-weight: bold;
+  color: #DDD;
+}
+.post h3:before {
+  content: "## ";
+  font-weight: bold;
+  color: #DDD;
+}
+.post h4:before {
+  content: "### ";
+  font-weight: bold;
+  color: #DDD;
+}
+.post p {
+  font-size: 2em;
+}
+.post li {
+  font-size: 2em;
+}
+.list {
+  max-width: 700px;
+}
+.list ul.double-list {
+  margin: 0 auto 60px;
+  padding: 0;
+  list-style-type: none;
+}
+.list ul.double-list li {
+  padding: 5px 0;
+}
+.list ul.double-list li h2 {
+  font-size: 2em;
+  display: inline;
+  font-weight: normal;
+}
+.list ul.double-list li span {
+  font-family: sans-serif;
+  text-transform: uppercase;
+  text-align: right;
+  float: right;
+  padding-top: 3px;
+  font-size: 12px;
+  color: #999;
+}
+.full-width-content {
+  padding-top: 10px;
+  padding-left: 0px;
+  padding-right: 0px;
+  margin-left: -20px;
+  margin-right: -20px;
+}
+.col-xs-1,
+.col-sm-1,
+.col-md-1,
+.col-lg-1,
+.col-xs-2,
+.col-sm-2,
+.col-md-2,
+.col-lg-2,
+.col-xs-3,
+.col-sm-3,
+.col-md-3,
+.col-lg-3,
+.col-xs-4,
+.col-sm-4,
+.col-md-4,
+.col-lg-4,
+.col-xs-5,
+.col-sm-5,
+.col-md-5,
+.col-lg-5,
+.col-xs-6,
+.col-sm-6,
+.col-md-6,
+.col-lg-6,
+.col-xs-7,
+.col-sm-7,
+.col-md-7,
+.col-lg-7,
+.col-xs-8,
+.col-sm-8,
+.col-md-8,
+.col-lg-8,
+.col-xs-9,
+.col-sm-9,
+.col-md-9,
+.col-lg-9,
+.col-xs-10,
+.col-sm-10,
+.col-md-10,
+.col-lg-10,
+.col-xs-11,
+.col-sm-11,
+.col-md-11,
+.col-lg-11,
+.col-xs-12,
+.col-sm-12,
+.col-md-12,
+.col-lg-12 {
+  padding-right: 0px;
+  padding-left: 0px;
+}
+.disclaimer {
+  text-align: center;
+  background-color: #EFEFEF;
+  border-bottom: none;
+  margin-top: 6em;
+}
+pre {
+  font-size: 1.2em;
+}</style>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+       <script src="https://comments.pybonacci.org/assets/js/commento.js" data-div="#commento"></script>
+
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+            tex2jax: {
+                inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+                processEscapes: true,
+                skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            }
+        });
+        MathJax.Hub.Queue(function() {
+            var all = MathJax.Hub.getAllJax(), i;
+            for(i=0; i < all.length; i += 1) {
+                all[i].SourceElement().parentNode.className += ' has-jax';
+            }
+        });
+    </script>
+
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/latest.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+        </script>
+
+    </head>
+
+    <body>
+        <header class="navbar navbar-default bs-docs-nav">
+            <div class="container-fluid">
+                <div class="navbar-header">
+		  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#theNavbar">
+		    <span class="icon-bar"></span>
+		    <span class="icon-bar"></span>
+		    <span class="icon-bar"></span> 
+		  </button>
+                  <a class="navbar-brand" href="/" title="Home" class="title">Pybonacci</a><!-- — Python y Ciencia-->
+                </div>
+                <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation" id="theNavbar">
+		    <ul class="nav navbar-nav navbar-right">
+                            <li><a href="/pages/acerca-de-pybonacci.html" title="About">Acerca de</a></li>
+                            <li><a href="/archives.html" title="Archive">Archivos</a></li>
+                            <li><a class="nodec icon-rss" href="/feeds/all.atom.xml" title="pybonacci.github.io RSS feed" rel="me"></a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <div id="wrap">
+<div class="container post">
+    <article>
+        <header>
+            <h1>C elemental, querido numba</h1>
+            <div class="meta">
+                <time datetime="article.date.isoformat()" pubdate>sáb 28 marzo 2015</time>
+                <address class="vcard author">Por
+                    <a class="url fn" href="http://pybonacci.github.io/author/kiko-correoso.html">Kiko Correoso</a>
+                </address>
+            </div>
+        </header>
+
+        <div class="article_content">
+            <div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      <h2 id="Volvemos-al-torneo-del-rendimiento!!!">
+        Volvemos al torneo del rendimiento!!!<a class="anchor-link" href="#Volvemos-al-torneo-del-rendimiento!!!">&#182;</a>
+      </h2>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      Recapitulando. Un artículo sobre Cython donde conseguíamos <a href="http://pybonacci.org/2015/03/09/c-elemental-querido-cython/">mejoras de velocidad de código Python con numpy arrays de 40x usando Cython</a> desembocó <a href="http://pybonacci.org/2015/03/13/como-acelerar-tu-codigo-python-con-numba/">en mejoras de 70x usando numba</a>. En esta tercera toma vamos a ver si con Cython conseguimos las velocidades de numba tomando algunas ideas de la implementación de JuanLu y definiendo una función un poco más inteligente que mi implementación con Cython (<a href="http://pybonacci.org/2015/03/09/c-elemental-querido-cython/#Cythonizando,-que-es-gerundio-%28toma-9%29.">busca_min_cython9</a>).</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      Preparamos el <em>setup inicial</em>.</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+    <div>
+      <div>
+        <div class=" highlight hl-ipython3">
+          <pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numba</span>
+
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi"></span><span class="p">)</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">2000</span><span class="p">)</span>
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      JuanLu hizo alguna trampa usando un numpy array en lugar de dos listas y devolviendo el resultado usando <code>numpy.nonzero</code>. En realidad no es trampa, es pura envidia mía al ver que ha usado una forma más inteligente de conseguir lo mismo que hacía mi función original 😛<br /> Usando esa implementación considero que es más inteligente tener un numpy array de salida por lo que el uso de <code>np.nonzero</code> sería innecesario y añadiría algo de pérdida de rendimiento si luego vamos a seguir trabajando con numpy arrays. Por tanto, la implementación de JuanLu eliminando el uso de <code>numpy.nonzero</code> sería:</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+    <div>
+      <div>
+        <div class=" highlight hl-ipython3">
+          <pre><span class="k">def</span> <span class="nf">busca_min_np_jit</span><span class="p">(</span><span class="n">malla</span><span class="p">):</span>
+    <span class="n">minimos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">malla</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="n">_busca_min</span><span class="p">(</span><span class="n">malla</span><span class="p">,</span> <span class="n">minimos</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">minimos</span>  <span class="c"># en lugar de &#39;return np.nonzero(minimos)&#39;</span>
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="k">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">_busca_min</span><span class="p">(</span><span class="n">malla</span><span class="p">,</span> <span class="n">minimos</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">malla</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">malla</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi"></span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span>
+                <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="ow">and</span>
+                <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span>
+                <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span>
+                <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span>
+                <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span>
+                <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="ow">and</span>
+                <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]):</span>
+                <span class="n">minimos</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="k">True</span>
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div>
+  <div>
+    <div>
+      <div>
+        <div class=" highlight hl-ipython3">
+          <pre><span class="o">%</span><span class="k">timeit</span> -n 100 busca_min_np_jit(data)
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<p><div>
+    <div>
+      <div>
+        <div>
+        </div></p>
+<div class="highlight"><pre><span></span>    &lt;div&gt;
+      &lt;pre&gt;100 loops, best of 3: 33 ms per loop
+</pre></div>
+
+
+<p></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      Ejecutándolo 100 veces obtenemos un valor más bajo de 33.6 ms devolviendo un numpy.array de 1's y 0's con los 1's indicando la posición de los máximos.<br /> La implementación original la vamos a modificar un poco para que devuelva lo mismo.</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+    <div>
+      <div>
+        <div class=" highlight hl-ipython3">
+          <pre><span class="k">def</span> <span class="nf">busca_min</span><span class="p">(</span><span class="n">malla</span><span class="p">):</span>
+    <span class="n">minimos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">malla</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">malla</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">malla</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi"></span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span>
+                <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="ow">and</span>
+                <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span>
+                <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span>
+                <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span>
+                <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span>
+                <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="ow">and</span>
+                <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]):</span>
+                <span class="n">minimos</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">minimos</span>
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div>
+  <div>
+    <div>
+      <div>
+        <div class=" highlight hl-ipython3">
+          <pre><span class="o">%</span><span class="k">timeit</span> busca_min(data)
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<p><div>
+    <div>
+      <div>
+        <div>
+        </div></p>
+<div class="highlight"><pre><span></span>    &lt;div&gt;
+      &lt;pre&gt;1 loops, best of 3: 3.4 s per loop
+</pre></div>
+
+
+<p></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      Los tiempos son similares a la función original y, aunque estamos usando más memoria, tenemos una mejora con numba que ya llega a los dos órdenes de magnitud (alrededor de 100x!!) y una función más usable para trabajar con numpy.</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      Vamos a modificar la opción Cython más rápida que obtuvimos para que se comporte igual que las de Numba y Python.<br /> Primero cargamos la extensión Cython.</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+    <div>
+      <div>
+        <div class=" highlight hl-ipython3">
+          <pre><span class="c"># antes cythonmagic</span>
+<span class="o">%</span><span class="k">load_ext</span> Cython
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      Vamos a usar la opción <code>annotate</code> para ver cuanto 'blanco' tenemos y la nueva versión Cython la vamos a llamar <code>busca_min_cython10</code>.</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+    <div>
+      <div>
+        <div class=" highlight hl-ipython3">
+          <pre><span class="o">%%</span><span class="n">cython</span> <span class="o">--</span><span class="n">annotate</span>
+<span class="k">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="k">from</span> <span class="nn">cython</span> <span class="k">cimport</span> <span class="n">boundscheck</span><span class="p">,</span> <span class="n">wraparound</span>
+
+<span class="k">cpdef</span> <span class="kt">char</span>[<span class="p">:,::</span><span class="mf">1</span><span class="p">]</span> <span class="n">busca_min_cython10</span><span class="p">(</span><span class="n">double</span><span class="p">[:,</span> <span class="p">::</span><span class="mf">1</span><span class="p">]</span> <span class="n">malla</span><span class="p">):</span>
+    <span class="k">cdef</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="nf">i</span><span class="p">,</span> <span class="nf">j</span>
+    <span class="k">cdef</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="nf">ii</span> <span class="o">=</span> <span class="n">malla</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mf">1</span><span class="p">]</span><span class="o">-</span><span class="mf">1</span>
+    <span class="k">cdef</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="nf">jj</span> <span class="o">=</span> <span class="n">malla</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mf"></span><span class="p">]</span><span class="o">-</span><span class="mf">1</span>
+    <span class="k">cdef</span> <span class="kt">char</span>[<span class="p">:,::</span><span class="mf">1</span><span class="p">]</span> <span class="n">minimos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">malla</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">)</span>
+    <span class="c">#minimos[...] = 0</span>
+    <span class="k">cdef</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="nf">start</span> <span class="o">=</span> <span class="mf">1</span>
+    <span class="c">#cdef float [:, :] malla_view = malla</span>
+    <span class="k">with</span> <span class="n">boundscheck</span><span class="p">(</span><span class="bp">False</span><span class="p">),</span> <span class="n">wraparound</span><span class="p">(</span><span class="bp">False</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">ii</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">jj</span><span class="p">):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mf">1</span><span class="p">,</span> <span class="n">i</span><span class="o">-</span><span class="mf">1</span><span class="p">]</span> <span class="ow">and</span>
+                    <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mf">1</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="ow">and</span>
+                    <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mf">1</span><span class="p">,</span> <span class="n">i</span><span class="o">+</span><span class="mf">1</span><span class="p">]</span> <span class="ow">and</span>
+                    <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="o">-</span><span class="mf">1</span><span class="p">]</span> <span class="ow">and</span>
+                    <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="o">+</span><span class="mf">1</span><span class="p">]</span> <span class="ow">and</span>
+                    <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mf">1</span><span class="p">,</span> <span class="n">i</span><span class="o">-</span><span class="mf">1</span><span class="p">]</span> <span class="ow">and</span>
+                    <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mf">1</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="ow">and</span>
+                    <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">malla</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mf">1</span><span class="p">,</span> <span class="n">i</span><span class="o">+</span><span class="mf">1</span><span class="p">]):</span>
+                    <span class="n">minimos</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1</span>
+
+    <span class="k">return</span> <span class="n">minimos</span>
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<p><div>
+    <div>
+      <div>
+        <div>
+        </div></p>
+<div class="highlight"><pre><span></span>    <span class="nt">&lt;div&gt;</span>
+      <span class="nt">&lt;br</span> <span class="nt">/&gt;</span> <span class="c">&lt;!-- Generated by Cython 0.22 --&gt;</span>
+
+      <span class="nt">&lt;br</span> <span class="nt">/&gt;</span> <span class="nt">&lt;br</span> <span class="nt">/&gt;</span> <span class="nt">&lt;br</span> <span class="nt">/&gt;</span> <span class="nt">&lt;br</span> <span class="nt">/&gt;</span> Generated by Cython 0.22<span class="nt">&lt;/p&gt;</span>
+
+      <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;cython&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython line score-19&#39;</span> <span class="na">onclick=</span><span class="s">&#39;toggleDiv(this)&#39;</span><span class="nt">&gt;</span>+01: <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;k&quot;</span><span class="nt">&gt;</span>import<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;nn&quot;</span><span class="nt">&gt;</span>numpy<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;k&quot;</span><span class="nt">&gt;</span>as<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;nn&quot;</span><span class="nt">&gt;</span>np<span class="nt">&lt;/span&gt;&lt;/pre&gt;</span>
+
+        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython code score-19&#39;</span><span class="nt">&gt;</span>  __pyx_t_1 = <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&#39;pyx_c_api&#39;</span><span class="nt">&gt;</span>__Pyx_Import<span class="nt">&lt;/span&gt;</span>(__pyx_n_s_numpy, 0, -1);<span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&#39;error_goto&#39;</span><span class="nt">&gt;</span> if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}<span class="nt">&lt;/span&gt;</span>
+</pre></div>
+
+
+<p><span class='refnanny'><strong>Pyx_GOTREF</span>(__pyx_t_1);
+  if (<span class='py_c_api'>PyDict_SetItem</span>(__pyx_d, __pyx_n_s_np, __pyx_t_1) &lt; 0) <span class='error_goto'>{__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE</strong>; goto <strong>pyx_L1_error;}</span>
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+/<em> … </em>/
+  __pyx_t_1 = <span class='py_c_api'>PyDict_New</span>();<span class='error_goto'> if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE</strong>; goto <strong>pyx_L1_error;}</span>
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_1);
+  if (<span class='py_c_api'>PyDict_SetItem</span>(__pyx_d, __pyx_n_s_test, __pyx_t_1) &lt; 0) <span class='error_goto'>{__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE</strong>; goto __pyx_L1_error;}</span>
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+</pre></p>
+<div class="highlight"><pre><span></span>        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython line score-0&#39;</span><span class="nt">&gt;</span><span class="ni">&amp;#xA0;</span>02: <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;k&quot;</span><span class="nt">&gt;</span>from<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;nn&quot;</span><span class="nt">&gt;</span>cython<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;k&quot;</span><span class="nt">&gt;</span>cimport<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>boundscheck<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>,<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>wraparound<span class="nt">&lt;/span&gt;&lt;/pre&gt;</span>
+
+        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython line score-0&#39;</span><span class="nt">&gt;</span><span class="ni">&amp;#xA0;</span>03: <span class="nt">&lt;/pre&gt;</span>
+
+        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython line score-22&#39;</span> <span class="na">onclick=</span><span class="s">&#39;toggleDiv(this)&#39;</span><span class="nt">&gt;</span>+04: <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;k&quot;</span><span class="nt">&gt;</span>cpdef<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;kt&quot;</span><span class="nt">&gt;</span>char<span class="nt">&lt;/span&gt;</span>[<span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>:,::<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;mf&quot;</span><span class="nt">&gt;</span>1<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>]<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>busca_min_cython10<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>(<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>double<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>[:,<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>::<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;mf&quot;</span><span class="nt">&gt;</span>1<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>]<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>malla<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>):<span class="nt">&lt;/span&gt;&lt;/pre&gt;</span>
+
+        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython code score-22&#39;</span><span class="nt">&gt;</span>static PyObject *__pyx_pw_46_cython_magic_de7594aedda59602146d5e749862b110_1busca_min_cython10(PyObject *__pyx_self, PyObject *__pyx_arg_malla); /*proto*/
+</pre></div>
+
+
+<p>static __Pyx_memviewslice __pyx_f_46_cython_magic_de7594aedda59602146d5e749862b110_busca_min_cython10(__Pyx_memviewslice __pyx_v_malla, CYTHON_UNUSED int __pyx_skip_dispatch) {
+  unsigned int __pyx_v_i;
+  unsigned int __pyx_v_j;
+  unsigned int __pyx_v_ii;
+  unsigned int __pyx_v_jj;
+  __Pyx_memviewslice __pyx_v_minimos = { 0, 0, { 0 }, { 0 }, { 0 } };
+  unsigned int __pyx_v_start;
+  __Pyx_memviewslice __pyx_r = { 0, 0, { 0 }, { 0 }, { 0 } };
+  <span class='refnanny'>__Pyx_RefNannyDeclarations</span>
+  <span class='refnanny'>__Pyx_RefNannySetupContext</span>("busca_min_cython10", 0);
+/<em> … </em>/
+  /<em> function exit code </em>/
+  __pyx_L1_error:;
+  <span class='pyx_macro_api'>__Pyx_XDECREF</span>(__pyx_t_1);
+  <span class='pyx_macro_api'>__Pyx_XDECREF</span>(__pyx_t_2);
+  <span class='pyx_macro_api'>__Pyx_XDECREF</span>(__pyx_t_3);
+  <span class='pyx_macro_api'>__Pyx_XDECREF</span>(__pyx_t_4);
+  <span class='pyx_macro_api'>__Pyx_XDECREF</span>(__pyx_t_5);
+  __PYX_XDEC_MEMVIEW(&amp;__pyx_t_6, 1);
+  __pyx_r.data = NULL;
+  __pyx_r.memview = NULL;
+  <span class='pyx_c_api'>__Pyx_AddTraceback</span>("_cython_magic_de7594aedda59602146d5e749862b110.busca_min_cython10", __pyx_clineno, __pyx_lineno, __pyx_filename);</p>
+<p>goto __pyx_L2;
+  __pyx_L0:;
+  if (unlikely(!__pyx_r.memview)) {
+    <span class='py_c_api'>PyErr_SetString</span>(PyExc_TypeError,"Memoryview return value is not initialized");
+  }
+  __pyx_L2:;
+  __PYX_XDEC_MEMVIEW(&amp;__pyx_v_minimos, 1);
+  <span class='refnanny'>__Pyx_RefNannyFinishContext</span>();
+  return __pyx_r;
+}</p>
+<p>/<em> Python wrapper </em>/
+static PyObject <em>__pyx_pw_46_cython_magic_de7594aedda59602146d5e749862b110_1busca_min_cython10(PyObject </em>__pyx_self, PyObject <em>__pyx_arg_malla); /</em>proto<em>/
+static PyObject </em>__pyx_pw_46_cython_magic_de7594aedda59602146d5e749862b110_1busca_min_cython10(PyObject <em>__pyx_self, PyObject </em>__pyx_arg_malla) {
+  __Pyx_memviewslice __pyx_v_malla = { 0, 0, { 0 }, { 0 }, { 0 } };
+  PyObject <em><strong>pyx_r = 0;
+  <span class='refnanny'>__Pyx_RefNannyDeclarations</span>
+  <span class='refnanny'>__Pyx_RefNannySetupContext</span>("busca_min_cython10 (wrapper)", 0);
+  assert(__pyx_arg_malla); {
+    __pyx_v_malla = <span class='pyx_c_api'>__Pyx_PyObject_to_MemoryviewSlice_d_dc_double</span>(__pyx_arg_malla);<span class='error_goto'> if (unlikely(!__pyx_v_malla.memview)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 4; __pyx_clineno = __LINE</strong>; goto __pyx_L3_error;}</span>
+  }
+  goto __pyx_L4_argument_unpacking_done;
+  __pyx_L3_error:;
+  <span class='pyx_c_api'>__Pyx_AddTraceback</span>("_cython_magic_de7594aedda59602146d5e749862b110.busca_min_cython10", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  <span class='refnanny'>__Pyx_RefNannyFinishContext</span>();
+  return NULL;
+  __pyx_L4_argument_unpacking_done:;
+  __pyx_r = __pyx_pf_46_cython_magic_de7594aedda59602146d5e749862b110_busca_min_cython10(__pyx_self, __pyx_v_malla);
+  int __pyx_lineno = 0;
+  const char </em>__pyx_filename = NULL;
+  int __pyx_clineno = 0;</p>
+<p>/<em> function exit code </em>/
+  <span class='refnanny'>__Pyx_RefNannyFinishContext</span>();
+  return __pyx_r;
+}</p>
+<p>static PyObject <em>__pyx_pf_46_cython_magic_de7594aedda59602146d5e749862b110_busca_min_cython10(CYTHON_UNUSED PyObject </em><strong>pyx_self, __Pyx_memviewslice __pyx_v_malla) {
+  PyObject <em><strong>pyx_r = NULL;
+  <span class='refnanny'>__Pyx_RefNannyDeclarations</span>
+  <span class='refnanny'>__Pyx_RefNannySetupContext</span>("busca_min_cython10", 0);
+  <span class='pyx_macro_api'>__Pyx_XDECREF</span>(__pyx_r);
+  if (unlikely(!__pyx_v_malla.memview)) { <span class='pyx_c_api'>__Pyx_RaiseUnboundLocalError</span>("malla"); <span class='error_goto'>{__pyx_filename = __pyx_f[0]; __pyx_lineno = 4; __pyx_clineno = __LINE</strong>; goto <strong>pyx_L1_error;}</span> }
+  __pyx_t_1 = __pyx_f_46_cython_magic_de7594aedda59602146d5e749862b110_busca_min_cython10(__pyx_v_malla, 0);<span class='error_goto'> if (unlikely(!__pyx_t_1.memview)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 4; __pyx_clineno = __LINE</strong>; goto __pyx_L1_error;}</span>
+  __pyx_t_2 = __pyx_memoryview_fromslice(__pyx_t_1, 2, (PyObject </em>(<em>)(char </em>)) __pyx_memview_get_char, (int (<em>)(char </em>, PyObject *)) __pyx_memview_set_char, 0);;<span class='error_goto'> if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 4; __pyx_clineno = __LINE</strong>; goto __pyx_L1_error;}</span>
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_2);
+  __PYX_XDEC_MEMVIEW(&amp;__pyx_t_1, 1);
+  __pyx_r = __pyx_t_2;
+  __pyx_t_2 = 0;
+  goto __pyx_L0;</p>
+<p>/<em> function exit code </em>/
+  __pyx_L1_error:;
+  __PYX_XDEC_MEMVIEW(&amp;__pyx_t_1, 1);
+  <span class='pyx_macro_api'>__Pyx_XDECREF</span>(__pyx_t_2);
+  <span class='pyx_c_api'>__Pyx_AddTraceback</span>("_cython_magic_de7594aedda59602146d5e749862b110.busca_min_cython10", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __PYX_XDEC_MEMVIEW(&amp;__pyx_v_malla, 1);
+  <span class='refnanny'>__Pyx_XGIVEREF</span>(__pyx_r);
+  <span class='refnanny'>__Pyx_RefNannyFinishContext</span>();
+  return __pyx_r;
+}
+</pre></p>
+<div class="highlight"><pre><span></span>        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython line score-0&#39;</span><span class="nt">&gt;</span><span class="ni">&amp;#xA0;</span>05:     <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;k&quot;</span><span class="nt">&gt;</span>cdef<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;kt&quot;</span><span class="nt">&gt;</span>unsigned<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;kt&quot;</span><span class="nt">&gt;</span>int<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;nf&quot;</span><span class="nt">&gt;</span>i<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>,<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;nf&quot;</span><span class="nt">&gt;</span>j<span class="nt">&lt;/span&gt;&lt;/pre&gt;</span>
+
+        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython line score-0&#39;</span> <span class="na">onclick=</span><span class="s">&#39;toggleDiv(this)&#39;</span><span class="nt">&gt;</span>+06:     <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;k&quot;</span><span class="nt">&gt;</span>cdef<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;kt&quot;</span><span class="nt">&gt;</span>unsigned<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;kt&quot;</span><span class="nt">&gt;</span>int<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;nf&quot;</span><span class="nt">&gt;</span>ii<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span>=<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>malla<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span>.<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>shape<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>[<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;mf&quot;</span><span class="nt">&gt;</span>1<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>]<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span>-<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;mf&quot;</span><span class="nt">&gt;</span>1<span class="nt">&lt;/span&gt;&lt;/pre&gt;</span>
+
+        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython code score-0&#39;</span><span class="nt">&gt;</span>  __pyx_v_ii = ((__pyx_v_malla.shape[1]) - 1);
+</pre></div>
+
+
+</pre>
+
+<div class="highlight"><pre><span></span>        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython line score-0&#39;</span> <span class="na">onclick=</span><span class="s">&#39;toggleDiv(this)&#39;</span><span class="nt">&gt;</span>+07:     <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;k&quot;</span><span class="nt">&gt;</span>cdef<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;kt&quot;</span><span class="nt">&gt;</span>unsigned<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;kt&quot;</span><span class="nt">&gt;</span>int<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;nf&quot;</span><span class="nt">&gt;</span>jj<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span>=<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>malla<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span>.<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>shape<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>[<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;mf&quot;</span><span class="nt">&gt;&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>]<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span>-<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;mf&quot;</span><span class="nt">&gt;</span>1<span class="nt">&lt;/span&gt;&lt;/pre&gt;</span>
+
+        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython code score-0&#39;</span><span class="nt">&gt;</span>  __pyx_v_jj = ((__pyx_v_malla.shape[0]) - 1);
+</pre></div>
+
+
+</pre>
+
+<div class="highlight"><pre><span></span>        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython line score-35&#39;</span> <span class="na">onclick=</span><span class="s">&#39;toggleDiv(this)&#39;</span><span class="nt">&gt;</span>+08:     <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;k&quot;</span><span class="nt">&gt;</span>cdef<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;kt&quot;</span><span class="nt">&gt;</span>char<span class="nt">&lt;/span&gt;</span>[<span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>:,::<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;mf&quot;</span><span class="nt">&gt;</span>1<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>]<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>minimos<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span>=<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>np<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span>.<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>zeros_like<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>(<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>malla<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>,<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>dtype<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span>=<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>np<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span>.<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>int8<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>)<span class="nt">&lt;/span&gt;&lt;/pre&gt;</span>
+
+        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython code score-35&#39;</span><span class="nt">&gt;</span>  __pyx_t_1 = <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&#39;pyx_c_api&#39;</span><span class="nt">&gt;</span>__Pyx_GetModuleGlobalName<span class="nt">&lt;/span&gt;</span>(__pyx_n_s_np);<span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&#39;error_goto&#39;</span><span class="nt">&gt;</span> if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 8; __pyx_clineno = __LINE__; goto __pyx_L1_error;}<span class="nt">&lt;/span&gt;</span>
+</pre></div>
+
+
+<p><span class='refnanny'><strong>Pyx_GOTREF</span>(__pyx_t_1);
+  __pyx_t_2 = <span class='pyx_c_api'>__Pyx_PyObject_GetAttrStr</span>(__pyx_t_1, __pyx_n_s_zeros_like);<span class='error_goto'> if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 8; __pyx_clineno = __LINE</strong>; goto <strong>pyx_L1_error;}</span>
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_2);
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_malla, 2, (PyObject <em>(</em>)(char <em>)) __pyx_memview_get_double, (int (</em>)(char <em>, PyObject </em>)) __pyx_memview_set_double, 0);;<span class='error_goto'> if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 8; __pyx_clineno = __LINE</strong>; goto <strong>pyx_L1_error;}</span>
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_1);
+  __pyx_t_3 = <span class='py_c_api'>PyTuple_New</span>(1);<span class='error_goto'> if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 8; __pyx_clineno = __LINE</strong>; goto <strong>pyx_L1_error;}</span>
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_3);
+  <span class='py_macro_api'>PyTuple_SET_ITEM</span>(__pyx_t_3, 0, __pyx_t_1);
+  <span class='refnanny'>__Pyx_GIVEREF</span>(__pyx_t_1);
+  __pyx_t_1 = 0;
+  __pyx_t_1 = <span class='py_c_api'>PyDict_New</span>();<span class='error_goto'> if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 8; __pyx_clineno = __LINE</strong>; goto <strong>pyx_L1_error;}</span>
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_1);
+  __pyx_t_4 = <span class='pyx_c_api'>__Pyx_GetModuleGlobalName</span>(__pyx_n_s_np);<span class='error_goto'> if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 8; __pyx_clineno = __LINE</strong>; goto <strong>pyx_L1_error;}</span>
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_4);
+  __pyx_t_5 = <span class='pyx_c_api'>__Pyx_PyObject_GetAttrStr</span>(__pyx_t_4, __pyx_n_s_int8);<span class='error_goto'> if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 8; __pyx_clineno = __LINE</strong>; goto <strong>pyx_L1_error;}</span>
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_5);
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_4); __pyx_t_4 = 0;
+  if (<span class='py_c_api'>PyDict_SetItem</span>(__pyx_t_1, __pyx_n_s_dtype, __pyx_t_5) &lt; 0) <span class='error_goto'>{__pyx_filename = __pyx_f[0]; __pyx_lineno = 8; __pyx_clineno = __LINE</strong>; goto <strong>pyx_L1_error;}</span>
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_5); __pyx_t_5 = 0;
+  __pyx_t_5 = <span class='pyx_c_api'>__Pyx_PyObject_Call</span>(__pyx_t_2, __pyx_t_3, __pyx_t_1);<span class='error_goto'> if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 8; __pyx_clineno = __LINE</strong>; goto <strong>pyx_L1_error;}</span>
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_5);
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_2); __pyx_t_2 = 0;
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_3); __pyx_t_3 = 0;
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_6 = <span class='pyx_c_api'>__Pyx_PyObject_to_MemoryviewSlice_d_dc_char</span>(__pyx_t_5);
+  if (unlikely(!__pyx_t_6.memview)) <span class='error_goto'>{__pyx_filename = __pyx_f[0]; __pyx_lineno = 8; __pyx_clineno = __LINE</strong>; goto __pyx_L1_error;}</span>
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_5); __pyx_t_5 = 0;
+  __pyx_v_minimos = __pyx_t_6;
+  __pyx_t_6.memview = NULL;
+  __pyx_t_6.data = NULL;
+</pre></p>
+<div class="highlight"><pre><span></span>        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython line score-0&#39;</span><span class="nt">&gt;</span><span class="ni">&amp;#xA0;</span>09:     <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;c&quot;</span><span class="nt">&gt;</span>#minimos[...] = 0<span class="nt">&lt;/span&gt;&lt;/pre&gt;</span>
+
+        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython line score-0&#39;</span> <span class="na">onclick=</span><span class="s">&#39;toggleDiv(this)&#39;</span><span class="nt">&gt;</span>+10:     <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;k&quot;</span><span class="nt">&gt;</span>cdef<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;kt&quot;</span><span class="nt">&gt;</span>unsigned<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;kt&quot;</span><span class="nt">&gt;</span>int<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;nf&quot;</span><span class="nt">&gt;</span>start<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span>=<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;mf&quot;</span><span class="nt">&gt;</span>1<span class="nt">&lt;/span&gt;&lt;/pre&gt;</span>
+
+        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython code score-0&#39;</span><span class="nt">&gt;</span>  __pyx_v_start = 1;
+</pre></div>
+
+
+</pre>
+
+<div class="highlight"><pre><span></span>        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython line score-0&#39;</span><span class="nt">&gt;</span><span class="ni">&amp;#xA0;</span>11:     <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;c&quot;</span><span class="nt">&gt;</span>#cdef float [:, :] malla_view = malla<span class="nt">&lt;/span&gt;&lt;/pre&gt;</span>
+
+        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython line score-0&#39;</span><span class="nt">&gt;</span><span class="ni">&amp;#xA0;</span>12:     <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;k&quot;</span><span class="nt">&gt;</span>with<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>boundscheck<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>(<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;bp&quot;</span><span class="nt">&gt;</span>False<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>),<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>wraparound<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>(<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;bp&quot;</span><span class="nt">&gt;</span>False<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>):<span class="nt">&lt;/span&gt;&lt;/pre&gt;</span>
+
+        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython line score-0&#39;</span> <span class="na">onclick=</span><span class="s">&#39;toggleDiv(this)&#39;</span><span class="nt">&gt;</span>+13:         <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;k&quot;</span><span class="nt">&gt;</span>for<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>j<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;ow&quot;</span><span class="nt">&gt;</span>in<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;nb&quot;</span><span class="nt">&gt;</span>range<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>(<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>start<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>,<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>ii<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>):<span class="nt">&lt;/span&gt;&lt;/pre&gt;</span>
+
+        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython code score-0&#39;</span><span class="nt">&gt;</span>  __pyx_t_7 = __pyx_v_ii;
+</pre></div>
+
+
+<p>for (__pyx_t_8 = __pyx_v_start; __pyx_t_8 &lt; __pyx_t_7; __pyx_t_8+=1) {
+    __pyx_v_j = __pyx_t_8;
+</pre></p>
+<div class="highlight"><pre><span></span>        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython line score-0&#39;</span> <span class="na">onclick=</span><span class="s">&#39;toggleDiv(this)&#39;</span><span class="nt">&gt;</span>+14:             <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;k&quot;</span><span class="nt">&gt;</span>for<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>i<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;ow&quot;</span><span class="nt">&gt;</span>in<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;nb&quot;</span><span class="nt">&gt;</span>range<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>(<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>start<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>,<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>jj<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>):<span class="nt">&lt;/span&gt;&lt;/pre&gt;</span>
+
+        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython code score-0&#39;</span><span class="nt">&gt;</span>    __pyx_t_9 = __pyx_v_jj;
+for (__pyx_t_10 = __pyx_v_start; __pyx_t_10 <span class="ni">&amp;lt;</span> __pyx_t_9; __pyx_t_10+=1) {
+  __pyx_v_i = __pyx_t_10;
+</pre></div>
+
+
+</pre>
+
+<div class="highlight"><pre><span></span>        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython line score-0&#39;</span> <span class="na">onclick=</span><span class="s">&#39;toggleDiv(this)&#39;</span><span class="nt">&gt;</span>+15:                 <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;k&quot;</span><span class="nt">&gt;</span>if<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>(<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>malla<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>[<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>j<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>,<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>i<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>]<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span><span class="ni">&amp;lt;</span><span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>malla<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>[<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>j<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span>-<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;mf&quot;</span><span class="nt">&gt;</span>1<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>,<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>i<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span>-<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;mf&quot;</span><span class="nt">&gt;</span>1<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>]<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;ow&quot;</span><span class="nt">&gt;</span>and<span class="nt">&lt;/span&gt;&lt;/pre&gt;</span>
+
+        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython code score-0&#39;</span><span class="nt">&gt;</span>      __pyx_t_12 = __pyx_v_j;
+  __pyx_t_13 = __pyx_v_i;
+  __pyx_t_14 = (__pyx_v_j - 1);
+  __pyx_t_15 = (__pyx_v_i - 1);
+  __pyx_t_16 = (((*((double *) ( /* dim=1 */ ((char *) (((double *) ( /* dim=0 */ (__pyx_v_malla.data + __pyx_t_12 * __pyx_v_malla.strides[0]) )) + __pyx_t_13)) ))) <span class="ni">&amp;lt;</span> (*((double *) ( /* dim=1 */ ((char *) (((double *) ( /* dim=0 */ (__pyx_v_malla.data + __pyx_t_14 * __pyx_v_malla.strides[0]) )) + __pyx_t_15)) )))) != 0);
+  if (__pyx_t_16) {
+  } else {
+    __pyx_t_11 = __pyx_t_16;
+    goto __pyx_L8_bool_binop_done;
+  }
+</pre></div>
+
+
+</pre>
+
+<div class="highlight"><pre><span></span>        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython line score-0&#39;</span> <span class="na">onclick=</span><span class="s">&#39;toggleDiv(this)&#39;</span><span class="nt">&gt;</span>+16:                     <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>malla<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>[<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>j<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>,<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>i<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>]<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span><span class="ni">&amp;lt;</span><span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>malla<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>[<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>j<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span>-<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;mf&quot;</span><span class="nt">&gt;</span>1<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>,<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>i<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>]<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;ow&quot;</span><span class="nt">&gt;</span>and<span class="nt">&lt;/span&gt;&lt;/pre&gt;</span>
+
+        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython code score-0&#39;</span><span class="nt">&gt;</span>      __pyx_t_17 = __pyx_v_j;
+  __pyx_t_18 = __pyx_v_i;
+  __pyx_t_19 = (__pyx_v_j - 1);
+  __pyx_t_20 = __pyx_v_i;
+  __pyx_t_16 = (((*((double *) ( /* dim=1 */ ((char *) (((double *) ( /* dim=0 */ (__pyx_v_malla.data + __pyx_t_17 * __pyx_v_malla.strides[0]) )) + __pyx_t_18)) ))) <span class="ni">&amp;lt;</span> (*((double *) ( /* dim=1 */ ((char *) (((double *) ( /* dim=0 */ (__pyx_v_malla.data + __pyx_t_19 * __pyx_v_malla.strides[0]) )) + __pyx_t_20)) )))) != 0);
+  if (__pyx_t_16) {
+  } else {
+    __pyx_t_11 = __pyx_t_16;
+    goto __pyx_L8_bool_binop_done;
+  }
+</pre></div>
+
+
+</pre>
+
+<div class="highlight"><pre><span></span>        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython line score-0&#39;</span> <span class="na">onclick=</span><span class="s">&#39;toggleDiv(this)&#39;</span><span class="nt">&gt;</span>+17:                     <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>malla<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>[<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>j<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>,<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>i<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>]<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span><span class="ni">&amp;lt;</span><span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>malla<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>[<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>j<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span>-<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;mf&quot;</span><span class="nt">&gt;</span>1<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>,<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>i<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span>+<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;mf&quot;</span><span class="nt">&gt;</span>1<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>]<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;ow&quot;</span><span class="nt">&gt;</span>and<span class="nt">&lt;/span&gt;&lt;/pre&gt;</span>
+
+        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython code score-0&#39;</span><span class="nt">&gt;</span>      __pyx_t_21 = __pyx_v_j;
+  __pyx_t_22 = __pyx_v_i;
+  __pyx_t_23 = (__pyx_v_j - 1);
+  __pyx_t_24 = (__pyx_v_i + 1);
+  __pyx_t_16 = (((*((double *) ( /* dim=1 */ ((char *) (((double *) ( /* dim=0 */ (__pyx_v_malla.data + __pyx_t_21 * __pyx_v_malla.strides[0]) )) + __pyx_t_22)) ))) <span class="ni">&amp;lt;</span> (*((double *) ( /* dim=1 */ ((char *) (((double *) ( /* dim=0 */ (__pyx_v_malla.data + __pyx_t_23 * __pyx_v_malla.strides[0]) )) + __pyx_t_24)) )))) != 0);
+  if (__pyx_t_16) {
+  } else {
+    __pyx_t_11 = __pyx_t_16;
+    goto __pyx_L8_bool_binop_done;
+  }
+</pre></div>
+
+
+</pre>
+
+<div class="highlight"><pre><span></span>        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython line score-0&#39;</span> <span class="na">onclick=</span><span class="s">&#39;toggleDiv(this)&#39;</span><span class="nt">&gt;</span>+18:                     <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>malla<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>[<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>j<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>,<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>i<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>]<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span><span class="ni">&amp;lt;</span><span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>malla<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>[<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>j<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>,<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>i<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span>-<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;mf&quot;</span><span class="nt">&gt;</span>1<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>]<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;ow&quot;</span><span class="nt">&gt;</span>and<span class="nt">&lt;/span&gt;&lt;/pre&gt;</span>
+
+        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython code score-0&#39;</span><span class="nt">&gt;</span>      __pyx_t_25 = __pyx_v_j;
+  __pyx_t_26 = __pyx_v_i;
+  __pyx_t_27 = __pyx_v_j;
+  __pyx_t_28 = (__pyx_v_i - 1);
+  __pyx_t_16 = (((*((double *) ( /* dim=1 */ ((char *) (((double *) ( /* dim=0 */ (__pyx_v_malla.data + __pyx_t_25 * __pyx_v_malla.strides[0]) )) + __pyx_t_26)) ))) <span class="ni">&amp;lt;</span> (*((double *) ( /* dim=1 */ ((char *) (((double *) ( /* dim=0 */ (__pyx_v_malla.data + __pyx_t_27 * __pyx_v_malla.strides[0]) )) + __pyx_t_28)) )))) != 0);
+  if (__pyx_t_16) {
+  } else {
+    __pyx_t_11 = __pyx_t_16;
+    goto __pyx_L8_bool_binop_done;
+  }
+</pre></div>
+
+
+</pre>
+
+<div class="highlight"><pre><span></span>        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython line score-0&#39;</span> <span class="na">onclick=</span><span class="s">&#39;toggleDiv(this)&#39;</span><span class="nt">&gt;</span>+19:                     <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>malla<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>[<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>j<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>,<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>i<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>]<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span><span class="ni">&amp;lt;</span><span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>malla<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>[<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>j<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>,<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>i<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span>+<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;mf&quot;</span><span class="nt">&gt;</span>1<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>]<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;ow&quot;</span><span class="nt">&gt;</span>and<span class="nt">&lt;/span&gt;&lt;/pre&gt;</span>
+
+        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython code score-0&#39;</span><span class="nt">&gt;</span>      __pyx_t_29 = __pyx_v_j;
+  __pyx_t_30 = __pyx_v_i;
+  __pyx_t_31 = __pyx_v_j;
+  __pyx_t_32 = (__pyx_v_i + 1);
+  __pyx_t_16 = (((*((double *) ( /* dim=1 */ ((char *) (((double *) ( /* dim=0 */ (__pyx_v_malla.data + __pyx_t_29 * __pyx_v_malla.strides[0]) )) + __pyx_t_30)) ))) <span class="ni">&amp;lt;</span> (*((double *) ( /* dim=1 */ ((char *) (((double *) ( /* dim=0 */ (__pyx_v_malla.data + __pyx_t_31 * __pyx_v_malla.strides[0]) )) + __pyx_t_32)) )))) != 0);
+  if (__pyx_t_16) {
+  } else {
+    __pyx_t_11 = __pyx_t_16;
+    goto __pyx_L8_bool_binop_done;
+  }
+</pre></div>
+
+
+</pre>
+
+<div class="highlight"><pre><span></span>        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython line score-0&#39;</span> <span class="na">onclick=</span><span class="s">&#39;toggleDiv(this)&#39;</span><span class="nt">&gt;</span>+20:                     <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>malla<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>[<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>j<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>,<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>i<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>]<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span><span class="ni">&amp;lt;</span><span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>malla<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>[<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>j<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span>+<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;mf&quot;</span><span class="nt">&gt;</span>1<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>,<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>i<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span>-<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;mf&quot;</span><span class="nt">&gt;</span>1<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>]<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;ow&quot;</span><span class="nt">&gt;</span>and<span class="nt">&lt;/span&gt;&lt;/pre&gt;</span>
+
+        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython code score-0&#39;</span><span class="nt">&gt;</span>      __pyx_t_33 = __pyx_v_j;
+  __pyx_t_34 = __pyx_v_i;
+  __pyx_t_35 = (__pyx_v_j + 1);
+  __pyx_t_36 = (__pyx_v_i - 1);
+  __pyx_t_16 = (((*((double *) ( /* dim=1 */ ((char *) (((double *) ( /* dim=0 */ (__pyx_v_malla.data + __pyx_t_33 * __pyx_v_malla.strides[0]) )) + __pyx_t_34)) ))) <span class="ni">&amp;lt;</span> (*((double *) ( /* dim=1 */ ((char *) (((double *) ( /* dim=0 */ (__pyx_v_malla.data + __pyx_t_35 * __pyx_v_malla.strides[0]) )) + __pyx_t_36)) )))) != 0);
+  if (__pyx_t_16) {
+  } else {
+    __pyx_t_11 = __pyx_t_16;
+    goto __pyx_L8_bool_binop_done;
+  }
+</pre></div>
+
+
+</pre>
+
+<div class="highlight"><pre><span></span>        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython line score-0&#39;</span> <span class="na">onclick=</span><span class="s">&#39;toggleDiv(this)&#39;</span><span class="nt">&gt;</span>+21:                     <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>malla<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>[<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>j<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>,<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>i<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>]<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span><span class="ni">&amp;lt;</span><span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>malla<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>[<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>j<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span>+<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;mf&quot;</span><span class="nt">&gt;</span>1<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>,<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>i<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>]<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;ow&quot;</span><span class="nt">&gt;</span>and<span class="nt">&lt;/span&gt;&lt;/pre&gt;</span>
+
+        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython code score-0&#39;</span><span class="nt">&gt;</span>      __pyx_t_37 = __pyx_v_j;
+  __pyx_t_38 = __pyx_v_i;
+  __pyx_t_39 = (__pyx_v_j + 1);
+  __pyx_t_40 = __pyx_v_i;
+  __pyx_t_16 = (((*((double *) ( /* dim=1 */ ((char *) (((double *) ( /* dim=0 */ (__pyx_v_malla.data + __pyx_t_37 * __pyx_v_malla.strides[0]) )) + __pyx_t_38)) ))) <span class="ni">&amp;lt;</span> (*((double *) ( /* dim=1 */ ((char *) (((double *) ( /* dim=0 */ (__pyx_v_malla.data + __pyx_t_39 * __pyx_v_malla.strides[0]) )) + __pyx_t_40)) )))) != 0);
+  if (__pyx_t_16) {
+  } else {
+    __pyx_t_11 = __pyx_t_16;
+    goto __pyx_L8_bool_binop_done;
+  }
+</pre></div>
+
+
+</pre>
+
+<div class="highlight"><pre><span></span>        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython line score-0&#39;</span> <span class="na">onclick=</span><span class="s">&#39;toggleDiv(this)&#39;</span><span class="nt">&gt;</span>+22:                     <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>malla<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>[<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>j<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>,<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>i<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>]<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span><span class="ni">&amp;lt;</span><span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>malla<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>[<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>j<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span>+<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;mf&quot;</span><span class="nt">&gt;</span>1<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>,<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>i<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span>+<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;mf&quot;</span><span class="nt">&gt;</span>1<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>]):<span class="nt">&lt;/span&gt;&lt;/pre&gt;</span>
+
+        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython code score-0&#39;</span><span class="nt">&gt;</span>      __pyx_t_41 = __pyx_v_j;
+  __pyx_t_42 = __pyx_v_i;
+  __pyx_t_43 = (__pyx_v_j + 1);
+  __pyx_t_44 = (__pyx_v_i + 1);
+  __pyx_t_16 = (((*((double *) ( /* dim=1 */ ((char *) (((double *) ( /* dim=0 */ (__pyx_v_malla.data + __pyx_t_41 * __pyx_v_malla.strides[0]) )) + __pyx_t_42)) ))) <span class="ni">&amp;lt;</span> (*((double *) ( /* dim=1 */ ((char *) (((double *) ( /* dim=0 */ (__pyx_v_malla.data + __pyx_t_43 * __pyx_v_malla.strides[0]) )) + __pyx_t_44)) )))) != 0);
+  __pyx_t_11 = __pyx_t_16;
+  __pyx_L8_bool_binop_done:;
+  if (__pyx_t_11) {
+</pre></div>
+
+
+</pre>
+
+<div class="highlight"><pre><span></span>        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython line score-0&#39;</span> <span class="na">onclick=</span><span class="s">&#39;toggleDiv(this)&#39;</span><span class="nt">&gt;</span>+23:                     <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>minimos<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>[<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>i<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>,<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>j<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>]<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span>=<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;mf&quot;</span><span class="nt">&gt;</span>1<span class="nt">&lt;/span&gt;&lt;/pre&gt;</span>
+
+        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython code score-0&#39;</span><span class="nt">&gt;</span>        __pyx_t_45 = __pyx_v_i;
+    __pyx_t_46 = __pyx_v_j;
+    *((char *) ( /* dim=1 */ ((char *) (((char *) ( /* dim=0 */ (__pyx_v_minimos.data + __pyx_t_45 * __pyx_v_minimos.strides[0]) )) + __pyx_t_46)) )) = 1;
+    goto __pyx_L7;
+  }
+  __pyx_L7:;
+}
+</pre></div>
+
+
+<p>}
+</pre></p>
+<div class="highlight"><pre><span></span>        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython line score-0&#39;</span><span class="nt">&gt;</span><span class="ni">&amp;#xA0;</span>24: <span class="nt">&lt;/pre&gt;</span>
+
+        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython line score-0&#39;</span> <span class="na">onclick=</span><span class="s">&#39;toggleDiv(this)&#39;</span><span class="nt">&gt;</span>+25:     <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;k&quot;</span><span class="nt">&gt;</span>return<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>minimos<span class="nt">&lt;/span&gt;&lt;/pre&gt;</span>
+
+        <span class="nt">&lt;pre</span> <span class="na">class=</span><span class="s">&#39;cython code score-0&#39;</span><span class="nt">&gt;</span>  __PYX_INC_MEMVIEW(<span class="err">&amp;</span>__pyx_v_minimos, 0);
+</pre></div>
+
+
+<p>__pyx_r = __pyx_v_minimos;
+  goto __pyx_L0;
+</pre>
+          </div></p>
+<div class="highlight"><pre><span></span>      <span class="nt">&lt;p&gt;</span>
+        <span class="nt">&lt;/body&gt;&lt;/html&gt;</span> <span class="nt">&lt;/div&gt;</span> <span class="nt">&lt;/div&gt;</span> <span class="nt">&lt;/div&gt;</span> <span class="nt">&lt;/div&gt;</span> <span class="nt">&lt;/div&gt;</span>
+
+        <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;/div&gt;</span>
+
+          <span class="nt">&lt;div&gt;</span>
+            <span class="nt">&lt;div&gt;</span>
+              Vemos que la mayor parte está en &#39;blanco&#39;. Eso significa que estamos evitando usar la C-API de CPython y la mayor parte sucede en C. Estoy usando <span class="nt">&lt;code&gt;</span>typed memoryviews<span class="nt">&lt;/code&gt;</span> que permite trabajar de forma &#39;transparente&#39; con numpy arrays.<span class="nt">&lt;br</span> <span class="nt">/&gt;</span> Vamos a ejecutar la nueva versión 100 veces, de la misma forma que hemos hecho con Numba:<span class="nt">&lt;/p&gt;</span>
+            <span class="nt">&lt;/div&gt;</span>
+          <span class="nt">&lt;/div&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+
+        <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;div&gt;</span>
+            <span class="nt">&lt;div&gt;</span>
+              <span class="nt">&lt;div&gt;</span>
+                <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot; highlight hl-ipython3&quot;</span><span class="nt">&gt;</span>
+                  <span class="nt">&lt;pre&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span>%<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;k&quot;</span><span class="nt">&gt;</span>timeit<span class="nt">&lt;/span&gt;</span> -n 100 busca_min_cython10(data)
+</pre></div>
+
+
+<p></pre>
+                    </div>
+                  </div>
+                </div>
+              </div></p>
+<div class="highlight"><pre><span></span>          <span class="nt">&lt;div&gt;</span>
+            <span class="nt">&lt;div&gt;</span>
+              <span class="nt">&lt;div&gt;</span>
+                <span class="nt">&lt;div&gt;</span>
+                <span class="nt">&lt;/div&gt;</span>
+
+                <span class="nt">&lt;div&gt;</span>
+                  <span class="nt">&lt;pre&gt;</span>100 loops, best of 3: 27.6 ms per loop
+</pre></div>
+
+
+<p></pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div></p>
+<div class="highlight"><pre><span></span>        <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;/div&gt;</span>
+
+          <span class="nt">&lt;div&gt;</span>
+            <span class="nt">&lt;div&gt;</span>
+              Wow, virtualmente obtenemos la misma velocidad entre Numba y Cython y dos órdenes de magnitud de mejora con respecto a la versión Python.<span class="nt">&lt;/p&gt;</span>
+            <span class="nt">&lt;/div&gt;</span>
+          <span class="nt">&lt;/div&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+
+        <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;div&gt;</span>
+            <span class="nt">&lt;div&gt;</span>
+              <span class="nt">&lt;div&gt;</span>
+                <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot; highlight hl-ipython3&quot;</span><span class="nt">&gt;</span>
+                  <span class="nt">&lt;pre&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>res_numba<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span>=<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>busca_min_np_jit<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>(<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>data<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>)<span class="nt">&lt;/span&gt;</span>
+</pre></div>
+
+
+<p><span class="n">res_cython</span> <span class="o">=</span> <span class="n">busca_min_cython10</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="n">res_python</span> <span class="o">=</span> <span class="n">busca_min</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></p>
+<p><span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_array_equal</span><span class="p">(</span><span class="n">res_numba</span><span class="p">,</span> <span class="n">res_cython</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_array_equal</span><span class="p">(</span><span class="n">res_numba</span><span class="p">,</span> <span class="n">res_python</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_array_equal</span><span class="p">(</span><span class="n">res_cython</span><span class="p">,</span> <span class="n">res_python</span><span class="p">)</span>
+</pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div></p>
+<div class="highlight"><pre><span></span>        <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;/div&gt;</span>
+
+          <span class="nt">&lt;div&gt;</span>
+            <span class="nt">&lt;div&gt;</span>
+              Parece que el resultado es el mismo en todo momento<span class="nt">&lt;/p&gt;</span>
+            <span class="nt">&lt;/div&gt;</span>
+          <span class="nt">&lt;/div&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+
+        <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;/div&gt;</span>
+
+          <span class="nt">&lt;div&gt;</span>
+            <span class="nt">&lt;div&gt;</span>
+              Probemos con arrays de menos y más tamaño.<span class="nt">&lt;/p&gt;</span>
+            <span class="nt">&lt;/div&gt;</span>
+          <span class="nt">&lt;/div&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+
+        <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;div&gt;</span>
+            <span class="nt">&lt;div&gt;</span>
+              <span class="nt">&lt;div&gt;</span>
+                <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot; highlight hl-ipython3&quot;</span><span class="nt">&gt;</span>
+                  <span class="nt">&lt;pre&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>data<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span>=<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>np<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span>.<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>random<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span>.<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>randn<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>(<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;mi&quot;</span><span class="nt">&gt;</span>500<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>,<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;mi&quot;</span><span class="nt">&gt;</span>500<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>)<span class="nt">&lt;/span&gt;</span>
+</pre></div>
+
+
+<p><span class="o">%</span><span class="k">timeit</span> -n 3 busca_min_np_jit(data)
+<span class="o">%</span><span class="k">timeit</span> -n 3 busca_min_cython10(data)
+<span class="o">%</span><span class="k">timeit</span> busca_min(data)
+</pre>
+                    </div>
+                  </div>
+                </div>
+              </div></p>
+<div class="highlight"><pre><span></span>          <span class="nt">&lt;div&gt;</span>
+            <span class="nt">&lt;div&gt;</span>
+              <span class="nt">&lt;div&gt;</span>
+                <span class="nt">&lt;div&gt;</span>
+                <span class="nt">&lt;/div&gt;</span>
+
+                <span class="nt">&lt;div&gt;</span>
+                  <span class="nt">&lt;pre&gt;</span>3 loops, best of 3: 2.04 ms per loop
+</pre></div>
+
+
+<p>3 loops, best of 3: 1.75 ms per loop
+1 loops, best of 3: 209 ms per loop
+</pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div></p>
+<div class="highlight"><pre><span></span>        <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;div&gt;</span>
+            <span class="nt">&lt;div&gt;</span>
+              <span class="nt">&lt;div&gt;</span>
+                <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot; highlight hl-ipython3&quot;</span><span class="nt">&gt;</span>
+                  <span class="nt">&lt;pre&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>data<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span>=<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>np<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span>.<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>random<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span>.<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>randn<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>(<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;mi&quot;</span><span class="nt">&gt;</span>5000<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>,<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;mi&quot;</span><span class="nt">&gt;</span>5000<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>)<span class="nt">&lt;/span&gt;</span>
+</pre></div>
+
+
+<p><span class="o">%</span><span class="k">timeit</span> -n 3 busca_min_np_jit(data)
+<span class="o">%</span><span class="k">timeit</span> -n 3 busca_min_cython10(data)
+<span class="o">%</span><span class="k">timeit</span> busca_min(data)
+</pre>
+                    </div>
+                  </div>
+                </div>
+              </div></p>
+<div class="highlight"><pre><span></span>          <span class="nt">&lt;div&gt;</span>
+            <span class="nt">&lt;div&gt;</span>
+              <span class="nt">&lt;div&gt;</span>
+                <span class="nt">&lt;div&gt;</span>
+                <span class="nt">&lt;/div&gt;</span>
+
+                <span class="nt">&lt;div&gt;</span>
+                  <span class="nt">&lt;pre&gt;</span>3 loops, best of 3: 216 ms per loop
+</pre></div>
+
+
+<p>3 loops, best of 3: 174 ms per loop
+1 loops, best of 3: 21.6 s per loop
+</pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div></p>
+<div class="highlight"><pre><span></span>        <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;/div&gt;</span>
+
+          <span class="nt">&lt;div&gt;</span>
+            <span class="nt">&lt;div&gt;</span>
+              Parece que las distintas versiones escalan de la misma forma y el rendimiento parece, más o menos, lineal.<span class="nt">&lt;/p&gt;</span>
+            <span class="nt">&lt;/div&gt;</span>
+          <span class="nt">&lt;/div&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+
+        <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;/div&gt;</span>
+
+          <span class="nt">&lt;div&gt;</span>
+            <span class="nt">&lt;div&gt;</span>
+              <span class="nt">&lt;h2</span> <span class="na">id=</span><span class="s">&quot;Conclusiones-de-este-nuevo-cap&amp;#237;tulo.&quot;</span><span class="nt">&gt;</span>
+                Conclusiones de este nuevo cap<span class="ni">&amp;#237;</span>tulo.<span class="nt">&lt;a</span> <span class="na">class=</span><span class="s">&quot;anchor-link&quot;</span> <span class="na">href=</span><span class="s">&quot;#Conclusiones-de-este-nuevo-cap&amp;#237;tulo.&quot;</span><span class="nt">&gt;</span><span class="ni">&amp;#182;</span><span class="nt">&lt;/a&gt;</span>
+              <span class="nt">&lt;/h2&gt;</span>
+            <span class="nt">&lt;/div&gt;</span>
+          <span class="nt">&lt;/div&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+
+        <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;/div&gt;</span>
+
+          <span class="nt">&lt;div&gt;</span>
+            <span class="nt">&lt;div&gt;</span>
+              Las conclusiones que saco yo de este mano a mano que hemos llevado a cabo JuanLu (featuring Numba) y yo (featuring Cython):<span class="nt">&lt;/p&gt;</span>
+
+              <span class="nt">&lt;ul&gt;</span>
+                <span class="nt">&lt;li&gt;</span>
+                  Cython: Si te restringes a cosas sencllas, es relativamente sencillo de usar. Básicamente habría que optimizar bucles y, solo en caso de que sea necesario, añadir tipos a otras variables para evitar pasar por la C-API de CPython en ciertas operaciones puesto que puede tener un coste elevado en el rendimiento. Para cosas más complejas, a pesar de que sigue siendo más placentero que C se puede complicar un poco más (pero no mucho más, una vez que has entendido cómo usarlo).
+                <span class="nt">&lt;/li&gt;</span>
+                <span class="nt">&lt;li&gt;</span>
+                  Numba: Es bastante sorprendente lo que se puede llegar a conseguir con poco esfuerzo. Parece que siempre introducirá un poco de <span class="nt">&lt;em&gt;</span>overhead<span class="nt">&lt;/em&gt;</span> puesto que hace muchas cosas entre bambalinas y de la otra forma (Cython) hace lo que le digamos que haga. También es verdad que muchas cosas no están soportadas, que los errores que obtenemos puede ser un poco crípticos y se hace difícil depurar el código. Pero a pesar de todo lo anterior y conociendo el historial de la gente que está detrás del proyecto Numba creo que su futuro será brillante. Por ejemplo, <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;https://github.com/shoyer/numbagg&quot;</span><span class="nt">&gt;</span>Numbagg<span class="nt">&lt;/a&gt;</span> es una librería que usa Numba y que pretende hacer lo mismo que <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;https://github.com/kwgoodman/bottleneck&quot;</span><span class="nt">&gt;</span>bottleneck<span class="nt">&lt;/a&gt;</span> (una librería muy especializada para determinadas operaciones de Numpy), que usa Cython consiguiendo <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;https://github.com/shoyer/numbagg#benchmarks&quot;</span><span class="nt">&gt;</span>resultados comparables aunque levemente peores<span class="nt">&lt;/a&gt;</span>.
+                <span class="nt">&lt;/li&gt;</span>
+              <span class="nt">&lt;/ul&gt;</span>
+
+              <span class="nt">&lt;p&gt;</span>
+                No sé si habrá algún capítulo más de esta serie... Lo dejo en manos de JuanLu o de cualquiera que nos quiera enviar un nuevo post relacionado.
+              <span class="nt">&lt;/p&gt;</span>
+            <span class="nt">&lt;/div&gt;</span>
+          <span class="nt">&lt;/div&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+</pre></div>
+        </div>
+
+        <div class="meta">
+            <div class="tags">
+                    <a href="http://pybonacci.github.io/tag/blttlenec.html" class="tag">blttlenec</a>
+                    <a href="http://pybonacci.github.io/tag/cython.html" class="tag">cython</a>
+                    <a href="http://pybonacci.github.io/tag/numba.html" class="tag">numba</a>
+                    <a href="http://pybonacci.github.io/tag/numbagg.html" class="tag">numbagg</a>
+                    <a href="http://pybonacci.github.io/tag/numpy.html" class="tag">numpy</a>
+                    <a href="http://pybonacci.github.io/tag/python.html" class="tag">python</a>
+                    <a href="http://pybonacci.github.io/tag/rendimiento.html" class="tag">rendimiento</a>
+            </div>
+        </div>
+
+  
+<hr>    
+<div class="row">
+  <div class="col-md-2">
+    <img src=https://pybonacci.org/images/author/kiko-correoso.jpg alt="photo" class="img-author img-rounded"/>
+  </div>
+  <div class="col-md-1"></div>
+  <div class="col-md-9 description-author">
+    <p>Kiko es doctor en ciencias físicas y esta especializado en física de la atmósfera, meteorología y climatología. Además de estar en las nubes es especialista en temas de energías renovables en Iberdrola. Ávido de seguir mejorando siempre está abierto a participar en nuevos proyectos y retos por lo que no dudes en contactarle si necesitas servicios especializados de Python o meteorología.
+</p>
+  </div>
+</div> 
+
+    </article>
+<div id="commento"></div>
+</div>
+
+<style type="text/css">
+{
+    max-width: 700px;
+}
+
+.text_cell .prompt {
+    display: none;
+}
+
+div.cell {
+    padding: 0;
+}
+
+div.text_cell_render {
+    padding: 0;
+}
+
+div.prompt {
+    font-size: 13px;
+}
+
+div.input_prompt {
+    padding: .7em 0.2em;
+}
+
+div.output_prompt {
+    padding: .4em .2em;
+}
+
+div.input_area {
+    margin: .2em 0.4em;
+    max-width: 580px;
+}
+
+table.dataframe {
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    line-height: 20px;
+}
+
+table.dataframe th, td {
+    padding: 4px;
+    text-align: left;
+}
+
+pre code {
+    background-color: inherit;
+}</style>
+
+        </div>
+
+        <footer class="disclaimer">
+          <div class="container-fluid">
+            <p>
+              © 2012-2017 Pybonacci, licencia <a href="https://github.com/Pybonacci/pybonacci.github.io/blob/sources/LICENSE.md"> CC BY-SA 4.0 + MIT</a>
+              salvo otra indicación.
+              <p>Contenido generado con <a href= "http://docs.getpelican.com/">Pelican</a>.</p>
+            </p>
+          </div>
+        </footer>
+
+    </body>
+</html>

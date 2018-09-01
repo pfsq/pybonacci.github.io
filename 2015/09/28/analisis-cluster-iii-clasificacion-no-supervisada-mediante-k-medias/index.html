@@ -1,0 +1,1599 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="author" content="Pybonacci">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+        <title>Análisis Cluster (III): Clasificación no supervisada mediante K-medias | Pybonacci</title>
+
+	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+	<link rel="icon" href="/favicon.ico" type="image/x-icon">
+        <link rel="alternate" type="application/atom+xml" title="Pybonacci blog atom feed" href="/feeds/all.atom.xml" />
+        <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700' rel='stylesheet' type='text/css'>
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <link rel="stylesheet" type="text/css" href="/theme/css/fontello.css"/>
+        <style>.highlight .hll { background-color: #ffffcc }
+.highlight .c { color: #60a0b0; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #007020; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #60a0b0; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #007020 } /* Comment.Preproc */
+.highlight .c1 { color: #60a0b0; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #60a0b0; background-color: #fff0f0 } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #c65d09; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #007020; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #007020; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #007020; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #007020 } /* Keyword.Pseudo */
+.highlight .kr { color: #007020; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #902000 } /* Keyword.Type */
+.highlight .m { color: #40a070 } /* Literal.Number */
+.highlight .s { color: #4070a0 } /* Literal.String */
+.highlight .na { color: #4070a0 } /* Name.Attribute */
+.highlight .nb { color: #007020 } /* Name.Builtin */
+.highlight .nc { color: #0e84b5; font-weight: bold } /* Name.Class */
+.highlight .no { color: #60add5 } /* Name.Constant */
+.highlight .nd { color: #555555; font-weight: bold } /* Name.Decorator */
+.highlight .ni { color: #d55537; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #007020 } /* Name.Exception */
+.highlight .nf { color: #06287e } /* Name.Function */
+.highlight .nl { color: #002070; font-weight: bold } /* Name.Label */
+.highlight .nn { color: #0e84b5; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #062873; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #bb60d5 } /* Name.Variable */
+.highlight .ow { color: #007020; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #40a070 } /* Literal.Number.Float */
+.highlight .mh { color: #40a070 } /* Literal.Number.Hex */
+.highlight .mi { color: #40a070 } /* Literal.Number.Integer */
+.highlight .mo { color: #40a070 } /* Literal.Number.Oct */
+.highlight .sb { color: #4070a0 } /* Literal.String.Backtick */
+.highlight .sc { color: #4070a0 } /* Literal.String.Char */
+.highlight .sd { color: #4070a0; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #4070a0 } /* Literal.String.Double */
+.highlight .se { color: #4070a0; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #4070a0 } /* Literal.String.Heredoc */
+.highlight .si { color: #70a0d0; font-style: italic } /* Literal.String.Interpol */
+.highlight .sx { color: #c65d09 } /* Literal.String.Other */
+.highlight .sr { color: #235388 } /* Literal.String.Regex */
+.highlight .s1 { color: #4070a0 } /* Literal.String.Single */
+.highlight .ss { color: #517918 } /* Literal.String.Symbol */
+.highlight .bp { color: #007020 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #bb60d5 } /* Name.Variable.Class */
+.highlight .vg { color: #bb60d5 } /* Name.Variable.Global */
+.highlight .vi { color: #bb60d5 } /* Name.Variable.Instance */
+.highlight .il { color: #40a070 } /* Literal.Number.Integer.Long */</style>
+        <style>.description-author {
+  font-size: 0.8em;
+  color: #333;
+}
+.img-author {
+  max-height: 10em;
+  max-width: 10em;
+}
+img[src$="centerme"] {
+  display: block;
+  margin: 0 auto;
+}
+body {
+  margin: 0;
+  padding: 0;
+  font: 15px 'Source Sans Pro', sans-serif;
+  line-height: 1.6em;
+  color: #222222;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+a {
+  color: #007ee5;
+  text-decoration: none;
+}
+a:hover {
+  color: #007ee5;
+  text-decoration: none;
+}
+header.main-header {
+  background: none repeat scroll 0% 0% #205F29;
+  margin-bottom: 0px;
+}
+header.main-header a {
+  color: #fff;
+}
+header.main-header .container {
+  max-width: 1000px;
+}
+header.main-header .container nav a:hover {
+  background-color: #5C881C;
+}
+header.navbar-default {
+  border-bottom: none;
+  background-color: #EFEFEF;
+}
+article {
+  margin: 0;
+}
+article header.about {
+  margin-bottom: 0px;
+  padding-bottom: 0px;
+}
+article header {
+  padding-bottom: 20px;
+}
+article header h1 {
+  margin-bottom: 2px;
+  font-weight: 700;
+  color: #000;
+}
+article header time {
+  color: #9E9E9E;
+  float: right;
+}
+article header time.left {
+  color: #9E9E9E;
+  float: left;
+}
+article div.social-links ul {
+  padding: 0px;
+}
+article div.social-links li {
+  display: inline;
+  font-size: 20px;
+}
+article div.social-links li a {
+  color: #000;
+  padding: 10px;
+}
+article div.social-links li a:hover {
+  color: #666;
+  text-decoration: none;
+}
+article p {
+  font-size: 2em;
+  margin-bottom: 20px;
+  line-height: 1.6em;
+  text-align: justify;
+}
+article p.note {
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  padding: 0.533em 0.733em;
+}
+article p.update {
+  background-color: #FEEFB3;
+  border: 1px solid #e6e68a;
+  padding: 0.533em 0.733em;
+}
+article p.alert {
+  background-color: #ffe2e2;
+  border: 1px solid #ffb2b2;
+  padding: 0.533em 0.733em;
+}
+article ul,
+article ol {
+  margin-top: 0px;
+  margin-bottom: 25px;
+}
+article li {
+  font-size: 16px;
+  line-height: 1.6em;
+}
+article a:hover {
+  text-decoration: underline;
+}
+article blockquote {
+  border-left: 2px solid #c7c7cc;
+  color: #666;
+  margin: 30px 0;
+  padding: 0 0 0 25px;
+}
+article img {
+  max-width: 100%;
+}
+article code {
+  color: #333;
+  background-color: #EEE;
+  border-radius: 0;
+  font-size: 1.1em;
+}
+article .meta {
+  margin-top: 35px;
+}
+article .meta a:hover {
+  text-decoration: none;
+}
+article .meta div {
+  display: block;
+}
+article .meta address:before,
+article .meta time:before,
+article .meta a.tag:before {
+  font-family: 'fontello';
+  margin-right: 6px;
+}
+article .meta address.author {
+  float: left;
+}
+article .meta address:before {
+  content: '\e819';
+}
+article .meta time:before {
+  content: '\f133';
+}
+article .meta div.tags {
+  clear: both;
+}
+article .meta a.tag {
+  margin: 0 10px 10px 0;
+  padding: 1px 12px;
+  display: inline-block;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.05);
+}
+article .meta a.tag:before {
+  content: '\e821';
+}
+article .meta a.tag:hover {
+  background: rgba(0, 0, 0, 0.15);
+}
+article .meta a.read_more,
+article .meta a.comments_btn {
+  font-size: 14px;
+  font-weight: 800;
+  padding: 10px 20px;
+  color: #007aa3;
+  background: #FFF;
+  border: 1px solid #007aa3;
+}
+article .meta a.read_more:hover,
+article .meta a.comments_btn:hover {
+  color: #FFF;
+  background: #007aa3;
+}
+article .meta:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+.index {
+  max-width: 700px;
+}
+.index article header h2 {
+  font-size: 36px;
+  margin-bottom: 2px;
+  font-weight: 700;
+}
+.index article header h2 a {
+  color: #333;
+}
+.index article header h2 a:hover {
+  color: #007ee5;
+  text-decoration: none;
+}
+.index .separator {
+  padding: 40px 0 0 0;
+  margin: 0 0 40px 0;
+  height: 10px;
+  border-bottom: solid 1px #CCC;
+}
+.index .pagination {
+  display: block;
+  margin-bottom: 100px;
+}
+.index .pagination .left {
+  text-align: right;
+}
+.index .pagination .right {
+  text-align: left;
+}
+.index .pagination a {
+  display: inline-block;
+  border: 2px solid #5C881C;
+  margin: 0 5px;
+  padding: 8px 20px;
+  font-weight: bold;
+  color: #5C881C;
+}
+.index .pagination a:hover {
+  color: #FFF;
+  background: #5C881C;
+}
+.post {
+  max-width: 80%;
+}
+.post h1 {
+  font-size: 42px;
+}
+.post h2:before {
+  content: "# ";
+  font-weight: bold;
+  color: #DDD;
+}
+.post h3:before {
+  content: "## ";
+  font-weight: bold;
+  color: #DDD;
+}
+.post h4:before {
+  content: "### ";
+  font-weight: bold;
+  color: #DDD;
+}
+.post p {
+  font-size: 2em;
+}
+.post li {
+  font-size: 2em;
+}
+.list {
+  max-width: 700px;
+}
+.list ul.double-list {
+  margin: 0 auto 60px;
+  padding: 0;
+  list-style-type: none;
+}
+.list ul.double-list li {
+  padding: 5px 0;
+}
+.list ul.double-list li h2 {
+  font-size: 2em;
+  display: inline;
+  font-weight: normal;
+}
+.list ul.double-list li span {
+  font-family: sans-serif;
+  text-transform: uppercase;
+  text-align: right;
+  float: right;
+  padding-top: 3px;
+  font-size: 12px;
+  color: #999;
+}
+.full-width-content {
+  padding-top: 10px;
+  padding-left: 0px;
+  padding-right: 0px;
+  margin-left: -20px;
+  margin-right: -20px;
+}
+.col-xs-1,
+.col-sm-1,
+.col-md-1,
+.col-lg-1,
+.col-xs-2,
+.col-sm-2,
+.col-md-2,
+.col-lg-2,
+.col-xs-3,
+.col-sm-3,
+.col-md-3,
+.col-lg-3,
+.col-xs-4,
+.col-sm-4,
+.col-md-4,
+.col-lg-4,
+.col-xs-5,
+.col-sm-5,
+.col-md-5,
+.col-lg-5,
+.col-xs-6,
+.col-sm-6,
+.col-md-6,
+.col-lg-6,
+.col-xs-7,
+.col-sm-7,
+.col-md-7,
+.col-lg-7,
+.col-xs-8,
+.col-sm-8,
+.col-md-8,
+.col-lg-8,
+.col-xs-9,
+.col-sm-9,
+.col-md-9,
+.col-lg-9,
+.col-xs-10,
+.col-sm-10,
+.col-md-10,
+.col-lg-10,
+.col-xs-11,
+.col-sm-11,
+.col-md-11,
+.col-lg-11,
+.col-xs-12,
+.col-sm-12,
+.col-md-12,
+.col-lg-12 {
+  padding-right: 0px;
+  padding-left: 0px;
+}
+.disclaimer {
+  text-align: center;
+  background-color: #EFEFEF;
+  border-bottom: none;
+  margin-top: 6em;
+}
+pre {
+  font-size: 1.2em;
+}</style>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+       <script src="https://comments.pybonacci.org/assets/js/commento.js" data-div="#commento"></script>
+
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+            tex2jax: {
+                inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+                processEscapes: true,
+                skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            }
+        });
+        MathJax.Hub.Queue(function() {
+            var all = MathJax.Hub.getAllJax(), i;
+            for(i=0; i < all.length; i += 1) {
+                all[i].SourceElement().parentNode.className += ' has-jax';
+            }
+        });
+    </script>
+
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/latest.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+        </script>
+
+    </head>
+
+    <body>
+        <header class="navbar navbar-default bs-docs-nav">
+            <div class="container-fluid">
+                <div class="navbar-header">
+		  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#theNavbar">
+		    <span class="icon-bar"></span>
+		    <span class="icon-bar"></span>
+		    <span class="icon-bar"></span> 
+		  </button>
+                  <a class="navbar-brand" href="/" title="Home" class="title">Pybonacci</a><!-- — Python y Ciencia-->
+                </div>
+                <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation" id="theNavbar">
+		    <ul class="nav navbar-nav navbar-right">
+                            <li><a href="/pages/acerca-de-pybonacci.html" title="About">Acerca de</a></li>
+                            <li><a href="/archives.html" title="Archive">Archivos</a></li>
+                            <li><a class="nodec icon-rss" href="/feeds/all.atom.xml" title="pybonacci.github.io RSS feed" rel="me"></a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <div id="wrap">
+<div class="container post">
+    <article>
+        <header>
+            <h1>Análisis Cluster (III): Clasificación no supervisada mediante K-medias</h1>
+            <div class="meta">
+                <time datetime="article.date.isoformat()" pubdate>lun 28 septiembre 2015</time>
+                <address class="vcard author">Por
+                    <a class="url fn" href="http://pybonacci.github.io/author/kiko-correoso.html">Kiko Correoso</a>
+                </address>
+            </div>
+        </header>
+
+        <div class="article_content">
+            <div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      (Este es el tercer capítulo de la mini-serie de artículos sobre análisis cluster que estamos haciendo en pybonacci, si todavía no has leído <a href="http://pybonacci.org/tag/agrupamiento-clusters/">los anteriores artículos les puedes echar un ojo ahora</a>. Escribir esta tercera parte solo ha tardado ¡¡¡tres años en salir!!!).<br /> El algoritmo de k-medias es uno de los algoritmos más sencillos de agrupamiento dentro del campo del aprendizaje automático (<em>machine learning</em> para los <em>hipsters</em>). Sirve para agrupar $N$-elementos en $K$-grupos distintos.</p> </p>
+<div class="highlight"><pre><span></span>  <span class="o">&lt;</span><span class="s s-Atom">h2</span> <span class="s s-Atom">id=</span><span class="s2">&quot;Agrupamiento&quot;</span><span class="o">&gt;</span>
+    <span class="nv">Agrupamiento</span><span class="o">&lt;</span><span class="s s-Atom">a</span> <span class="s s-Atom">class=</span><span class="s2">&quot;anchor-link&quot;</span> <span class="s s-Atom">href=</span><span class="s2">&quot;#Agrupamiento&quot;</span><span class="s s-Atom">&gt;&amp;#</span><span class="mi">182</span><span class="p">;</span><span class="s s-Atom">&lt;/a</span><span class="o">&gt;</span>
+  <span class="s s-Atom">&lt;/h2</span><span class="o">&gt;</span>
+
+  <span class="o">&lt;</span><span class="s s-Atom">p</span><span class="o">&gt;</span>
+    <span class="p">(</span><span class="nv">Breve</span> <span class="s s-Atom">resumen</span> <span class="s s-Atom">de</span> <span class="s s-Atom">lo</span> <span class="s s-Atom">visto</span> <span class="s s-Atom">en</span> <span class="s s-Atom">anteriores</span> <span class="s s-Atom">artículos</span><span class="p">).</span><span class="o">&lt;</span><span class="s s-Atom">br</span> <span class="s s-Atom">/&gt;</span> <span class="nv">Las</span> <span class="s s-Atom">técnicas</span> <span class="s s-Atom">de</span> <span class="o">&lt;</span><span class="s s-Atom">a</span> <span class="s s-Atom">href=</span><span class="s2">&quot;https://en.wikipedia.org/wiki/Cluster_analysis&quot;</span><span class="o">&gt;</span><span class="s s-Atom">agrupamiento</span> <span class="s s-Atom">o</span> <span class="s s-Atom">análisis</span> <span class="o">&lt;</span><span class="s s-Atom">em</span><span class="o">&gt;</span><span class="nv">Cluster</span><span class="s s-Atom">&lt;/em&gt;&lt;/a</span><span class="o">&gt;</span> <span class="s s-Atom">son</span> <span class="s s-Atom">un</span> <span class="s s-Atom">tipo</span> <span class="s s-Atom">de</span> <span class="s s-Atom">aprendizaje</span> <span class="s s-Atom">no</span> <span class="s s-Atom">supervisado</span> <span class="s s-Atom">ya</span> <span class="s s-Atom">que</span> <span class="s s-Atom">no</span> <span class="s s-Atom">requieren</span> <span class="s s-Atom">un</span> <span class="s s-Atom">aprendizaje</span> <span class="s s-Atom">previo</span> <span class="s s-Atom">a</span> <span class="s s-Atom">partir</span> <span class="s s-Atom">de</span> <span class="s s-Atom">los</span> <span class="s s-Atom">datos</span><span class="p">.</span><span class="o">&lt;</span><span class="s s-Atom">br</span> <span class="s s-Atom">/&gt;</span> <span class="nv">Son</span> <span class="s s-Atom">métodos</span> <span class="s s-Atom">para</span> <span class="s s-Atom">agrupar</span> <span class="s s-Atom">datos</span> <span class="s s-Atom">sin</span> <span class="s s-Atom">etiqueta</span> <span class="s s-Atom">en</span> <span class="s s-Atom">subgrupos</span><span class="p">.</span> <span class="nv">Estos</span> <span class="s s-Atom">subgrupos</span> <span class="s s-Atom">pretenden</span> <span class="s s-Atom">reflejar</span> <span class="s s-Atom">algún</span> <span class="s s-Atom">tipo</span> <span class="s s-Atom">de</span> <span class="s s-Atom">estructura</span> <span class="s s-Atom">interna</span><span class="p">.</span>
+  <span class="s s-Atom">&lt;/p</span><span class="o">&gt;</span>
+
+  <span class="o">&lt;</span><span class="s s-Atom">h2</span> <span class="s s-Atom">id=</span><span class="s2">&quot;K-medias&quot;</span><span class="o">&gt;</span>
+    <span class="nv">K</span><span class="o">-</span><span class="s s-Atom">medias</span><span class="o">&lt;</span><span class="s s-Atom">a</span> <span class="s s-Atom">class=</span><span class="s2">&quot;anchor-link&quot;</span> <span class="s s-Atom">href=</span><span class="s2">&quot;#K-medias&quot;</span><span class="s s-Atom">&gt;&amp;#</span><span class="mi">182</span><span class="p">;</span><span class="s s-Atom">&lt;/a</span><span class="o">&gt;</span>
+  <span class="s s-Atom">&lt;/h2</span><span class="o">&gt;</span>
+
+  <span class="o">&lt;</span><span class="s s-Atom">p</span><span class="o">&gt;</span>
+    <span class="nv">El</span> <span class="s s-Atom">algoritmo</span> <span class="s s-Atom">de</span> <span class="o">&lt;</span><span class="s s-Atom">a</span> <span class="s s-Atom">href=</span><span class="s2">&quot;https://en.wikipedia.org/wiki/K-means_clustering&quot;</span><span class="o">&gt;</span><span class="nv">K</span><span class="o">-</span><span class="s s-Atom">medias&lt;/a</span><span class="o">&gt;</span> <span class="s s-Atom">es</span> <span class="s s-Atom">un</span> <span class="s s-Atom">algoritmo</span> <span class="s s-Atom">de</span> <span class="s s-Atom">agrupamiento</span> <span class="s s-Atom">particional</span> <span class="s s-Atom">que</span> <span class="s s-Atom">nos</span> <span class="s s-Atom">crea</span> <span class="err">$</span><span class="nv">K</span><span class="err">$</span> <span class="s s-Atom">particiones</span> <span class="s s-Atom">de</span> <span class="s s-Atom">los</span> <span class="err">$</span><span class="nv">N</span><span class="err">$</span> <span class="nf">datos</span> <span class="p">(</span><span class="s s-Atom">con</span> <span class="err">$</span><span class="nv">N</span> <span class="s s-Atom">\geqslant</span> <span class="nv">K</span><span class="err">$</span><span class="p">).</span> <span class="nv">El</span> <span class="s s-Atom">algoritmo</span> <span class="s s-Atom">se</span> <span class="s s-Atom">puede</span> <span class="s s-Atom">resumir</span> <span class="s s-Atom">en</span> <span class="s s-Atom">los</span> <span class="s s-Atom">siguientes</span> <span class="nn">pasos</span><span class="p">:</span>
+  <span class="s s-Atom">&lt;/p</span><span class="o">&gt;</span>
+
+  <span class="o">&lt;</span><span class="s s-Atom">ul</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="s s-Atom">li</span><span class="o">&gt;</span>
+      <span class="nv">Seleccionar</span> <span class="err">$</span><span class="nv">K</span><span class="err">$</span> <span class="s s-Atom">puntos</span> <span class="s s-Atom">de</span> <span class="s s-Atom">forma</span> <span class="s s-Atom">aleatoria</span> <span class="s s-Atom">en</span> <span class="s s-Atom">un</span> <span class="s s-Atom">dominio</span> <span class="s s-Atom">que</span> <span class="s s-Atom">comprende</span> <span class="s s-Atom">todos</span> <span class="s s-Atom">los</span> <span class="s s-Atom">puntos</span> <span class="s s-Atom">del</span> <span class="s s-Atom">conjunto</span> <span class="s s-Atom">de</span> <span class="s s-Atom">datos</span><span class="p">.</span> <span class="s s-Atom">estos</span> <span class="err">$</span><span class="nv">K</span><span class="err">$</span> <span class="s s-Atom">puntos</span> <span class="s s-Atom">representan</span> <span class="s s-Atom">los</span> <span class="s s-Atom">centros</span> <span class="s s-Atom">iniciales</span> <span class="s s-Atom">de</span> <span class="s s-Atom">los</span> <span class="nf">grupos</span> <span class="p">(</span><span class="s s-Atom">lo</span> <span class="s s-Atom">veremos</span> <span class="s s-Atom">en</span> <span class="s s-Atom">el</span> <span class="s s-Atom">método</span> <span class="o">&lt;</span><span class="s s-Atom">code&gt;</span><span class="k">_</span><span class="s s-Atom">init_centroids&lt;/code</span><span class="o">&gt;</span> <span class="s s-Atom">de</span> <span class="s s-Atom">la</span> <span class="s s-Atom">clase</span> <span class="o">&lt;</span><span class="s s-Atom">code</span><span class="o">&gt;</span><span class="nv">KMeans</span><span class="s s-Atom">&lt;/code</span><span class="o">&gt;</span> <span class="s s-Atom">que</span> <span class="s s-Atom">luego</span> <span class="s s-Atom">explicaremos</span> <span class="s s-Atom">más</span> <span class="s s-Atom">en</span> <span class="s s-Atom">detalle</span><span class="p">).</span> <span class="nv">No</span> <span class="s s-Atom">vamos</span> <span class="s s-Atom">a</span> <span class="s s-Atom">implementar</span> <span class="s s-Atom">ningún</span> <span class="s s-Atom">método</span> <span class="s s-Atom">de</span> <span class="s s-Atom">posicionamiento</span> <span class="s s-Atom">inicial</span> <span class="s s-Atom">complejo</span><span class="p">,</span> <span class="s s-Atom">los</span> <span class="s s-Atom">centros</span> <span class="s s-Atom">iniciales</span> <span class="s s-Atom">serán</span> <span class="s s-Atom">valores</span> <span class="s s-Atom">aleatorios</span> <span class="s s-Atom">colocados</span> <span class="s s-Atom">entre</span> <span class="s s-Atom">los</span> <span class="s s-Atom">umbrales</span> <span class="s s-Atom">mínimos</span> <span class="s s-Atom">y</span> <span class="s s-Atom">máximos</span> <span class="s s-Atom">del</span> <span class="s s-Atom">conjunto</span> <span class="s s-Atom">de</span> <span class="nf">puntos</span> <span class="p">(</span><span class="s s-Atom">entre</span> <span class="s s-Atom">las</span> <span class="err">$</span><span class="s s-Atom">x$</span><span class="p">,</span> <span class="err">$</span><span class="s s-Atom">y$</span> <span class="s s-Atom">mínimas</span> <span class="s s-Atom">y</span> <span class="s s-Atom">máximas</span><span class="p">).</span> <span class="nv">El</span> <span class="s s-Atom">problema</span> <span class="s s-Atom">que</span> <span class="s s-Atom">resolveremos</span> <span class="s s-Atom">será</span> <span class="s s-Atom">en</span> <span class="s s-Atom">dos</span> <span class="s s-Atom">dimensiones</span><span class="p">,</span> <span class="s s-Atom">como</span> <span class="s s-Atom">ya</span> <span class="s s-Atom">podéis</span> <span class="s s-Atom">intuir</span><span class="p">.</span>
+    <span class="s s-Atom">&lt;/li</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="s s-Atom">li</span><span class="o">&gt;</span>
+      <span class="nv">Asignar</span> <span class="s s-Atom">cada</span> <span class="s s-Atom">punto</span> <span class="s s-Atom">del</span> <span class="s s-Atom">conjunto</span> <span class="s s-Atom">de</span> <span class="s s-Atom">datos</span> <span class="s s-Atom">al</span> <span class="s s-Atom">grupo</span> <span class="s s-Atom">con</span> <span class="s s-Atom">el</span> <span class="s s-Atom">centro</span> <span class="s s-Atom">más</span> <span class="nf">próximo</span> <span class="p">(</span><span class="s s-Atom">lo</span> <span class="s s-Atom">veremos</span> <span class="s s-Atom">en</span> <span class="s s-Atom">el</span> <span class="s s-Atom">método</span> <span class="o">&lt;</span><span class="s s-Atom">code&gt;</span><span class="k">_</span><span class="s s-Atom">assign_centroids&lt;/code</span><span class="o">&gt;</span> <span class="s s-Atom">de</span> <span class="s s-Atom">la</span> <span class="s s-Atom">clase</span> <span class="o">&lt;</span><span class="s s-Atom">code</span><span class="o">&gt;</span><span class="nv">KMeans</span><span class="s s-Atom">&lt;/code&gt;</span><span class="p">,</span> <span class="s s-Atom">llegaremos</span> <span class="s s-Atom">en</span> <span class="s s-Atom">breve</span><span class="p">).</span>
+    <span class="s s-Atom">&lt;/li</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="s s-Atom">li</span><span class="o">&gt;</span>
+      <span class="nv">Recalculamos</span> <span class="s s-Atom">los</span> <span class="s s-Atom">centros</span> <span class="s s-Atom">de</span> <span class="s s-Atom">los</span> <span class="s s-Atom">grupos</span> <span class="s s-Atom">a</span> <span class="s s-Atom">partir</span> <span class="s s-Atom">de</span> <span class="s s-Atom">todos</span> <span class="s s-Atom">los</span> <span class="s s-Atom">datos</span> <span class="s s-Atom">asignados</span> <span class="s s-Atom">a</span> <span class="s s-Atom">cada</span> <span class="s s-Atom">grupo</span><span class="p">,</span> <span class="s s-Atom">es</span> <span class="s s-Atom">decir</span><span class="p">,</span> <span class="s s-Atom">calculamos</span> <span class="s s-Atom">el</span> <span class="o">&lt;</span><span class="s s-Atom">a</span> <span class="s s-Atom">href=</span><span class="s2">&quot;https://es.wikipedia.org/wiki/Centroide&quot;</span><span class="o">&gt;</span><span class="s s-Atom">centroide&lt;/a</span><span class="o">&gt;</span> <span class="s s-Atom">de</span> <span class="s s-Atom">cada</span> <span class="s s-Atom">grupo</span> <span class="s s-Atom">método</span> <span class="o">&lt;</span><span class="s s-Atom">code&gt;</span><span class="k">_</span><span class="s s-Atom">recalculate_centroids&lt;/code</span><span class="o">&gt;</span> <span class="s s-Atom">de</span> <span class="s s-Atom">la</span> <span class="nf">clase</span> <span class="p">(</span><span class="o">&lt;</span><span class="s s-Atom">code</span><span class="o">&gt;</span><span class="nv">KMeans</span><span class="s s-Atom">&lt;/code&gt;</span><span class="p">).</span>
+    <span class="s s-Atom">&lt;/li</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="s s-Atom">li</span><span class="o">&gt;</span>
+      <span class="nv">Repetir</span> <span class="s s-Atom">los</span> <span class="s s-Atom">dos</span> <span class="s s-Atom">pasos</span> <span class="s s-Atom">anteriores</span> <span class="s s-Atom">hasta</span> <span class="s s-Atom">que</span> <span class="s s-Atom">se</span> <span class="s s-Atom">cumpla</span> <span class="s s-Atom">un</span> <span class="s s-Atom">condición</span> <span class="s s-Atom">que</span> <span class="s s-Atom">puede</span> <span class="nn">ser</span><span class="p">:</span> <span class="o">&lt;</span><span class="s s-Atom">ul</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="s s-Atom">li</span><span class="o">&gt;</span>
+          <span class="nv">Se</span> <span class="s s-Atom">ha</span> <span class="s s-Atom">alcanzado</span> <span class="s s-Atom">un</span> <span class="s s-Atom">número</span> <span class="s s-Atom">máximo</span> <span class="s s-Atom">de</span> <span class="nf">iteraciones</span> <span class="p">(</span><span class="s s-Atom">no</span> <span class="s s-Atom">deseable</span><span class="p">).</span>
+        <span class="s s-Atom">&lt;/li</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="s s-Atom">li</span><span class="o">&gt;</span>
+          <span class="nv">Los</span> <span class="s s-Atom">centroides</span> <span class="s s-Atom">ya</span> <span class="s s-Atom">no</span> <span class="s s-Atom">cambian</span> <span class="s s-Atom">más</span> <span class="s s-Atom">allá</span> <span class="s s-Atom">de</span> <span class="s s-Atom">un</span> <span class="s s-Atom">rango</span><span class="p">.</span>
+        <span class="s s-Atom">&lt;/li</span><span class="o">&gt;</span>
+      <span class="s s-Atom">&lt;/ul</span><span class="o">&gt;</span>
+
+      <span class="o">&lt;</span><span class="s s-Atom">p</span><span class="o">&gt;</span>
+        <span class="nv">Nosotros</span> <span class="s s-Atom">solo</span> <span class="s s-Atom">comprobaremos</span> <span class="s s-Atom">el</span> <span class="s s-Atom">segundo</span> <span class="s s-Atom">ya</span> <span class="s s-Atom">que</span> <span class="s s-Atom">solo</span> <span class="s s-Atom">vamos</span> <span class="s s-Atom">a</span> <span class="s s-Atom">manejar</span> <span class="s s-Atom">conjuntos</span> <span class="s s-Atom">pequeños</span> <span class="s s-Atom">de</span> <span class="s s-Atom">datos</span><span class="p">.</span> <span class="nv">Le</span> <span class="s s-Atom">pondremos</span> <span class="s s-Atom">un</span> <span class="s s-Atom">límite</span> <span class="s s-Atom">de</span> <span class="s s-Atom">variación</span> <span class="s s-Atom">a</span> <span class="s s-Atom">nuestra</span> <span class="s s-Atom">clase</span> <span class="o">&lt;</span><span class="s s-Atom">code</span><span class="o">&gt;</span><span class="nv">KMeans</span><span class="s s-Atom">&lt;/code</span><span class="o">&gt;</span> <span class="s s-Atom">que</span> <span class="s s-Atom">deberán</span> <span class="s s-Atom">cumplir</span> <span class="s s-Atom">todos</span> <span class="s s-Atom">los</span> <span class="s s-Atom">centroides</span><span class="p">.</span> <span class="nv">La</span> <span class="s s-Atom">comprobación</span> <span class="s s-Atom">sobre</span> <span class="s s-Atom">si</span> <span class="s s-Atom">parar</span> <span class="s s-Atom">las</span> <span class="s s-Atom">iteraciones</span> <span class="s s-Atom">se</span> <span class="s s-Atom">realizarán</span> <span class="s s-Atom">en</span> <span class="s s-Atom">el</span> <span class="s s-Atom">método</span> <span class="o">&lt;</span><span class="s s-Atom">code&gt;</span><span class="k">_</span><span class="s s-Atom">check_stop&lt;/code</span><span class="o">&gt;</span> <span class="s s-Atom">de</span> <span class="s s-Atom">la</span> <span class="s s-Atom">clase</span> <span class="nv">KMeans</span><span class="p">.</span> <span class="s s-Atom">&lt;/li</span><span class="o">&gt;</span> <span class="s s-Atom">&lt;/ul</span><span class="o">&gt;</span>
+
+        <span class="o">&lt;</span><span class="s s-Atom">h2</span> <span class="s s-Atom">id=</span><span class="s2">&quot;Todo-esto-pretende-ser-m&amp;#225;s-educativo-que-riguroso&quot;</span><span class="o">&gt;</span>
+          <span class="nv">Todo</span> <span class="s s-Atom">esto</span> <span class="s s-Atom">pretende</span> <span class="s s-Atom">ser</span> <span class="s s-Atom">m&amp;#</span><span class="mi">225</span><span class="p">;</span><span class="s s-Atom">s</span> <span class="s s-Atom">educativo</span> <span class="s s-Atom">que</span> <span class="s s-Atom">riguroso</span><span class="o">&lt;</span><span class="s s-Atom">a</span> <span class="s s-Atom">class=</span><span class="s2">&quot;anchor-link&quot;</span> <span class="s s-Atom">href=</span><span class="s2">&quot;#Todo-esto-pretende-ser-m&amp;#225;s-educativo-que-riguroso&quot;</span><span class="s s-Atom">&gt;&amp;#</span><span class="mi">182</span><span class="p">;</span><span class="s s-Atom">&lt;/a</span><span class="o">&gt;</span>
+        <span class="s s-Atom">&lt;/h2</span><span class="o">&gt;</span>
+
+        <span class="o">&lt;</span><span class="s s-Atom">p</span><span class="o">&gt;</span>
+          <span class="nv">La</span> <span class="s s-Atom">implementación</span> <span class="s s-Atom">que</span> <span class="s s-Atom">vamos</span> <span class="s s-Atom">a</span> <span class="s s-Atom">hacer</span> <span class="s s-Atom">será</span> <span class="s s-Atom">en</span> <span class="nv">Python</span> <span class="s s-Atom">puro</span> <span class="s s-Atom">ya</span> <span class="s s-Atom">que</span> <span class="s s-Atom">pretende</span> <span class="s s-Atom">ser</span> <span class="s s-Atom">educativa</span> <span class="s s-Atom">de</span> <span class="s s-Atom">cara</span> <span class="s s-Atom">a</span> <span class="s s-Atom">ayudar</span> <span class="s s-Atom">a</span> <span class="s s-Atom">conocer</span> <span class="s s-Atom">el</span> <span class="s s-Atom">funcionamiento</span> <span class="s s-Atom">del</span> <span class="s s-Atom">algoritmo</span> <span class="s s-Atom">paso</span> <span class="s s-Atom">a</span> <span class="s s-Atom">paso</span><span class="p">.</span> <span class="nv">Tenéis</span> <span class="s s-Atom">implementaciones</span> <span class="s s-Atom">mucho</span> <span class="s s-Atom">más</span> <span class="s s-Atom">desarrolladas</span><span class="p">,</span> <span class="s s-Atom">precisas</span><span class="p">,</span> <span class="s s-Atom">con</span> <span class="s s-Atom">mejor</span> <span class="s s-Atom">rendimiento</span><span class="p">,...,</span> <span class="s s-Atom">en</span> <span class="s s-Atom">paquetes</span> <span class="s s-Atom">como</span> <span class="o">&lt;</span><span class="s s-Atom">a</span> <span class="s s-Atom">href=</span><span class="s2">&quot;http://docs.scipy.org/doc/scipy/reference/cluster.vq.html&quot;</span><span class="o">&gt;</span><span class="s s-Atom">scipy&lt;/a&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="s s-Atom">a</span> <span class="s s-Atom">href=</span><span class="s2">&quot;http://scikit-learn.org/stable/modules/clustering.html#k-means&quot;</span><span class="o">&gt;</span><span class="s s-Atom">scikit</span><span class="o">-</span><span class="s s-Atom">learn&lt;/a</span><span class="o">&gt;</span> <span class="s s-Atom">u</span> <span class="o">&lt;</span><span class="s s-Atom">a</span> <span class="s s-Atom">href=</span><span class="s2">&quot;https://pypi.python.org/pypi?%3Aaction=search&amp;term=kmeans&amp;submit=search&quot;</span><span class="o">&gt;</span><span class="s s-Atom">otros&lt;/a&gt;.</span>
+        <span class="s s-Atom">&lt;/p</span><span class="o">&gt;</span>
+
+        <span class="o">&lt;</span><span class="s s-Atom">h2</span> <span class="s s-Atom">id=</span><span class="s2">&quot;La-implementaci&amp;#243;n&quot;</span><span class="o">&gt;</span>
+          <span class="nv">La</span> <span class="s s-Atom">implementaci&amp;#</span><span class="mi">243</span><span class="p">;</span><span class="s s-Atom">n</span><span class="o">&lt;</span><span class="s s-Atom">a</span> <span class="s s-Atom">class=</span><span class="s2">&quot;anchor-link&quot;</span> <span class="s s-Atom">href=</span><span class="s2">&quot;#La-implementaci&amp;#243;n&quot;</span><span class="s s-Atom">&gt;&amp;#</span><span class="mi">182</span><span class="p">;</span><span class="s s-Atom">&lt;/a</span><span class="o">&gt;</span>
+        <span class="s s-Atom">&lt;/h2</span><span class="o">&gt;</span>
+
+        <span class="o">&lt;</span><span class="s s-Atom">p</span><span class="o">&gt;</span>
+          <span class="p">[</span><span class="nv">AVISO</span> <span class="nv">PARA</span> <span class="nv">NAVEGANTES</span><span class="s s-Atom">:</span> <span class="nv">Todo</span> <span class="s s-Atom">el</span> <span class="s s-Atom">código</span> <span class="s s-Atom">está</span> <span class="s s-Atom">pensado</span> <span class="s s-Atom">para</span> <span class="s s-Atom">funcionar</span> <span class="s s-Atom">en</span> <span class="nv">Python</span> <span class="mf">3.</span> <span class="nv">Si</span> <span class="s s-Atom">usas</span> <span class="nv">Python</span> <span class="mi">2</span> <span class="s s-Atom">deberías</span> <span class="s s-Atom">empezar</span> <span class="s s-Atom">a</span> <span class="s s-Atom">pensar</span> <span class="s s-Atom">en</span> <span class="s s-Atom">actualizarte</span><span class="p">].</span><span class="o">&lt;</span><span class="s s-Atom">br</span> <span class="s s-Atom">/&gt;</span> <span class="nv">Primero</span> <span class="s s-Atom">escribo</span> <span class="s s-Atom">la</span> <span class="s s-Atom">clase</span> <span class="s s-Atom">a</span> <span class="s s-Atom">capón</span> <span class="s s-Atom">y</span> <span class="s s-Atom">luego</span> <span class="s s-Atom">la</span> <span class="s s-Atom">voy</span> <span class="s s-Atom">desgranando</span> <span class="s s-Atom">poco</span> <span class="s s-Atom">a</span> <span class="s s-Atom">poco</span><span class="p">.</span> <span class="nv">La</span> <span class="s s-Atom">he</span> <span class="s s-Atom">escrito</span> <span class="s s-Atom">como</span> <span class="s s-Atom">un</span> <span class="s s-Atom">iterador</span> <span class="s s-Atom">de</span> <span class="s s-Atom">forma</span> <span class="s s-Atom">que</span> <span class="s s-Atom">nos</span> <span class="s s-Atom">permita</span> <span class="s s-Atom">iterar</span> <span class="s s-Atom">fácilmente</span> <span class="s s-Atom">paso</span> <span class="s s-Atom">a</span> <span class="nf">paso</span> <span class="p">(</span><span class="s s-Atom">la</span> <span class="s s-Atom">iteración</span> <span class="s s-Atom">paso</span> <span class="s s-Atom">a</span> <span class="s s-Atom">paso</span> <span class="s s-Atom">la</span> <span class="s s-Atom">veremos</span> <span class="s s-Atom">de</span> <span class="s s-Atom">forma</span> <span class="s s-Atom">visual</span> <span class="s s-Atom">para</span> <span class="s s-Atom">intentar</span> <span class="s s-Atom">aportar</span> <span class="s s-Atom">aun</span> <span class="s s-Atom">mayor</span> <span class="s s-Atom">claridad</span><span class="p">).</span> <span class="nv">Para</span> <span class="s s-Atom">ver</span> <span class="s s-Atom">más</span> <span class="s s-Atom">sobre</span> <span class="s s-Atom">iteradores</span> <span class="s s-Atom">podéis</span> <span class="nv">DuckDuckGoear</span> <span class="s s-Atom">o</span> <span class="s s-Atom">ver</span> <span class="s s-Atom">este</span> <span class="o">&lt;</span><span class="s s-Atom">a</span> <span class="s s-Atom">href=</span><span class="s2">&quot;http://www.diveintopython3.net/iterators.html&quot;</span><span class="o">&gt;</span><span class="s s-Atom">enlace&lt;/a&gt;.</span>
+        <span class="s s-Atom">&lt;/p</span><span class="o">&gt;</span>
+
+            <span class="s s-Atom">:::</span><span class="p">[]</span>
+<span class="s s-Atom">class</span> <span class="nv">KMeans</span><span class="s s-Atom">:</span>
+    <span class="s s-Atom">def</span> <span class="k">__</span><span class="nf">init__</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">,</span> <span class="s s-Atom">x</span><span class="p">,</span> <span class="s s-Atom">y</span><span class="p">,</span> <span class="s s-Atom">n_clusters</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="s s-Atom">limit</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span><span class="s s-Atom">:</span>
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">x</span> <span class="o">=</span> <span class="s s-Atom">x</span>
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">x_min</span> <span class="o">=</span> <span class="nf">min</span><span class="p">(</span><span class="s s-Atom">x</span><span class="p">)</span>
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">x_max</span> <span class="o">=</span> <span class="nf">max</span><span class="p">(</span><span class="s s-Atom">x</span><span class="p">)</span>
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">y</span> <span class="o">=</span> <span class="s s-Atom">y</span>
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">y_min</span> <span class="o">=</span> <span class="nf">min</span><span class="p">(</span><span class="s s-Atom">y</span><span class="p">)</span>
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">y_max</span> <span class="o">=</span> <span class="nf">max</span><span class="p">(</span><span class="s s-Atom">y</span><span class="p">)</span>
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">n_clusters</span> <span class="o">=</span> <span class="s s-Atom">n_clusters</span>
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">limit</span> <span class="o">=</span> <span class="s s-Atom">limit</span>
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="nf">init_centroids</span><span class="p">()</span>        
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">iterations</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="s s-Atom">def</span> <span class="k">_</span><span class="nf">init_centroids</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">)</span><span class="s s-Atom">:</span>
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">x_centroids</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">y_centroids</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">colors</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="s s-Atom">for</span> <span class="s s-Atom">i</span> <span class="s s-Atom">in</span> <span class="nf">range</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">n_clusters</span><span class="p">)</span><span class="s s-Atom">:</span>
+            <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">x_centroids</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="nf">randint</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">x_min</span><span class="p">,</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">x_max</span><span class="p">))</span>
+            <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">y_centroids</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="nf">randint</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">y_min</span><span class="p">,</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">y_max</span><span class="p">))</span>
+            <span class="s s-Atom">r</span> <span class="o">=</span> <span class="nf">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">)</span>
+            <span class="s s-Atom">g</span> <span class="o">=</span> <span class="nf">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">)</span>
+            <span class="s s-Atom">b</span> <span class="o">=</span> <span class="nf">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">)</span>
+            <span class="s s-Atom">color</span> <span class="o">=</span> <span class="s s-Atom">&#39;rgb({0},{1},{2})&#39;</span><span class="p">.</span><span class="nf">format</span><span class="p">(</span><span class="s s-Atom">r</span><span class="p">,</span> <span class="s s-Atom">g</span><span class="p">,</span> <span class="s s-Atom">b</span><span class="p">)</span>
+            <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">colors</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="s s-Atom">color</span><span class="p">)</span>
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="nf">assign_centroids</span><span class="p">()</span>
+
+    <span class="s s-Atom">def</span> <span class="k">_</span><span class="nf">assign_centroids</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">)</span><span class="s s-Atom">:</span>
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">c</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="s s-Atom">#</span> <span class="nv">Maximum</span> <span class="s s-Atom">possible</span> <span class="s s-Atom">distance</span> <span class="s s-Atom">to</span> <span class="s s-Atom">a</span> <span class="s s-Atom">centroid</span>
+        <span class="s s-Atom">dmax</span>  <span class="o">=</span> <span class="nf">sqrt</span><span class="p">((</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">x_min</span> <span class="o">-</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">x_max</span><span class="p">)</span><span class="s s-Atom">**</span><span class="mi">2</span> <span class="o">+</span> 
+                     <span class="p">(</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">y_min</span> <span class="o">-</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">y_max</span><span class="p">)</span><span class="s s-Atom">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="s s-Atom">for</span> <span class="s s-Atom">xi</span><span class="p">,</span> <span class="s s-Atom">yi</span> <span class="s s-Atom">in</span> <span class="nf">zip</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">x</span><span class="p">,</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">y</span><span class="p">)</span><span class="s s-Atom">:</span>
+            <span class="s s-Atom">cluster</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="s s-Atom">d0</span> <span class="o">=</span> <span class="s s-Atom">dmax</span>
+            <span class="s s-Atom">for</span> <span class="s s-Atom">i</span> <span class="s s-Atom">in</span> <span class="nf">range</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">n_clusters</span><span class="p">)</span><span class="s s-Atom">:</span>
+                <span class="s s-Atom">d</span> <span class="o">=</span> <span class="nf">sqrt</span><span class="p">((</span><span class="s s-Atom">xi</span> <span class="o">-</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">x_centroids</span><span class="p">[</span><span class="s s-Atom">i</span><span class="p">])</span><span class="s s-Atom">**</span><span class="mi">2</span> <span class="o">+</span> 
+                         <span class="p">(</span><span class="s s-Atom">yi</span> <span class="o">-</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">y_centroids</span><span class="p">[</span><span class="s s-Atom">i</span><span class="p">])</span><span class="s s-Atom">**</span><span class="mi">2</span><span class="p">)</span>
+                <span class="s s-Atom">if</span> <span class="s s-Atom">d</span> <span class="s s-Atom">&amp;lt</span><span class="p">;</span> <span class="s s-Atom">d0:</span>
+                    <span class="s s-Atom">cluster</span> <span class="o">=</span> <span class="s s-Atom">i</span>
+                    <span class="s s-Atom">d0</span> <span class="o">=</span> <span class="s s-Atom">d</span>
+            <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">c</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="s s-Atom">cluster</span><span class="p">)</span>
+
+    <span class="s s-Atom">def</span> <span class="k">_</span><span class="nf">recalculate_centroids</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">)</span><span class="s s-Atom">:</span>
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="s s-Atom">x_centroids</span> <span class="o">=</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">x_centroids</span><span class="p">[</span><span class="s s-Atom">:</span><span class="p">]</span>
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="s s-Atom">y_centroids</span> <span class="o">=</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">y_centroids</span><span class="p">[</span><span class="s s-Atom">:</span><span class="p">]</span>
+        <span class="s s-Atom">for</span> <span class="s s-Atom">n</span> <span class="s s-Atom">in</span> <span class="nf">range</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">n_clusters</span><span class="p">)</span><span class="s s-Atom">:</span>
+            <span class="s s-Atom">x0</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="s s-Atom">y0</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="s s-Atom">cont</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="s s-Atom">for</span> <span class="s s-Atom">i</span><span class="p">,</span> <span class="s s-Atom">c</span> <span class="s s-Atom">in</span> <span class="nf">enumerate</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">c</span><span class="p">)</span><span class="s s-Atom">:</span>
+                <span class="s s-Atom">if</span> <span class="s s-Atom">c</span> <span class="o">==</span> <span class="nn">n</span><span class="p">:</span>
+                    <span class="s s-Atom">cont</span> <span class="s s-Atom">+=</span> <span class="mi">1</span>
+                    <span class="s s-Atom">x0</span> <span class="s s-Atom">+=</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">x</span><span class="p">[</span><span class="s s-Atom">i</span><span class="p">]</span>
+                    <span class="s s-Atom">y0</span> <span class="s s-Atom">+=</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">y</span><span class="p">[</span><span class="s s-Atom">i</span><span class="p">]</span>
+            <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">x_centroids</span><span class="p">[</span><span class="s s-Atom">n</span><span class="p">]</span> <span class="o">=</span> <span class="s s-Atom">x0</span> <span class="o">/</span> <span class="s s-Atom">cont</span>
+            <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">y_centroids</span><span class="p">[</span><span class="s s-Atom">n</span><span class="p">]</span> <span class="o">=</span> <span class="s s-Atom">y0</span> <span class="o">/</span> <span class="s s-Atom">cont</span>
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="nf">assign_centroids</span><span class="p">()</span>
+
+    <span class="s s-Atom">def</span> <span class="k">_</span><span class="nf">check_stop</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">)</span><span class="s s-Atom">:</span>
+        <span class="s s-Atom">for</span> <span class="s s-Atom">i</span> <span class="s s-Atom">in</span> <span class="nf">range</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">n_clusters</span><span class="p">)</span><span class="s s-Atom">:</span>
+            <span class="s s-Atom">d</span> <span class="o">=</span> <span class="nf">sqrt</span><span class="p">(</span>
+                <span class="p">(</span><span class="s s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="s s-Atom">x_centroids</span><span class="p">[</span><span class="s s-Atom">i</span><span class="p">]</span> <span class="o">-</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">x_centroids</span><span class="p">[</span><span class="s s-Atom">i</span><span class="p">])</span><span class="s s-Atom">**</span><span class="mi">2</span> <span class="o">+</span>
+                <span class="p">(</span><span class="s s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="s s-Atom">y_centroids</span><span class="p">[</span><span class="s s-Atom">i</span><span class="p">]</span> <span class="o">-</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">y_centroids</span><span class="p">[</span><span class="s s-Atom">i</span><span class="p">])</span><span class="s s-Atom">**</span><span class="mi">2</span>
+                <span class="p">)</span>
+            <span class="s s-Atom">if</span> <span class="s s-Atom">d</span> <span class="s s-Atom">&amp;gt</span><span class="p">;</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="nn">limit</span><span class="p">:</span>
+                <span class="s s-Atom">return</span> <span class="nv">False</span>
+        <span class="s s-Atom">return</span> <span class="nv">True</span>
+
+    <span class="s s-Atom">def</span> <span class="k">__</span><span class="nf">iter__</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">)</span><span class="s s-Atom">:</span>
+        <span class="s s-Atom">return</span> <span class="s s-Atom">self</span>
+
+    <span class="s s-Atom">def</span> <span class="k">__</span><span class="nf">next__</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">)</span><span class="s s-Atom">:</span>
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">iterations</span> <span class="s s-Atom">+=</span> <span class="mi">1</span>
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="nf">recalculate_centroids</span><span class="p">()</span>
+        <span class="s s-Atom">stop</span> <span class="o">=</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="nf">check_stop</span><span class="p">()</span>
+        <span class="s s-Atom">if</span> <span class="s s-Atom">stop</span> <span class="o">==</span> <span class="nv">True</span><span class="s s-Atom">:</span>
+            <span class="s s-Atom">raise</span> <span class="nv">StopIteration</span>
+        <span class="s s-Atom">return</span> <span class="s s-Atom">self</span>
+
+
+
+        <span class="o">&lt;</span><span class="s s-Atom">p</span><span class="o">&gt;</span>
+          <span class="nv">La</span> <span class="s s-Atom">clase</span> <span class="s s-Atom">anterior</span> <span class="s s-Atom">paso</span> <span class="s s-Atom">a</span> <span class="nn">paso</span><span class="p">:</span>
+        <span class="s s-Atom">&lt;/p</span><span class="o">&gt;</span>
+
+        <span class="o">&lt;</span><span class="s s-Atom">h3</span> <span class="s s-Atom">id=</span><span class="s2">&quot;m&amp;#233;todo-__init__&quot;</span><span class="o">&gt;</span>
+          <span class="s s-Atom">m&amp;#</span><span class="mi">233</span><span class="p">;</span><span class="s s-Atom">todo</span> <span class="k">__</span><span class="s s-Atom">init__</span><span class="o">&lt;</span><span class="s s-Atom">a</span> <span class="s s-Atom">class=</span><span class="s2">&quot;anchor-link&quot;</span> <span class="s s-Atom">href=</span><span class="s2">&quot;#m&amp;#233;todo-__init__&quot;</span><span class="s s-Atom">&gt;&amp;#</span><span class="mi">182</span><span class="p">;</span><span class="s s-Atom">&lt;/a</span><span class="o">&gt;</span>
+        <span class="s s-Atom">&lt;/h3</span><span class="o">&gt;</span>
+
+            <span class="s s-Atom">:::</span><span class="p">[]</span>
+<span class="s s-Atom">def</span> <span class="k">__</span><span class="nf">init__</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">,</span> <span class="s s-Atom">x</span><span class="p">,</span> <span class="s s-Atom">y</span><span class="p">,</span> <span class="s s-Atom">n_clusters</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="s s-Atom">limit</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span><span class="s s-Atom">:</span>
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">x</span> <span class="o">=</span> <span class="s s-Atom">x</span>
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">x_min</span> <span class="o">=</span> <span class="nf">min</span><span class="p">(</span><span class="s s-Atom">x</span><span class="p">)</span>
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">x_max</span> <span class="o">=</span> <span class="nf">max</span><span class="p">(</span><span class="s s-Atom">x</span><span class="p">)</span>
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">y</span> <span class="o">=</span> <span class="s s-Atom">y</span>
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">y_min</span> <span class="o">=</span> <span class="nf">min</span><span class="p">(</span><span class="s s-Atom">y</span><span class="p">)</span>
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">y_max</span> <span class="o">=</span> <span class="nf">max</span><span class="p">(</span><span class="s s-Atom">y</span><span class="p">)</span>
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">n_clusters</span> <span class="o">=</span> <span class="s s-Atom">n_clusters</span>
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">limit</span> <span class="o">=</span> <span class="s s-Atom">limit</span>
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="nf">init_centroids</span><span class="p">()</span>        
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">iterations</span> <span class="o">=</span> <span class="mi">0</span>
+
+
+
+        <span class="o">&lt;</span><span class="s s-Atom">p</span><span class="o">&gt;</span>
+          <span class="nv">Inicializamos</span> <span class="s s-Atom">la</span> <span class="s s-Atom">clase</span> <span class="s s-Atom">con</span> <span class="s s-Atom">los</span> <span class="s s-Atom">valores</span> <span class="o">&lt;</span><span class="s s-Atom">code</span><span class="o">&gt;</span><span class="s s-Atom">x&lt;/code</span><span class="o">&gt;</span> <span class="s s-Atom">de</span> <span class="s s-Atom">los</span> <span class="s s-Atom">puntos</span><span class="p">,</span> <span class="s s-Atom">los</span> <span class="s s-Atom">valores</span> <span class="o">&lt;</span><span class="s s-Atom">code</span><span class="o">&gt;</span><span class="s s-Atom">y&lt;/code</span><span class="o">&gt;</span> <span class="s s-Atom">de</span> <span class="s s-Atom">los</span> <span class="s s-Atom">puntos</span><span class="p">,</span> <span class="s s-Atom">el</span> <span class="s s-Atom">número</span> <span class="s s-Atom">de</span> <span class="s s-Atom">grupos</span> <span class="s s-Atom">a</span> <span class="s s-Atom">usar</span><span class="p">,</span> <span class="o">&lt;</span><span class="s s-Atom">code</span><span class="o">&gt;</span><span class="s s-Atom">n_clusters&lt;/code</span><span class="o">&gt;</span> <span class="s s-Atom">y</span> <span class="s s-Atom">el</span> <span class="s s-Atom">límite</span> <span class="s s-Atom">del</span> <span class="s s-Atom">desplazamiento</span> <span class="s s-Atom">de</span> <span class="s s-Atom">los</span> <span class="s s-Atom">grupos</span> <span class="s s-Atom">a</span> <span class="s s-Atom">partir</span> <span class="s s-Atom">del</span> <span class="s s-Atom">cual</span> <span class="s s-Atom">consideraremos</span> <span class="s s-Atom">que</span> <span class="s s-Atom">podemos</span> <span class="s s-Atom">parar</span> <span class="s s-Atom">de</span> <span class="s s-Atom">iterar</span><span class="p">,</span> <span class="o">&lt;</span><span class="s s-Atom">code</span><span class="o">&gt;</span><span class="s s-Atom">limit&lt;/code&gt;.&lt;br</span> <span class="s s-Atom">/&gt;</span> <span class="nv">Además</span><span class="p">,</span> <span class="s s-Atom">a</span> <span class="s s-Atom">partir</span> <span class="s s-Atom">del</span> <span class="s s-Atom">los</span> <span class="s s-Atom">valores</span> <span class="s s-Atom">introducidos</span><span class="p">,</span> <span class="s s-Atom">extraemos</span> <span class="s s-Atom">las</span> <span class="s s-Atom">ventana</span> <span class="s s-Atom">umbral</span> <span class="s s-Atom">donde</span> <span class="s s-Atom">se</span> <span class="s s-Atom">colocan</span> <span class="s s-Atom">los</span> <span class="nf">puntos</span> <span class="p">(</span><span class="s s-Atom">atributos</span> <span class="o">&lt;</span><span class="s s-Atom">code</span><span class="o">&gt;</span><span class="s s-Atom">x_min&lt;/code&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="s s-Atom">code</span><span class="o">&gt;</span><span class="s s-Atom">x_max&lt;/code&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="s s-Atom">code</span><span class="o">&gt;</span><span class="s s-Atom">y_min&lt;/code</span><span class="o">&gt;</span> <span class="s s-Atom">e</span> <span class="o">&lt;</span><span class="s s-Atom">code</span><span class="o">&gt;</span><span class="s s-Atom">y_max&lt;/code&gt;</span><span class="p">)</span> <span class="s s-Atom">que</span> <span class="s s-Atom">después</span> <span class="s s-Atom">usaremos</span> <span class="s s-Atom">para</span> <span class="s s-Atom">inicializar</span> <span class="s s-Atom">los</span> <span class="nf">centroides</span> <span class="p">(</span><span class="s s-Atom">mediante</span> <span class="o">&lt;</span><span class="s s-Atom">code&gt;</span><span class="k">_</span><span class="s s-Atom">init_centroids&lt;/code&gt;</span><span class="p">).</span>
+        <span class="s s-Atom">&lt;/p</span><span class="o">&gt;</span>
+
+        <span class="o">&lt;</span><span class="s s-Atom">h3</span> <span class="s s-Atom">id=</span><span class="s2">&quot;m&amp;#233;todo-_init_centroids&quot;</span><span class="o">&gt;</span>
+          <span class="s s-Atom">m&amp;#</span><span class="mi">233</span><span class="p">;</span><span class="s s-Atom">todo</span> <span class="k">_</span><span class="s s-Atom">init_centroids</span><span class="o">&lt;</span><span class="s s-Atom">a</span> <span class="s s-Atom">class=</span><span class="s2">&quot;anchor-link&quot;</span> <span class="s s-Atom">href=</span><span class="s2">&quot;#m&amp;#233;todo-_init_centroids&quot;</span><span class="s s-Atom">&gt;&amp;#</span><span class="mi">182</span><span class="p">;</span><span class="s s-Atom">&lt;/a</span><span class="o">&gt;</span>
+        <span class="s s-Atom">&lt;/h3</span><span class="o">&gt;</span>
+
+            <span class="s s-Atom">:::</span><span class="p">[]</span>
+    <span class="s s-Atom">def</span> <span class="k">_</span><span class="nf">init_centroids</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">)</span><span class="s s-Atom">:</span>
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">x_centroids</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">y_centroids</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">colors</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="s s-Atom">for</span> <span class="s s-Atom">i</span> <span class="s s-Atom">in</span> <span class="nf">range</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">n_clusters</span><span class="p">)</span><span class="s s-Atom">:</span>
+            <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">x_centroids</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="nf">randint</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">x_min</span><span class="p">,</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">x_max</span><span class="p">))</span>
+            <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">y_centroids</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="nf">randint</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">y_min</span><span class="p">,</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">y_max</span><span class="p">))</span>
+            <span class="s s-Atom">r</span> <span class="o">=</span> <span class="nf">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">)</span>
+            <span class="s s-Atom">g</span> <span class="o">=</span> <span class="nf">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">)</span>
+            <span class="s s-Atom">b</span> <span class="o">=</span> <span class="nf">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">)</span>
+            <span class="s s-Atom">color</span> <span class="o">=</span> <span class="s s-Atom">&#39;rgb({0},{1},{2})&#39;</span><span class="p">.</span><span class="nf">format</span><span class="p">(</span><span class="s s-Atom">r</span><span class="p">,</span> <span class="s s-Atom">g</span><span class="p">,</span> <span class="s s-Atom">b</span><span class="p">)</span>
+            <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">colors</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="s s-Atom">color</span><span class="p">)</span>
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="nf">assign_centroids</span><span class="p">()</span>
+
+
+
+        <span class="o">&lt;</span><span class="s s-Atom">p</span><span class="o">&gt;</span>
+          <span class="nv">Mediante</span> <span class="s s-Atom">este</span> <span class="s s-Atom">método</span><span class="p">,</span> <span class="s s-Atom">que</span> <span class="s s-Atom">se</span> <span class="s s-Atom">usa</span> <span class="s s-Atom">al</span> <span class="s s-Atom">inicializar</span> <span class="s s-Atom">la</span> <span class="s s-Atom">clase</span><span class="p">,</span> <span class="s s-Atom">creamos</span> <span class="s s-Atom">los</span> <span class="s s-Atom">centroides</span> <span class="s s-Atom">iniciales</span> <span class="s s-Atom">a</span> <span class="s s-Atom">partir</span> <span class="s s-Atom">de</span> <span class="s s-Atom">valores</span> <span class="s s-Atom">aleatorios</span> <span class="s s-Atom">situados</span> <span class="s s-Atom">entre</span> <span class="s s-Atom">los</span> <span class="s s-Atom">valores</span> <span class="s s-Atom">de</span> <span class="o">&lt;</span><span class="s s-Atom">code</span><span class="o">&gt;</span><span class="s s-Atom">x_min&lt;/code&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="s s-Atom">code</span><span class="o">&gt;</span><span class="s s-Atom">x_max&lt;/code&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="s s-Atom">code</span><span class="o">&gt;</span><span class="s s-Atom">y_min&lt;/code</span><span class="o">&gt;</span> <span class="s s-Atom">e</span> <span class="o">&lt;</span><span class="s s-Atom">code</span><span class="o">&gt;</span><span class="s s-Atom">y_max&lt;/code&gt;.</span> <span class="nv">Además</span><span class="p">,</span> <span class="s s-Atom">asignamos</span> <span class="s s-Atom">unos</span> <span class="s s-Atom">colores</span> <span class="s s-Atom">aleatorios</span> <span class="s s-Atom">a</span> <span class="s s-Atom">cada</span> <span class="nf">centroide</span> <span class="p">(</span><span class="s s-Atom">que</span> <span class="s s-Atom">luego</span> <span class="s s-Atom">usaremos</span> <span class="s s-Atom">en</span> <span class="s s-Atom">la</span> <span class="s s-Atom">visualización</span><span class="p">).</span> <span class="nv">Pensándolo</span> <span class="s s-Atom">fríamente</span><span class="p">,</span> <span class="s s-Atom">ahora</span> <span class="s s-Atom">que</span> <span class="s s-Atom">estoy</span> <span class="s s-Atom">escribiendo</span> <span class="s s-Atom">esto</span><span class="p">,</span> <span class="s s-Atom">la</span> <span class="s s-Atom">verdad</span> <span class="s s-Atom">que</span> <span class="o">&lt;</span><span class="s s-Atom">code</span><span class="o">&gt;</span><span class="s s-Atom">colors&lt;/code</span><span class="o">&gt;</span> <span class="s s-Atom">podría</span> <span class="s s-Atom">estar</span> <span class="s s-Atom">fuera</span> <span class="s s-Atom">de</span> <span class="s s-Atom">esta</span> <span class="s s-Atom">clase</span> <span class="s s-Atom">pero</span> <span class="s s-Atom">lo</span> <span class="s s-Atom">vamos</span> <span class="s s-Atom">a</span> <span class="s s-Atom">dejar</span> <span class="s s-Atom">así</span><span class="p">.</span><span class="o">&lt;</span><span class="s s-Atom">br</span> <span class="s s-Atom">/&gt;</span> <span class="nv">Una</span> <span class="s s-Atom">vez</span> <span class="s s-Atom">que</span> <span class="s s-Atom">se</span> <span class="s s-Atom">han</span> <span class="s s-Atom">creado</span> <span class="s s-Atom">los</span> <span class="s s-Atom">centroides</span> <span class="s s-Atom">hacemos</span> <span class="s s-Atom">la</span> <span class="s s-Atom">asignación</span> <span class="s s-Atom">de</span> <span class="s s-Atom">cada</span> <span class="s s-Atom">punto</span> <span class="s s-Atom">del</span> <span class="s s-Atom">conjunto</span> <span class="s s-Atom">de</span> <span class="s s-Atom">puntos</span> <span class="err">$</span><span class="s s-Atom">x$</span> <span class="s s-Atom">e</span> <span class="err">$</span><span class="s s-Atom">y$</span> <span class="s s-Atom">a</span> <span class="s s-Atom">cada</span> <span class="s s-Atom">centroide</span> <span class="s s-Atom">mediante</span> <span class="s s-Atom">el</span> <span class="s s-Atom">método</span> <span class="o">&lt;</span><span class="s s-Atom">code&gt;</span><span class="k">_</span><span class="s s-Atom">assign_centroids&lt;/code&gt;.</span>
+        <span class="s s-Atom">&lt;/p</span><span class="o">&gt;</span>
+
+        <span class="o">&lt;</span><span class="s s-Atom">h3</span> <span class="s s-Atom">id=</span><span class="s2">&quot;m&amp;#233;todo-_assign_centroids&quot;</span><span class="o">&gt;</span>
+          <span class="s s-Atom">m&amp;#</span><span class="mi">233</span><span class="p">;</span><span class="s s-Atom">todo</span> <span class="k">_</span><span class="s s-Atom">assign_centroids</span><span class="o">&lt;</span><span class="s s-Atom">a</span> <span class="s s-Atom">class=</span><span class="s2">&quot;anchor-link&quot;</span> <span class="s s-Atom">href=</span><span class="s2">&quot;#m&amp;#233;todo-_assign_centroids&quot;</span><span class="s s-Atom">&gt;&amp;#</span><span class="mi">182</span><span class="p">;</span><span class="s s-Atom">&lt;/a</span><span class="o">&gt;</span>
+        <span class="s s-Atom">&lt;/h3</span><span class="o">&gt;</span>
+
+            <span class="s s-Atom">:::</span><span class="p">[]</span>
+    <span class="s s-Atom">def</span> <span class="k">_</span><span class="nf">assign_centroids</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">)</span><span class="s s-Atom">:</span>
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">c</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="s s-Atom">#</span> <span class="nv">Maximum</span> <span class="s s-Atom">possible</span> <span class="s s-Atom">distance</span> <span class="s s-Atom">to</span> <span class="s s-Atom">a</span> <span class="s s-Atom">centroid</span>
+        <span class="s s-Atom">dmax</span>  <span class="o">=</span> <span class="nf">sqrt</span><span class="p">((</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">x_min</span> <span class="o">-</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">x_max</span><span class="p">)</span><span class="s s-Atom">**</span><span class="mi">2</span> <span class="o">+</span> 
+                     <span class="p">(</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">y_min</span> <span class="o">-</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">y_max</span><span class="p">)</span><span class="s s-Atom">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="s s-Atom">for</span> <span class="s s-Atom">xi</span><span class="p">,</span> <span class="s s-Atom">yi</span> <span class="s s-Atom">in</span> <span class="nf">zip</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">x</span><span class="p">,</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">y</span><span class="p">)</span><span class="s s-Atom">:</span>
+            <span class="s s-Atom">cluster</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="s s-Atom">d0</span> <span class="o">=</span> <span class="s s-Atom">dmax</span>
+            <span class="s s-Atom">for</span> <span class="s s-Atom">i</span> <span class="s s-Atom">in</span> <span class="nf">range</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">n_clusters</span><span class="p">)</span><span class="s s-Atom">:</span>
+                <span class="s s-Atom">d</span> <span class="o">=</span> <span class="nf">sqrt</span><span class="p">((</span><span class="s s-Atom">xi</span> <span class="o">-</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">x_centroids</span><span class="p">[</span><span class="s s-Atom">i</span><span class="p">])</span><span class="s s-Atom">**</span><span class="mi">2</span> <span class="o">+</span> 
+                         <span class="p">(</span><span class="s s-Atom">yi</span> <span class="o">-</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">y_centroids</span><span class="p">[</span><span class="s s-Atom">i</span><span class="p">])</span><span class="s s-Atom">**</span><span class="mi">2</span><span class="p">)</span>
+                <span class="s s-Atom">if</span> <span class="s s-Atom">d</span> <span class="s s-Atom">&amp;lt</span><span class="p">;</span> <span class="s s-Atom">d0:</span>
+                    <span class="s s-Atom">cluster</span> <span class="o">=</span> <span class="s s-Atom">i</span>
+                    <span class="s s-Atom">d0</span> <span class="o">=</span> <span class="s s-Atom">d</span>
+            <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">c</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="s s-Atom">cluster</span><span class="p">)</span>
+
+
+
+        <span class="o">&lt;</span><span class="s s-Atom">p</span><span class="o">&gt;</span>
+          <span class="s s-Atom">en</span> <span class="s s-Atom">el</span> <span class="s s-Atom">atributo</span> <span class="o">&lt;</span><span class="s s-Atom">code</span><span class="o">&gt;</span><span class="s s-Atom">c&lt;/code</span><span class="o">&gt;</span> <span class="p">(</span><span class="s s-Atom">que</span> <span class="s s-Atom">es</span> <span class="s s-Atom">una</span> <span class="s s-Atom">lista</span><span class="p">)</span> <span class="s s-Atom">almacenamos</span> <span class="s s-Atom">el</span> <span class="s s-Atom">valor</span> <span class="s s-Atom">del</span> <span class="s s-Atom">grupo</span> <span class="s s-Atom">al</span> <span class="s s-Atom">que</span> <span class="s s-Atom">pertenece</span> <span class="s s-Atom">cada</span> <span class="s s-Atom">punto</span> <span class="s s-Atom">del</span> <span class="s s-Atom">conjunto</span> <span class="s s-Atom">de</span> <span class="s s-Atom">datos</span> <span class="err">$</span><span class="s s-Atom">x$</span> <span class="s s-Atom">e</span> <span class="err">$</span><span class="s s-Atom">y$</span><span class="p">.</span> <span class="nv">Para</span> <span class="s s-Atom">ello</span><span class="p">,</span> <span class="s s-Atom">primero</span> <span class="s s-Atom">tenemos</span> <span class="s s-Atom">que</span> <span class="s s-Atom">calcular</span> <span class="s s-Atom">la</span> <span class="s s-Atom">distancia</span> <span class="s s-Atom">de</span> <span class="s s-Atom">cada</span> <span class="s s-Atom">punto</span> <span class="s s-Atom">a</span> <span class="s s-Atom">cada</span> <span class="s s-Atom">centroide</span> <span class="s s-Atom">y</span> <span class="s s-Atom">el</span> <span class="s s-Atom">que</span> <span class="s s-Atom">centroide</span> <span class="s s-Atom">que</span> <span class="s s-Atom">tenga</span> <span class="s s-Atom">menos</span> <span class="s s-Atom">distancia</span> <span class="s s-Atom">al</span> <span class="s s-Atom">punto</span> <span class="s s-Atom">será</span> <span class="s s-Atom">el</span> <span class="s s-Atom">asignado</span><span class="p">.</span> <span class="nv">Por</span> <span class="s s-Atom">tanto</span><span class="p">,</span> <span class="s s-Atom">en</span> <span class="s s-Atom">este</span> <span class="s s-Atom">paso</span><span class="p">,</span> <span class="s s-Atom">hemos</span> <span class="s s-Atom">de</span> <span class="s s-Atom">calcular</span> <span class="err">$</span><span class="nv">N</span> <span class="s s-Atom">\cdot</span> <span class="nv">K</span><span class="err">$</span> <span class="s s-Atom">distancias</span><span class="p">.</span>
+        <span class="s s-Atom">&lt;/p</span><span class="o">&gt;</span>
+
+        <span class="o">&lt;</span><span class="s s-Atom">h3</span> <span class="s s-Atom">id=</span><span class="s2">&quot;m&amp;#233;todo-_recalculate_centroids&quot;</span><span class="o">&gt;</span>
+          <span class="s s-Atom">m&amp;#</span><span class="mi">233</span><span class="p">;</span><span class="s s-Atom">todo</span> <span class="k">_</span><span class="s s-Atom">recalculate_centroids</span><span class="o">&lt;</span><span class="s s-Atom">a</span> <span class="s s-Atom">class=</span><span class="s2">&quot;anchor-link&quot;</span> <span class="s s-Atom">href=</span><span class="s2">&quot;#m&amp;#233;todo-_recalculate_centroids&quot;</span><span class="s s-Atom">&gt;&amp;#</span><span class="mi">182</span><span class="p">;</span><span class="s s-Atom">&lt;/a</span><span class="o">&gt;</span>
+        <span class="s s-Atom">&lt;/h3</span><span class="o">&gt;</span>
+
+            <span class="s s-Atom">:::</span><span class="p">[]</span>
+    <span class="s s-Atom">def</span> <span class="k">_</span><span class="nf">recalculate_centroids</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">)</span><span class="s s-Atom">:</span>
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="s s-Atom">x_centroids</span> <span class="o">=</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">x_centroids</span><span class="p">[</span><span class="s s-Atom">:</span><span class="p">]</span>
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="s s-Atom">y_centroids</span> <span class="o">=</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">y_centroids</span><span class="p">[</span><span class="s s-Atom">:</span><span class="p">]</span>
+        <span class="s s-Atom">for</span> <span class="s s-Atom">n</span> <span class="s s-Atom">in</span> <span class="nf">range</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">n_clusters</span><span class="p">)</span><span class="s s-Atom">:</span>
+            <span class="s s-Atom">x0</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="s s-Atom">y0</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="s s-Atom">cont</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="s s-Atom">for</span> <span class="s s-Atom">i</span><span class="p">,</span> <span class="s s-Atom">c</span> <span class="s s-Atom">in</span> <span class="nf">enumerate</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">c</span><span class="p">)</span><span class="s s-Atom">:</span>
+                <span class="s s-Atom">if</span> <span class="s s-Atom">c</span> <span class="o">==</span> <span class="nn">n</span><span class="p">:</span>
+                    <span class="s s-Atom">cont</span> <span class="s s-Atom">+=</span> <span class="mi">1</span>
+                    <span class="s s-Atom">x0</span> <span class="s s-Atom">+=</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">x</span><span class="p">[</span><span class="s s-Atom">i</span><span class="p">]</span>
+                    <span class="s s-Atom">y0</span> <span class="s s-Atom">+=</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">y</span><span class="p">[</span><span class="s s-Atom">i</span><span class="p">]</span>
+            <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">x_centroids</span><span class="p">[</span><span class="s s-Atom">n</span><span class="p">]</span> <span class="o">=</span> <span class="s s-Atom">x0</span> <span class="o">/</span> <span class="s s-Atom">cont</span>
+            <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">y_centroids</span><span class="p">[</span><span class="s s-Atom">n</span><span class="p">]</span> <span class="o">=</span> <span class="s s-Atom">y0</span> <span class="o">/</span> <span class="s s-Atom">cont</span>
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="nf">assign_centroids</span><span class="p">()</span>
+
+
+
+        <span class="o">&lt;</span><span class="s s-Atom">p</span><span class="o">&gt;</span>
+          <span class="nv">En</span> <span class="s s-Atom">este</span> <span class="s s-Atom">paso</span><span class="p">,</span> <span class="s s-Atom">recalculamos</span> <span class="s s-Atom">los</span> <span class="s s-Atom">centroides</span><span class="p">.</span> <span class="nv">Cada</span> <span class="s s-Atom">nuevo</span> <span class="s s-Atom">centroide</span> <span class="s s-Atom">será</span> <span class="s s-Atom">el</span> <span class="s s-Atom">centroide</span> <span class="s s-Atom">de</span> <span class="s s-Atom">los</span> <span class="s s-Atom">puntos</span> <span class="s s-Atom">asignados</span> <span class="s s-Atom">a</span> <span class="s s-Atom">ese</span> <span class="s s-Atom">centroide</span><span class="p">.</span> <span class="nv">Los</span> <span class="s s-Atom">antiguos</span> <span class="s s-Atom">centroides</span> <span class="s s-Atom">los</span> <span class="s s-Atom">conservamos</span> <span class="s s-Atom">para</span> <span class="s s-Atom">poder</span> <span class="s s-Atom">compararlos</span> <span class="s s-Atom">con</span> <span class="s s-Atom">los</span> <span class="s s-Atom">nuevos</span> <span class="s s-Atom">y</span> <span class="s s-Atom">ver</span> <span class="s s-Atom">si</span> <span class="s s-Atom">han</span> <span class="s s-Atom">variado</span> <span class="s s-Atom">poco</span> <span class="s s-Atom">o</span> <span class="s s-Atom">mucho</span> <span class="s s-Atom">las</span> <span class="s s-Atom">nuevas</span> <span class="s s-Atom">posiciones</span> <span class="s s-Atom">de</span> <span class="s s-Atom">los</span> <span class="s s-Atom">centroides</span><span class="p">.</span> <span class="nv">Una</span> <span class="s s-Atom">vez</span> <span class="s s-Atom">que</span> <span class="s s-Atom">hemos</span> <span class="s s-Atom">calculado</span> <span class="s s-Atom">los</span> <span class="s s-Atom">nuevos</span> <span class="s s-Atom">centroides</span> <span class="s s-Atom">y</span> <span class="s s-Atom">que</span> <span class="s s-Atom">mantenemos</span> <span class="s s-Atom">los</span> <span class="s s-Atom">antiguos</span> <span class="s s-Atom">asignamos</span> <span class="s s-Atom">los</span> <span class="s s-Atom">puntos</span> <span class="s s-Atom">a</span> <span class="s s-Atom">los</span> <span class="s s-Atom">nuevos</span> <span class="s s-Atom">centroides</span> <span class="s s-Atom">mediante</span> <span class="s s-Atom">el</span> <span class="s s-Atom">método</span> <span class="o">&lt;</span><span class="s s-Atom">code&gt;</span><span class="k">_</span><span class="s s-Atom">assign_centroids&lt;/code</span><span class="o">&gt;</span> <span class="s s-Atom">explicado</span> <span class="s s-Atom">anteriormente</span><span class="p">.</span>
+        <span class="s s-Atom">&lt;/p</span><span class="o">&gt;</span>
+
+        <span class="o">&lt;</span><span class="s s-Atom">h3</span> <span class="s s-Atom">id=</span><span class="s2">&quot;m&amp;#233;todo-_check_stop&quot;</span><span class="o">&gt;</span>
+          <span class="s s-Atom">m&amp;#</span><span class="mi">233</span><span class="p">;</span><span class="s s-Atom">todo</span> <span class="k">_</span><span class="s s-Atom">check_stop</span><span class="o">&lt;</span><span class="s s-Atom">a</span> <span class="s s-Atom">class=</span><span class="s2">&quot;anchor-link&quot;</span> <span class="s s-Atom">href=</span><span class="s2">&quot;#m&amp;#233;todo-_check_stop&quot;</span><span class="s s-Atom">&gt;&amp;#</span><span class="mi">182</span><span class="p">;</span><span class="s s-Atom">&lt;/a</span><span class="o">&gt;</span>
+        <span class="s s-Atom">&lt;/h3</span><span class="o">&gt;</span>
+
+            <span class="s s-Atom">:::</span><span class="p">[]</span>
+    <span class="s s-Atom">def</span> <span class="k">_</span><span class="nf">check_stop</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">)</span><span class="s s-Atom">:</span>
+        <span class="s s-Atom">for</span> <span class="s s-Atom">i</span> <span class="s s-Atom">in</span> <span class="nf">range</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">n_clusters</span><span class="p">)</span><span class="s s-Atom">:</span>
+            <span class="s s-Atom">d</span> <span class="o">=</span> <span class="nf">sqrt</span><span class="p">(</span>
+                <span class="p">(</span><span class="s s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="s s-Atom">x_centroids</span><span class="p">[</span><span class="s s-Atom">i</span><span class="p">]</span> <span class="o">-</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">x_centroids</span><span class="p">[</span><span class="s s-Atom">i</span><span class="p">])</span><span class="s s-Atom">**</span><span class="mi">2</span> <span class="o">+</span>
+                <span class="p">(</span><span class="s s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="s s-Atom">y_centroids</span><span class="p">[</span><span class="s s-Atom">i</span><span class="p">]</span> <span class="o">-</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">y_centroids</span><span class="p">[</span><span class="s s-Atom">i</span><span class="p">])</span><span class="s s-Atom">**</span><span class="mi">2</span>
+                <span class="p">)</span>
+            <span class="s s-Atom">if</span> <span class="s s-Atom">d</span> <span class="s s-Atom">&amp;gt</span><span class="p">;</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="nn">limit</span><span class="p">:</span>
+                <span class="s s-Atom">return</span> <span class="nv">False</span>
+        <span class="s s-Atom">return</span> <span class="nv">True</span>
+
+
+
+        <span class="o">&lt;</span><span class="s s-Atom">p</span><span class="o">&gt;</span>
+          <span class="nv">En</span> <span class="s s-Atom">este</span> <span class="s s-Atom">método</span> <span class="s s-Atom">calculamos</span> <span class="s s-Atom">si</span> <span class="s s-Atom">la</span> <span class="s s-Atom">diferencia</span> <span class="s s-Atom">entre</span> <span class="s s-Atom">la</span> <span class="s s-Atom">posición</span> <span class="s s-Atom">de</span> <span class="s s-Atom">los</span> <span class="s s-Atom">centroides</span> <span class="s s-Atom">antiguos</span> <span class="s s-Atom">y</span> <span class="s s-Atom">de</span> <span class="s s-Atom">los</span> <span class="s s-Atom">nuevos</span> <span class="s s-Atom">es</span> <span class="s s-Atom">superior</span> <span class="s s-Atom">o</span> <span class="s s-Atom">inferior</span> <span class="s s-Atom">al</span> <span class="s s-Atom">límite</span> <span class="s s-Atom">o</span> <span class="s s-Atom">umbral</span> <span class="s s-Atom">que</span> <span class="s s-Atom">hemos</span> <span class="s s-Atom">definido</span> <span class="s s-Atom">al</span> <span class="s s-Atom">instanciar</span> <span class="s s-Atom">la</span> <span class="s s-Atom">clase</span><span class="p">.</span> <span class="nv">Si</span> <span class="s s-Atom">cualquiera</span> <span class="s s-Atom">de</span> <span class="s s-Atom">los</span> <span class="s s-Atom">centroides</span> <span class="s s-Atom">se</span> <span class="s s-Atom">ha</span> <span class="s s-Atom">movido</span> <span class="s s-Atom">más</span> <span class="s s-Atom">del</span> <span class="s s-Atom">umbral</span> <span class="s s-Atom">definido</span> <span class="s s-Atom">seguiremos</span> <span class="nf">iterando</span> <span class="p">(</span><span class="o">&lt;</span><span class="s s-Atom">code&gt;</span><span class="k">_</span><span class="s s-Atom">check_stop&lt;/code</span><span class="o">&gt;</span> <span class="s s-Atom">devolverá</span> <span class="o">&lt;</span><span class="s s-Atom">code</span><span class="o">&gt;</span><span class="nv">False</span><span class="s s-Atom">&lt;/code&gt;</span><span class="p">),</span> <span class="s s-Atom">si</span> <span class="s s-Atom">ninguno</span> <span class="s s-Atom">supera</span> <span class="s s-Atom">el</span> <span class="s s-Atom">umbral</span> <span class="s s-Atom">le</span> <span class="s s-Atom">diremos</span> <span class="s s-Atom">que</span> <span class="s s-Atom">pare</span> <span class="s s-Atom">de</span> <span class="nf">iterar</span> <span class="p">(</span><span class="o">&lt;</span><span class="s s-Atom">code&gt;</span><span class="k">_</span><span class="s s-Atom">check_stop&lt;/code</span><span class="o">&gt;</span> <span class="s s-Atom">devolverá</span> <span class="o">&lt;</span><span class="s s-Atom">code</span><span class="o">&gt;</span><span class="nv">True</span><span class="s s-Atom">&lt;/code&gt;</span><span class="p">).</span>
+        <span class="s s-Atom">&lt;/p</span><span class="o">&gt;</span>
+
+        <span class="o">&lt;</span><span class="s s-Atom">h3</span> <span class="s s-Atom">id=</span><span class="s2">&quot;m&amp;#233;todos-__iter__-y-__next__&quot;</span><span class="o">&gt;</span>
+          <span class="s s-Atom">m&amp;#</span><span class="mi">233</span><span class="p">;</span><span class="s s-Atom">todos</span> <span class="k">__</span><span class="s s-Atom">iter__</span> <span class="s s-Atom">y</span> <span class="k">__</span><span class="s s-Atom">next__</span><span class="o">&lt;</span><span class="s s-Atom">a</span> <span class="s s-Atom">class=</span><span class="s2">&quot;anchor-link&quot;</span> <span class="s s-Atom">href=</span><span class="s2">&quot;#m&amp;#233;todos-__iter__-y-__next__&quot;</span><span class="s s-Atom">&gt;&amp;#</span><span class="mi">182</span><span class="p">;</span><span class="s s-Atom">&lt;/a</span><span class="o">&gt;</span>
+        <span class="s s-Atom">&lt;/h3</span><span class="o">&gt;</span>
+
+            <span class="s s-Atom">:::</span><span class="p">[]</span>
+    <span class="s s-Atom">def</span> <span class="k">__</span><span class="nf">iter__</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">)</span><span class="s s-Atom">:</span>
+        <span class="s s-Atom">return</span> <span class="s s-Atom">self</span>
+
+    <span class="s s-Atom">def</span> <span class="k">__</span><span class="nf">next__</span><span class="p">(</span><span class="s s-Atom">self</span><span class="p">)</span><span class="s s-Atom">:</span>
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="s s-Atom">iterations</span> <span class="s s-Atom">+=</span> <span class="mi">1</span>
+        <span class="s s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="nf">recalculate_centroids</span><span class="p">()</span>
+        <span class="s s-Atom">stop</span> <span class="o">=</span> <span class="s s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="nf">check_stop</span><span class="p">()</span>
+        <span class="s s-Atom">if</span> <span class="s s-Atom">stop</span> <span class="o">==</span> <span class="nv">True</span><span class="s s-Atom">:</span>
+            <span class="s s-Atom">raise</span> <span class="nv">StopIteration</span>
+        <span class="s s-Atom">return</span> <span class="s s-Atom">self</span>
+
+
+
+        <span class="o">&lt;</span><span class="s s-Atom">p</span><span class="o">&gt;</span>
+          <span class="nv">Si</span> <span class="s s-Atom">os</span> <span class="s s-Atom">habéis</span> <span class="s s-Atom">leído</span> <span class="s s-Atom">el</span> <span class="s s-Atom">enlace</span> <span class="s s-Atom">sobre</span> <span class="s s-Atom">iteradores</span> <span class="s s-Atom">que</span> <span class="s s-Atom">he</span> <span class="s s-Atom">dejado</span> <span class="s s-Atom">más</span> <span class="s s-Atom">arriba</span> <span class="s s-Atom">espero</span> <span class="s s-Atom">que</span> <span class="s s-Atom">esto</span> <span class="s s-Atom">sea</span> <span class="s s-Atom">sencillo</span> <span class="s s-Atom">de</span> <span class="s s-Atom">entender</span><span class="p">.</span>
+        <span class="s s-Atom">&lt;/p</span><span class="o">&gt;</span>
+
+        <span class="o">&lt;</span><span class="s s-Atom">ul</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="s s-Atom">li</span><span class="o">&gt;</span>
+            <span class="nv">El</span> <span class="s s-Atom">método</span> <span class="o">&lt;</span><span class="s s-Atom">code&gt;</span><span class="k">__</span><span class="s s-Atom">iter__&lt;/code</span><span class="o">&gt;</span> <span class="s s-Atom">no</span> <span class="s s-Atom">necesita</span> <span class="s s-Atom">mayor</span> <span class="s s-Atom">explicación</span><span class="p">.</span>
+          <span class="s s-Atom">&lt;/li</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="s s-Atom">li</span><span class="o">&gt;</span>
+            <span class="nv">El</span> <span class="s s-Atom">método</span> <span class="o">&lt;</span><span class="s s-Atom">code&gt;</span><span class="k">__</span><span class="s s-Atom">next__&lt;/code</span><span class="o">&gt;</span> <span class="s s-Atom">incrementa</span> <span class="s s-Atom">el</span> <span class="s s-Atom">atributo</span> <span class="o">&lt;</span><span class="s s-Atom">code</span><span class="o">&gt;</span><span class="s s-Atom">iterations&lt;/code&gt;</span><span class="p">,</span> <span class="s s-Atom">que</span> <span class="s s-Atom">no</span> <span class="s s-Atom">vamos</span> <span class="s s-Atom">a</span> <span class="s s-Atom">usar</span> <span class="s s-Atom">pero</span> <span class="s s-Atom">que</span> <span class="s s-Atom">podríamos</span> <span class="s s-Atom">usar</span> <span class="s s-Atom">para</span> <span class="s s-Atom">limitar</span><span class="p">,</span> <span class="s s-Atom">por</span> <span class="s s-Atom">ejemplo</span><span class="p">,</span> <span class="s s-Atom">el</span> <span class="s s-Atom">número</span> <span class="s s-Atom">de</span> <span class="s s-Atom">iteraciones</span><span class="p">,</span> <span class="s s-Atom">os</span> <span class="s s-Atom">lo</span> <span class="s s-Atom">dejo</span> <span class="s s-Atom">como</span> <span class="nf">ejercicio</span> <span class="o">:-</span><span class="nv">D</span><span class="p">,</span> <span class="s s-Atom">cada</span> <span class="s s-Atom">vez</span> <span class="s s-Atom">que</span> <span class="s s-Atom">damos</span> <span class="s s-Atom">un</span> <span class="s s-Atom">nuevo</span> <span class="s s-Atom">paso</span> <span class="s s-Atom">recalculamos</span> <span class="s s-Atom">los</span> <span class="s s-Atom">centroides</span> <span class="s s-Atom">y</span> <span class="s s-Atom">chequeamos</span> <span class="s s-Atom">si</span> <span class="s s-Atom">hay</span> <span class="s s-Atom">que</span> <span class="s s-Atom">parar</span> <span class="s s-Atom">la</span> <span class="s s-Atom">iteración</span> <span class="s s-Atom">porque</span> <span class="s s-Atom">hemos</span> <span class="s s-Atom">cumplido</span> <span class="s s-Atom">las</span> <span class="s s-Atom">condiciones</span> <span class="nf">fijadas</span> <span class="p">(</span><span class="s s-Atom">sí</span><span class="p">,</span> <span class="s s-Atom">el</span> <span class="o">&lt;</span><span class="s s-Atom">code</span><span class="o">&gt;</span><span class="s s-Atom">stop</span> <span class="o">==</span> <span class="nv">True</span><span class="s s-Atom">&lt;/code</span><span class="o">&gt;</span> <span class="s s-Atom">es</span> <span class="s s-Atom">redundante</span> <span class="s s-Atom">pero</span> <span class="s s-Atom">he</span> <span class="s s-Atom">pretendido</span> <span class="s s-Atom">que</span> <span class="s s-Atom">sea</span> <span class="s s-Atom">lo</span> <span class="s s-Atom">más</span> <span class="s s-Atom">claro</span> <span class="s s-Atom">posible</span><span class="p">).</span>
+          <span class="s s-Atom">&lt;/li</span><span class="o">&gt;</span>
+        <span class="s s-Atom">&lt;/ul</span><span class="o">&gt;</span>
+
+        <span class="o">&lt;</span><span class="s s-Atom">h2</span> <span class="s s-Atom">id=</span><span class="s2">&quot;Visualizaci&amp;#243;n&quot;</span><span class="o">&gt;</span>
+          <span class="nv">Visualizaci</span><span class="s s-Atom">&amp;#</span><span class="mi">243</span><span class="p">;</span><span class="s s-Atom">n</span><span class="o">&lt;</span><span class="s s-Atom">a</span> <span class="s s-Atom">class=</span><span class="s2">&quot;anchor-link&quot;</span> <span class="s s-Atom">href=</span><span class="s2">&quot;#Visualizaci&amp;#243;n&quot;</span><span class="s s-Atom">&gt;&amp;#</span><span class="mi">182</span><span class="p">;</span><span class="s s-Atom">&lt;/a</span><span class="o">&gt;</span>
+        <span class="s s-Atom">&lt;/h2</span><span class="o">&gt;</span>
+
+        <span class="o">&lt;</span><span class="s s-Atom">p</span><span class="o">&gt;</span>
+          <span class="nv">El</span> <span class="s s-Atom">hecho</span> <span class="s s-Atom">de</span> <span class="s s-Atom">crear</span> <span class="s s-Atom">la</span> <span class="s s-Atom">clase</span> <span class="s s-Atom">como</span> <span class="s s-Atom">un</span> <span class="s s-Atom">iterador</span> <span class="s s-Atom">es</span> <span class="s s-Atom">porque</span> <span class="s s-Atom">he</span> <span class="s s-Atom">pensado</span> <span class="s s-Atom">que</span> <span class="s s-Atom">podríamos</span> <span class="s s-Atom">iterar</span> <span class="s s-Atom">en</span> <span class="s s-Atom">cada</span> <span class="s s-Atom">paso</span> <span class="s s-Atom">y</span> <span class="s s-Atom">hacer</span> <span class="s s-Atom">una</span> <span class="s s-Atom">visualización</span> <span class="s s-Atom">interactiva</span><span class="p">.</span> <span class="nv">Como</span> <span class="s s-Atom">la</span> <span class="s s-Atom">visualizazión</span> <span class="s s-Atom">quiero</span> <span class="s s-Atom">que</span> <span class="s s-Atom">funciones</span> <span class="s s-Atom">cuando</span> <span class="s s-Atom">el</span> <span class="s s-Atom">notebook</span> <span class="s s-Atom">está</span> <span class="s s-Atom">estático</span> <span class="s s-Atom">he</span> <span class="s s-Atom">recurrido</span> <span class="s s-Atom">a</span> <span class="s s-Atom">usar</span> <span class="o">&lt;</span><span class="s s-Atom">a</span> <span class="s s-Atom">href=</span><span class="s2">&quot;https://github.com/kikocorreoso/brythonmagic&quot;</span><span class="o">&gt;</span><span class="nv">Brythonmagic</span><span class="s s-Atom">&lt;/a&gt;.&lt;br</span> <span class="s s-Atom">/&gt;</span> <span class="nv">Si</span> <span class="s s-Atom">queréis</span> <span class="s s-Atom">saber</span> <span class="s s-Atom">más</span> <span class="s s-Atom">sobre</span> <span class="nv">Brythonmagic</span> <span class="s s-Atom">podéis</span> <span class="s s-Atom">leer</span> <span class="s s-Atom">el</span> <span class="nv">README</span> <span class="s s-Atom">del</span> <span class="s s-Atom">enlace</span> <span class="s s-Atom">anterior</span> <span class="s s-Atom">o</span> <span class="s s-Atom">ver</span> <span class="o">&lt;</span><span class="s s-Atom">a</span> <span class="s s-Atom">href=</span><span class="s2">&quot;http://pybonacci.org/2014/03/03/presentando-brythonmagic/&quot;</span><span class="o">&gt;</span><span class="s s-Atom">esta</span> <span class="s s-Atom">entrada&lt;/a</span><span class="o">&gt;</span> <span class="s s-Atom">con</span> <span class="s s-Atom">vídeo</span> <span class="s s-Atom">y</span> <span class="s s-Atom">todo</span> <span class="s s-Atom">que</span> <span class="s s-Atom">muestra</span> <span class="s s-Atom">el</span> <span class="s s-Atom">funcionamiento</span><span class="p">.</span><span class="o">&lt;</span><span class="s s-Atom">br</span> <span class="s s-Atom">/&gt;</span> <span class="nv">Como</span> <span class="s s-Atom">resumen</span><span class="p">,</span> <span class="s s-Atom">básicamente</span> <span class="s s-Atom">es</span> <span class="s s-Atom">una</span> <span class="o">&lt;</span><span class="s s-Atom">em</span><span class="o">&gt;</span><span class="s s-Atom">magic</span> <span class="s s-Atom">function&lt;/em</span><span class="o">&gt;</span> <span class="s s-Atom">para</span> <span class="s s-Atom">el</span> <span class="s s-Atom">notebook</span> <span class="s s-Atom">que</span> <span class="s s-Atom">nos</span> <span class="s s-Atom">permite</span> <span class="s s-Atom">usar</span> <span class="nf">brython</span> <span class="p">(</span><span class="s s-Atom">una</span> <span class="s s-Atom">implementación</span> <span class="s s-Atom">de</span> <span class="nv">Python</span> <span class="mi">3</span> <span class="s s-Atom">hecha</span> <span class="s s-Atom">en</span> <span class="s s-Atom">javascript</span> <span class="s s-Atom">que</span> <span class="s s-Atom">funciona</span> <span class="s s-Atom">en</span> <span class="s s-Atom">el</span> <span class="s s-Atom">navegador</span> <span class="s s-Atom">sin</span> <span class="s s-Atom">necesidad</span> <span class="s s-Atom">de</span> <span class="s s-Atom">ningún</span> <span class="s s-Atom">kernel</span> <span class="s s-Atom">detrás</span><span class="p">).</span><span class="o">&lt;</span><span class="s s-Atom">br</span> <span class="s s-Atom">/&gt;</span> <span class="nv">Si</span> <span class="s s-Atom">no</span> <span class="s s-Atom">lo</span> <span class="s s-Atom">tienes</span> <span class="s s-Atom">instalado</span> <span class="s s-Atom">lo</span> <span class="s s-Atom">puedes</span> <span class="s s-Atom">instalar</span> <span class="s s-Atom">mediante</span> <span class="o">&lt;</span><span class="s s-Atom">code</span><span class="o">&gt;</span><span class="s s-Atom">pip&lt;/code&gt;.</span>
+        <span class="s s-Atom">&lt;/p&gt;&lt;/</span><span class="o">div&gt;</span> <span class="s s-Atom">&lt;/</span><span class="o">div&gt;</span> <span class="s s-Atom">&lt;/</span><span class="o">div&gt;</span>
+
+        <span class="o">&lt;div&gt;</span>
+          <span class="o">&lt;div&gt;</span>
+            <span class="o">&lt;div&gt;</span>
+              <span class="o">&lt;div&gt;</span>
+                <span class="o">&lt;div</span> <span class="s s-Atom">class=</span><span class="s2">&quot; highlight hl-ipython3&quot;</span><span class="o">&gt;</span>
+                  <span class="o">&lt;</span><span class="s s-Atom">pre&gt;&lt;span</span> <span class="s s-Atom">class=</span><span class="s2">&quot;o&quot;</span><span class="s s-Atom">&gt;</span><span class="p">!</span><span class="s s-Atom">&lt;/span</span><span class="o">&gt;</span><span class="s s-Atom">pip</span> <span class="s s-Atom">install</span> <span class="s s-Atom">brythonmagic</span>
+</pre></div>
+
+
+<p></pre>
+                    </div>
+                  </div>
+                </div>
+              </div></p>
+<div class="highlight"><pre><span></span>          <span class="nt">&lt;div&gt;</span>
+            <span class="nt">&lt;div&gt;</span>
+              <span class="nt">&lt;div&gt;</span>
+                <span class="nt">&lt;div&gt;</span>
+                <span class="nt">&lt;/div&gt;</span>
+
+                <span class="nt">&lt;div&gt;</span>
+                  <span class="nt">&lt;pre&gt;</span>Downloading/unpacking brythonmagic
+</pre></div>
+
+
+<p>Downloading brythonmagic-0.1.1.tar.gz
+  Running setup.py (path:/home/kiko/pyprojs/venv-scipy/build/brythonmagic/setup.py) egg_info for package brythonmagic</p>
+<p>Requirement already satisfied (use --upgrade to upgrade): ipython&gt;=1.0 in /home/kiko/pyprojs/venv-scipy/lib/python3.4/site-packages (from brythonmagic)
+Installing collected packages: brythonmagic
+  Running setup.py install for brythonmagic</p>
+<p>Successfully installed brythonmagic
+Cleaning up...
+</pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div></p>
+<div class="highlight"><pre><span></span>        <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;/div&gt;</span>
+
+          <span class="nt">&lt;div&gt;</span>
+            <span class="nt">&lt;div&gt;</span>
+              Para poder hacer uso de la extensión la hemos de cargar mediante:<span class="nt">&lt;/p&gt;</span>
+            <span class="nt">&lt;/div&gt;</span>
+          <span class="nt">&lt;/div&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+
+        <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;div&gt;</span>
+            <span class="nt">&lt;div&gt;</span>
+              <span class="nt">&lt;div&gt;</span>
+                <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot; highlight hl-ipython3&quot;</span><span class="nt">&gt;</span>
+                  <span class="nt">&lt;pre&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span>%<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;k&quot;</span><span class="nt">&gt;</span>load_ext<span class="nt">&lt;/span&gt;</span> brythonmagic
+</pre></div>
+
+
+<p></pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div></p>
+<div class="highlight"><pre><span></span>        <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;/div&gt;</span>
+
+          <span class="nt">&lt;div&gt;</span>
+            <span class="nt">&lt;div&gt;</span>
+              El paso siguiente nos permite usar toda la maquinaria de brython en el navegador dentro del notebook y es el último paso para que todo funcione.<span class="nt">&lt;/p&gt;</span>
+            <span class="nt">&lt;/div&gt;</span>
+          <span class="nt">&lt;/div&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+
+        <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;div&gt;</span>
+            <span class="nt">&lt;div&gt;</span>
+              <span class="nt">&lt;div&gt;</span>
+                <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot; highlight hl-ipython3&quot;</span><span class="nt">&gt;</span>
+                  <span class="nt">&lt;pre&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span>%%<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;k&quot;</span><span class="nt">&gt;</span>HTML<span class="nt">&lt;/span&gt;</span>
+</pre></div>
+
+
+<p>&lt;script type="text/javascript" src="http://brython.info/src/brython_dist.js"&gt;&lt;/script&gt;
+</pre>
+                    </div>
+                  </div>
+                </div>
+              </div></p>
+<div class="highlight"><pre><span></span>          <span class="nt">&lt;div&gt;</span>
+            <span class="nt">&lt;div&gt;</span>
+              <span class="nt">&lt;div&gt;</span>
+                <span class="nt">&lt;div&gt;</span>
+                <span class="nt">&lt;/div&gt;</span>
+              <span class="nt">&lt;/div&gt;</span>
+            <span class="nt">&lt;/div&gt;</span>
+          <span class="nt">&lt;/div&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+
+        <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;/div&gt;</span>
+
+          <span class="nt">&lt;div&gt;</span>
+            <span class="nt">&lt;div&gt;</span>
+              Podemos comprobar si funciona con el siguiente ejemplo. Después de ejecutar la celda debrías de ver un mensaje en pantalla (esto seré un poco enojante cuando lo veamos en estático puesto que siempre saltará esta ventana...):<span class="nt">&lt;/p&gt;</span>
+            <span class="nt">&lt;/div&gt;</span>
+          <span class="nt">&lt;/div&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+
+        <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;div&gt;</span>
+            <span class="nt">&lt;div&gt;</span>
+              <span class="nt">&lt;div&gt;</span>
+                <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot; highlight hl-ipython3&quot;</span><span class="nt">&gt;</span>
+                  <span class="nt">&lt;pre&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span>%%<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;k&quot;</span><span class="nt">&gt;</span>brython<span class="nt">&lt;/span&gt;</span>
+</pre></div>
+
+
+<p>from browser import alert
+alert(&#39;it works!&#39;)
+</pre>
+                    </div>
+                  </div>
+                </div>
+              </div></p>
+<div class="highlight"><pre><span></span>          <span class="nt">&lt;div&gt;</span>
+            <span class="nt">&lt;div&gt;</span>
+              <span class="nt">&lt;div&gt;</span>
+                <span class="nt">&lt;div&gt;</span>
+                <span class="nt">&lt;/div&gt;</span>
+              <span class="nt">&lt;/div&gt;</span>
+            <span class="nt">&lt;/div&gt;</span>
+          <span class="nt">&lt;/div&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+
+        <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;/div&gt;</span>
+
+          <span class="nt">&lt;div&gt;</span>
+            <span class="nt">&lt;div&gt;</span>
+              A continuación metemos el código de la clase <span class="nt">&lt;code&gt;</span>KMeans<span class="nt">&lt;/code&gt;</span> que ya hemos detallado más arriba y la llamaremos desde otras celdas brython a partir del nombre que le hemos dado en esta celda (<span class="nt">&lt;code&gt;</span>kmeans_class<span class="nt">&lt;/code&gt;</span>, ver primera línea de la celda)<span class="nt">&lt;/p&gt;</span>
+            <span class="nt">&lt;/div&gt;</span>
+          <span class="nt">&lt;/div&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+
+        <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;div&gt;</span>
+            <span class="nt">&lt;div&gt;</span>
+              <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot; highlight hl-ipython3&quot;</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;pre&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span>%%<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;k&quot;</span><span class="nt">&gt;</span>brython<span class="nt">&lt;/span&gt;</span> -s kmeans_class
+</pre></div>
+
+
+<p>from math import sqrt
+from random import randint</p>
+<p>class KMeans:
+    def <strong>init</strong>(self, x, y, n_clusters = 1, limit = 10):
+        self.x = x
+        self.x_min = min(x)
+        self.x_max = max(x)
+        self.y = y
+        self.y_min = min(y)
+        self.y_max = max(y)
+        self.n_clusters = n_clusters
+        self.limit = limit
+        self._init_centroids()      <br>
+        self.iterations = 0</p>
+<div class="highlight"><pre><span></span>def _init_centroids(self):
+    self.x_centroids = []
+    self.y_centroids = []
+    self.colors = []
+    for i in range(self.n_clusters):
+        self.x_centroids.append(randint(self.x_min, self.x_max))
+        self.y_centroids.append(randint(self.y_min, self.y_max))
+        r = randint(0,255)
+        g = randint(0,255)
+        b = randint(0,255)
+        color = &amp;#39;rgb({0},{1},{2})&amp;#39;.format(r, g, b)
+        self.colors.append(color)
+    self._assign_centroids()
+
+def _assign_centroids(self):
+    self.c = []
+    # Maximum possible distance to a centroid
+    dmax  = sqrt((self.x_min - self.x_max)**2 + 
+                 (self.y_min - self.y_max)**2)
+    for xi, yi in zip(self.x, self.y):
+        cluster = 0
+        d0 = dmax
+        for i in range(self.n_clusters):
+            d = sqrt((xi - self.x_centroids[i])**2 + 
+                     (yi - self.y_centroids[i])**2)
+            if d &amp;lt; d0:
+                cluster = i
+                d0 = d
+        self.c.append(cluster)
+
+def _recalculate_centroids(self):
+    self._x_centroids = self.x_centroids[:]
+    self._y_centroids = self.y_centroids[:]
+    for n in range(self.n_clusters):
+        x0 = 0
+        y0 = 0
+        cont = 0
+        for i, c in enumerate(self.c):
+            if c == n:
+                cont += 1
+                x0 += self.x[i]
+                y0 += self.y[i]
+        self.x_centroids[n] = x0 / cont
+        self.y_centroids[n] = y0 / cont
+    self._assign_centroids()
+
+def _check_stop(self):
+    for i in range(self.n_clusters):
+        d = sqrt(
+            (self._x_centroids[i] - self.x_centroids[i])**2 +
+            (self._y_centroids[i] - self.y_centroids[i])**2
+            )
+        if d &amp;gt; self.limit:
+            return False
+    return True
+
+def __iter__(self):
+    return self
+
+def __next__(self):
+    self.iterations += 1
+    self._recalculate_centroids()
+    stop = self._check_stop()
+    if stop == True:
+        raise StopIteration
+    return self
+</pre></div>
+
+
+<p></pre>
+                  </div>
+                </div>
+              </div>
+            </div></p>
+<div class="highlight"><pre><span></span>        <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;div&gt;</span>
+            <span class="nt">&lt;div&gt;</span>
+              <span class="nt">&lt;div&gt;</span>
+              <span class="nt">&lt;/div&gt;</span>
+
+              <span class="nt">&lt;div&gt;</span>
+              <span class="nt">&lt;/div&gt;</span>
+            <span class="nt">&lt;/div&gt;</span>
+          <span class="nt">&lt;/div&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+
+        <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;/div&gt;</span>
+
+          <span class="nt">&lt;div&gt;</span>
+            <span class="nt">&lt;div&gt;</span>
+              El código que figura a continuación es parte de <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;https://bitbucket.org/kikocorreoso/brython-bryplot/src&quot;</span><span class="nt">&gt;</span>una librería que empecé hace un tiempo para hacer gráficos en el canvas del navegador de forma simple a partir de Brython<span class="nt">&lt;/a&gt;</span>. La funcionalidad básica está en el módulo <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;https://bitbucket.org/kikocorreoso/brython-bryplot/src/528fa4116d1f8fd1f2ab44feb537d63778edb5d5/bryplot/base.py?at=default&amp;fileviewer=file-view-default&quot;</span><span class="nt">&gt;&lt;em&gt;</span>base.py<span class="nt">&lt;/em&gt;&lt;/a&gt;</span> y lo que figura a continuación es parte de ese módulo modificado en algún sitio.<span class="nt">&lt;br</span> <span class="nt">/&gt;</span> NO VOY A EXPLICAR ESTE CÓDIGO EN DETALLE PUESTO QUE NO ES PARTE DEL PROPÓSITO DE LA ENTRADA Y NO QUIERO DESVIAR LA ATENCIÓN. SI TENÉIS ALGUNA DUDA O INTERÉS PODÉIS USAR LOS COMENTARIOS DEL BLOG PARA ELLO.<span class="nt">&lt;br</span> <span class="nt">/&gt;</span> El código a continuación permite dibujar sobre un <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;http://www.html5canvastutorials.com/&quot;</span><span class="nt">&gt;</span>canvas HTML5<span class="nt">&lt;/a&gt;</span> diferentes formas. Solo vamos a definir formas para dibujar círculos, para los puntos y los centroides de los grupos, y líneas, para mostrar qué puntos se asignan a qué centroide en cada paso.<span class="nt">&lt;/p&gt;</span>
+            <span class="nt">&lt;/div&gt;</span>
+          <span class="nt">&lt;/div&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+
+        <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;div&gt;</span>
+            <span class="nt">&lt;div&gt;</span>
+              <span class="nt">&lt;div&gt;</span>
+                <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot; highlight hl-ipython3&quot;</span><span class="nt">&gt;</span>
+                  <span class="nt">&lt;pre&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span>%%<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;k&quot;</span><span class="nt">&gt;</span>brython<span class="nt">&lt;/span&gt;</span> -s canvas_utils
+</pre></div>
+
+
+<p>from browser import document as doc
+import math</p>
+<h2>Base classes for higher level objects</h2>
+<p>class Figure:
+    """
+    Base class to create other elements.
+    """
+    def <strong>init</strong>(self, canvasid, 
+                       facecolor = "white", 
+                       edgecolor = "black", 
+                       borderwidth = None):
+        """      <br>
+        Parameters
+        ----------
+        <em>canvasid</em>: String
+            String indicating the canvas id where the image should be 
+            rendered.
+        <em>facecolor</em>: String
+            String value containing a valid HTML color
+        <em>edgecolor</em>: String
+            String value containing a valid HTML color
+        <em>borderwidth</em>: Integer
+            Value indicating the width of the border in pixels.
+            If not provided it will 0 and the edgecolor will not be
+            visible
+        """</p>
+<div class="highlight"><pre><span></span>    if isinstance(canvasid, str):
+        self.id = canvasid
+    else:
+        raise Exception(&quot;The canvasid parameter should be a string&quot;)
+
+    try:
+        self.canvas = doc[self.id]
+    except:
+        raise Exception(&quot;No HTML element with id=%s&quot; %
+                        self.id)
+
+    try:
+        self._W = self.canvas.width
+        self._H = self.canvas.height
+        self._ctx = self.canvas.getContext(&quot;2d&quot;)
+    except:
+        raise Exception(&quot;You must provide the ID of a &amp;lt;canvas&amp;gt; element&quot;)
+
+    self.facecolor = facecolor
+    self.borderwidth = borderwidth
+    self.edgecolor = edgecolor
+    self.clf()
+
+def clf(self):
+    &quot;clear the figure&quot;
+    self._ctx.save()
+
+    # The following line should clear the canvas but I found a
+    # problem when I use beginPath ¿¿¿???
+    #self._ctx.clearRect(0, 0, self._W, self._H)
+    # So I use the following line that is less performant but
+    # this operation shouldn&amp;#39;t be done very often...
+    self.canvas.width = self.canvas.width
+
+    self._ctx.fillStyle = self.facecolor
+    self._ctx.fillRect(0, 0, self._W, self._H)
+    self._ctx.fill()
+    if self.borderwidth:
+        self._ctx.lineWidth = self.borderwidth
+        self._ctx.strokeStyle = self.edgecolor
+        self._ctx.strokeRect(0, 0, self._W, self._H)
+        self._ctx.stroke()
+    self._ctx.restore()
+</pre></div>
+
+
+<p>class Shape:
+    """
+    Base class to create other elements.
+    """
+    def <strong>init</strong>(self, context, x, y,
+                       facecolor = "black", 
+                       edgecolor = "black",
+                       #alpha = 1,
+                       borderwidth = None):
+        """      <br>
+        Parameters
+        ----------
+        <em>context</em>: a canvas context
+            a valid canvas context where the text will be rendered
+        <em>x</em>: int or float
+            x value for location in pixels
+        <em>y</em>: int or float
+            y value for location in pixels
+        <em>facecolor</em>: String
+            String value containing a valid HTML color
+        <em>edgecolor</em>: String
+            String value containing a valid HTML color
+        <em>alpha</em>: int or float
+            Value between 0 (transparent) and 1 (opaque) to set the
+            transparency of the text
+        <em>borderwidth</em>: Integer
+            Value indicating the width of the border in pixels.
+            If not provided it will 0 and the edgecolor will not be
+            visible
+        """
+        self._ctx = context
+        self.x = x
+        self.y = y
+        self.facecolor = facecolor
+        self.borderwidth = borderwidth
+        self.edgecolor = edgecolor
+        #self.alpha = alpha</p>
+<p>class Circle(Shape):
+    def <strong>init</strong>(self, *args, radius = 10, <strong>kwargs):
+        """
+        Parameters
+        ----------
+        <em>radius</em>: int or float
+            radius of the circle in pixels.
+        """
+        Shape.<strong>init</strong>(self, *args, </strong>kwargs)
+        self.r = radius
+        self.draw()</p>
+<div class="highlight"><pre><span></span>def draw(self):
+    self._ctx.save()
+    #self._ctx.globalAlpha = self.alpha
+    self._ctx.beginPath()
+    self._ctx.fillStyle = self.facecolor
+    self._ctx.arc(self.x, self.y, self.r, 0, 2 * math.pi)
+    self._ctx.fill()
+    if self.borderwidth:
+        self._ctx.lineWidth = self.borderwidth
+        self._ctx.strokeStyle = self.edgecolor
+        self._ctx.arc(self.x, self.y, self.r, 0, 2 * math.pi)
+        self._ctx.stroke()
+    self._ctx.closePath()
+    self._ctx.restore()
+</pre></div>
+
+
+<p>class Line(Shape):
+    def <strong>init</strong>(self, *args, polygon = False, borderwidth = 2, <strong>kwargs):
+        Shape.<strong>init</strong>(self, *args, </strong>kwargs)
+        self.borderwidth = borderwidth
+        self.polygon = polygon
+        self.draw()</p>
+<div class="highlight"><pre><span></span>def draw(self):
+    self._ctx.save()
+    #self._ctx.globalAlpha = self.alpha
+    self._ctx.beginPath()
+    self._ctx.moveTo(self.x[0], self.y[0])
+    for i in range(len(self.x)):
+        self._ctx.lineTo(self.x[i], self.y[i])
+    if self.polygon:
+        self._ctx.closePath()
+        if self.facecolor:
+            self._ctx.fillStyle = self.facecolor
+            self._ctx.fill()
+    if self.borderwidth:
+        self._ctx.lineWidth = self.borderwidth
+        self._ctx.strokeStyle = self.edgecolor
+        self._ctx.stroke()
+    self._ctx.restore()
+</pre></div>
+
+
+<p></pre>
+                    </div>
+                  </div>
+                </div>
+              </div></p>
+<div class="highlight"><pre><span></span>          <span class="nt">&lt;div&gt;</span>
+            <span class="nt">&lt;div&gt;</span>
+              <span class="nt">&lt;div&gt;</span>
+                <span class="nt">&lt;div&gt;</span>
+                <span class="nt">&lt;/div&gt;</span>
+
+                <span class="nt">&lt;div&gt;</span>
+                <span class="nt">&lt;/div&gt;</span>
+              <span class="nt">&lt;/div&gt;</span>
+            <span class="nt">&lt;/div&gt;</span>
+          <span class="nt">&lt;/div&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+
+        <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;/div&gt;</span>
+
+          <span class="nt">&lt;div&gt;</span>
+            <span class="nt">&lt;div&gt;</span>
+              El siguiente código solo nos va a valer para establecer una mínima disposición de los elementos contenidos en la visualización.<span class="nt">&lt;br</span> <span class="nt">/&gt;</span> Se incluye un canvas, donde se dibujarán las cosas, y un botón, para poder iterar el algoritmo.<span class="nt">&lt;/p&gt;</span>
+            <span class="nt">&lt;/div&gt;</span>
+          <span class="nt">&lt;/div&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+
+        <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;div&gt;</span>
+            <span class="nt">&lt;div&gt;</span>
+              <span class="nt">&lt;div&gt;</span>
+                <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot; highlight hl-ipython3&quot;</span><span class="nt">&gt;</span>
+                  <span class="nt">&lt;pre&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;n&quot;</span><span class="nt">&gt;</span>html<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span>=<span class="nt">&lt;/span&gt;</span> <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;s&quot;</span><span class="nt">&gt;</span>&quot;&quot;&quot;<span class="nt">&lt;/span&gt;</span>
+</pre></div>
+
+
+<p><span class="s">&lt;div id="main"&gt;</span>
+<span class="s"> &lt;p&gt;</span>
+<span class="s">  &lt;canvas id="cnvs01" width=500 height=500&gt;&lt;/canvas&gt;</span>
+<span class="s"> &lt;/p&gt;</span>
+<span class="s"> &lt;p&gt;</span>
+<span class="s">  &lt;button id="button" class="btn"&gt;Next step&lt;/button&gt;</span>
+<span class="s"> &lt;/p&gt;</span>
+<span class="s">&lt;/div&gt;"""</span>
+</pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div></p>
+<div class="highlight"><pre><span></span>        <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;/div&gt;</span>
+
+          <span class="nt">&lt;div&gt;</span>
+            <span class="nt">&lt;div&gt;</span>
+              Por último, este es el código que realiza todo a partir de los demás. Voy a intentar explicarlo un poco más en detalle:<span class="nt">&lt;/p&gt;</span>
+
+                  :::[]
+fig = Figure(&#39;cnvs01&#39;, borderwidth = 2)
+
+n_points = 50
+x = [randint(10, fig._W - 10) for value in range(n_points)]
+y = [randint(10, fig._H - 10) for value in range(n_points)]
+
+kmeans = KMeans(x, y, n_clusters = 4, limit = 1)
+
+def plot(obj):
+    fig._ctx.save()
+    fig._ctx.fillStyle= &quot;#ffffff&quot;
+    fig._ctx.globalAlpha = 0.3
+    fig._ctx.fillRect(2,2,fig._W-4,fig._H-4)
+    fig._ctx.restore()
+    x = obj.x
+    y = obj.y
+    npoints = len(x)
+    colors = obj.colors
+    xc = obj.x_centroids
+    yc = obj.y_centroids
+    c = obj.c
+    for i in range(npoints):
+        color = colors[c[i]]
+        Line(fig._ctx, [x[i], xc[c[i]]], [y[i], yc[c[i]]],
+             facecolor = color, edgecolor = color)
+        Circle(fig._ctx, x[i], y[i], 
+               facecolor = color, edgecolor = &#39;black&#39;,
+               borderwidth = 1, radius = 4)
+    for xci, yci, color in zip(xc, yc, colors):
+        Circle(fig._ctx, xci, yci, 
+               facecolor = color, edgecolor = &#39;black&#39;,
+               borderwidth = 1, radius = 8)
+
+def update(ev):
+    plot(kmeans)
+    try:
+        next(kmeans)
+    except:
+        #doc[&#39;button&#39;].disabled = True
+        del doc[&#39;button&#39;]
+
+doc[&#39;button&#39;].bind(&#39;click&#39;, update)
+
+
+
+              <span class="nt">&lt;ul&gt;</span>
+                <span class="nt">&lt;li&gt;</span>
+                  <span class="nt">&lt;code&gt;</span>fig = Figure(&#39;cnvs01&#39;, borderwidth = 2)<span class="nt">&lt;/code&gt;</span> inicializamos el canvas con un borde negro usando la clase Figure creada más arriba.
+                <span class="nt">&lt;/li&gt;</span>
+                <span class="nt">&lt;li&gt;</span>
+                  Definimos el número de puntos a usar y las posiciones de los puntos.
+                <span class="nt">&lt;/li&gt;</span>
+                <span class="nt">&lt;li&gt;</span>
+                  Inicializamos el objeto mediante <span class="nt">&lt;code&gt;</span>kmeans = KMeans(x, y, n_clusters = 4, limit = 1)<span class="nt">&lt;/code&gt;</span>. En este caso queremos que tenga 4 clusters (<span class="nt">&lt;code&gt;</span>n_clusters<span class="nt">&lt;/code&gt;</span>) y que el límite (<span class="nt">&lt;code&gt;</span>limit<span class="nt">&lt;/code&gt;</span>) para dejar de iterar sea cuando los centroides se muevan un pixel o menos.
+                <span class="nt">&lt;/li&gt;</span>
+                <span class="nt">&lt;li&gt;</span>
+                  La función <span class="nt">&lt;code&gt;</span>plot<span class="nt">&lt;/code&gt;</span> hace varias cosas. <span class="nt">&lt;ol&gt;</span>
+                    <span class="nt">&lt;li&gt;</span>
+                      Primero suaviza los colores de la imagen previa antes de la actual iteración (esto está más relacionado con el canvas HTML5 y con javascript y no hace falta entenderlo mucho más allá de lo comentado en esta línea)     :::[]
+fig._ctx.save()
+fig._ctx.fillStyle= &quot;#ffffff&quot;
+fig._ctx.globalAlpha = 0.3
+fig._ctx.fillRect(2,2,fig._W-4,fig._H-4)
+fig._ctx.restore()
+                    <span class="nt">&lt;/li&gt;</span>
+
+                    <span class="nt">&lt;li&gt;</span>
+                      Después extraemos todos los datos del objeto (<span class="nt">&lt;code&gt;</span>kmeans<span class="nt">&lt;/code&gt;</span>) que vamos a usar dentro de la función.     :::[]
+x = obj.x
+y = obj.y
+npoints = len(x)
+colors = obj.colors
+xc = obj.x_centroids
+yc = obj.y_centroids
+c = obj.c
+                    <span class="nt">&lt;/li&gt;</span>
+
+                    <span class="nt">&lt;li&gt;</span>
+                      Dibujamos las líneas entre los puntos y los centroides y los puntos con colores asociados a cada grupo     :::[]
+for i in range(npoints):
+   color = colors[c[i]]
+   Line(fig._ctx, [x[i], xc[c[i]]], [y[i], yc[c[i]]],
+        facecolor = color, edgecolor = color)
+   Circle(fig._ctx, x[i], y[i], 
+          facecolor = color, edgecolor = &#39;black&#39;,
+          borderwidth = 1, radius = 4)
+                    <span class="nt">&lt;/li&gt;</span>
+
+                    <span class="nt">&lt;li&gt;</span>
+                      Y finalmente se dibujan los centroides de cada grupo con un círculo un poco más grande que los propios puntos     :::[]
+for xci, yci, color in zip(xc, yc, colors):
+   Circle(fig._ctx, xci, yci, 
+          facecolor = color, edgecolor = &#39;black&#39;,
+          borderwidth = 1, radius = 8)
+                    <span class="nt">&lt;/li&gt;</span>
+                  <span class="nt">&lt;/ol&gt;</span>
+                <span class="nt">&lt;/li&gt;</span>
+
+                <span class="nt">&lt;li&gt;</span>
+                  Creamos, además, una función <span class="nt">&lt;code&gt;</span>update<span class="nt">&lt;/code&gt;</span> que será la que llama a la función <span class="nt">&lt;code&gt;</span>plot<span class="nt">&lt;/code&gt;</span> y la que llama a una nueva iteración. El código que figura en el bloque <span class="nt">&lt;code&gt;</span>except<span class="nt">&lt;/code&gt;</span>, <span class="nt">&lt;code&gt;</span>del doc[&#39;button&#39;]<span class="nt">&lt;/code&gt;</span>, es más de la parte de brython y sirve para que el botón desaparezca una vez que el iterador ha quedado exhausto (se han agotado las iteraciones).
+                <span class="nt">&lt;/li&gt;</span>
+                <span class="nt">&lt;li&gt;</span>
+                  La última línea de código, <span class="nt">&lt;code&gt;</span>doc[&#39;button&#39;].bind(&#39;click&#39;, update)<span class="nt">&lt;/code&gt;</span>, asocia el evento <span class="nt">&lt;em&gt;</span>click<span class="nt">&lt;/em&gt;</span> del botón a la función <span class="nt">&lt;code&gt;</span>update<span class="nt">&lt;/code&gt;</span> que he comentado anteriormente.
+                <span class="nt">&lt;/li&gt;</span>
+              <span class="nt">&lt;/ul&gt;</span>
+
+              <span class="nt">&lt;p&gt;</span>
+                Si ahora ejecutamos la siguiente celda de código deberíamos ver un canvas de 500px x 500px con un botón debajo. Si vamos pulsando al botón veremos como nueva iteración en acción, además de ver las anteriores iteraciones de forma difuminada. Una vez que hemos alcanzado la condición de que los centroides no se mueven más desaparecerá el botón (para no teneros ahí pulsando y que me digáis que eso no sigue funcionando...).
+              <span class="nt">&lt;/p&gt;</span>
+            <span class="nt">&lt;/div&gt;</span>
+          <span class="nt">&lt;/div&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+
+        <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;div&gt;</span>
+            <span class="nt">&lt;div&gt;</span>
+              <span class="nt">&lt;div&gt;</span>
+                <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot; highlight hl-ipython3&quot;</span><span class="nt">&gt;</span>
+                  <span class="nt">&lt;pre&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;o&quot;</span><span class="nt">&gt;</span>%%<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">&quot;k&quot;</span><span class="nt">&gt;</span>brython<span class="nt">&lt;/span&gt;</span> -S kmeans_class canvas_utils -h html
+</pre></div>
+
+
+<p>fig = Figure(&#39;cnvs01&#39;, borderwidth = 2)</p>
+<p>n_points = 50</p>
+<p>x = [randint(10, fig._W - 10) for value in range(n_points)]
+y = [randint(10, fig._H - 10) for value in range(n_points)]</p>
+<p>kmeans = KMeans(x, y, n_clusters = 4, limit = 1)</p>
+<p>def plot(obj):
+    fig._ctx.save()
+    fig._ctx.fillStyle= "#ffffff"
+    fig._ctx.globalAlpha = 0.3
+    fig._ctx.fillRect(2,2,fig._W-4,fig._H-4)
+    fig._ctx.restore()
+    x = obj.x
+    y = obj.y
+    npoints = len(x)
+    colors = obj.colors
+    xc = obj.x_centroids
+    yc = obj.y_centroids
+    c = obj.c
+    for i in range(npoints):
+        color = colors[c[i]]
+        Line(fig._ctx, [x[i], xc[c[i]]], [y[i], yc[c[i]]],
+             facecolor = color, edgecolor = color)
+        Circle(fig._ctx, x[i], y[i], 
+               facecolor = color, edgecolor = &#39;black&#39;,
+               borderwidth = 1, radius = 4)
+    for xci, yci, color in zip(xc, yc, colors):
+        Circle(fig._ctx, xci, yci, 
+               facecolor = color, edgecolor = &#39;black&#39;,
+               borderwidth = 1, radius = 8)</p>
+<p>def update(ev):
+    plot(kmeans)
+    try:
+        next(kmeans)
+    except:
+        #doc[&#39;button&#39;].disabled = True
+        del doc[&#39;button&#39;]</p>
+<p>doc[&#39;button&#39;].bind(&#39;click&#39;, update)
+</pre>
+                    </div>
+                  </div>
+                </div>
+              </div></p>
+<div class="highlight"><pre><span></span>          <span class="nt">&lt;div&gt;</span>
+            <span class="nt">&lt;div&gt;</span>
+              <span class="nt">&lt;div&gt;</span>
+                Podéis ver todo el código contenido en una página web <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;http://kikocorreoso.bitbucket.org/kmeans/&quot;</span><span class="nt">&gt;</span>aquí<span class="nt">&lt;/a&gt;</span>.<span class="nt">&lt;/p&gt;</span>
+
+                <span class="nt">&lt;div&gt;</span>
+                <span class="nt">&lt;/div&gt;</span>
+              <span class="nt">&lt;/div&gt;</span>
+            <span class="nt">&lt;/div&gt;</span>
+          <span class="nt">&lt;/div&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+
+        <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;div&gt;</span>
+          <span class="nt">&lt;/div&gt;</span>
+
+          <span class="nt">&lt;div&gt;</span>
+            <span class="nt">&lt;div&gt;</span>
+              <span class="nt">&lt;h2</span> <span class="na">id=</span><span class="s">&quot;Conclusiones&quot;</span><span class="nt">&gt;</span>
+                Conclusiones<span class="nt">&lt;a</span> <span class="na">class=</span><span class="s">&quot;anchor-link&quot;</span> <span class="na">href=</span><span class="s">&quot;#Conclusiones&quot;</span><span class="nt">&gt;</span><span class="ni">&amp;#182;</span><span class="nt">&lt;/a&gt;</span>
+              <span class="nt">&lt;/h2&gt;</span>
+
+              <span class="nt">&lt;p&gt;</span>
+                Espero que haya quedado claro el funcionamiento básico del algoritmo K-Medias. También espero que si veis alguna errata en el código me aviséis o hagáis un <span class="nt">&lt;em&gt;</span>Pull Request<span class="nt">&lt;/em&gt;</span> a nuestro repositorio de notebooks.<span class="nt">&lt;br</span> <span class="nt">/&gt;</span> Podéis ver este notebook funcionando incluso en estático en <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;http://nbviewer.jupyter.org/github/Pybonacci/notebooks/blob/master/K-Medias.ipynb&quot;</span><span class="nt">&gt;</span>el siguiente enlace<span class="nt">&lt;/a&gt;</span>.
+              <span class="nt">&lt;/p&gt;</span>
+            <span class="nt">&lt;/div&gt;</span>
+          <span class="nt">&lt;/div&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+</pre></div>
+        </div>
+
+        <div class="meta">
+            <div class="tags">
+                    <a href="http://pybonacci.github.io/tag/agrupamiento-clusters.html" class="tag">agrupamiento clusters</a>
+                    <a href="http://pybonacci.github.io/tag/ai.html" class="tag">ai</a>
+                    <a href="http://pybonacci.github.io/tag/aprendizaje-automatico.html" class="tag">aprendizaje automático</a>
+                    <a href="http://pybonacci.github.io/tag/aprendizaje-no-supervisado.html" class="tag">aprendizaje no supervisado</a>
+                    <a href="http://pybonacci.github.io/tag/clasificacion-clustering.html" class="tag">clasificación clustering</a>
+                    <a href="http://pybonacci.github.io/tag/ia.html" class="tag">ia</a>
+                    <a href="http://pybonacci.github.io/tag/inteligencia-artificial.html" class="tag">inteligencia artificial</a>
+                    <a href="http://pybonacci.github.io/tag/machine-learning.html" class="tag">machine learning</a>
+                    <a href="http://pybonacci.github.io/tag/scipy.html" class="tag">scipy</a>
+                    <a href="http://pybonacci.github.io/tag/scipycluster.html" class="tag">scipy.cluster</a>
+                    <a href="http://pybonacci.github.io/tag/scipyspatial.html" class="tag">scipy.spatial</a>
+                    <a href="http://pybonacci.github.io/tag/unsupervised-learning.html" class="tag">unsupervised learning</a>
+            </div>
+        </div>
+
+  
+<hr>    
+<div class="row">
+  <div class="col-md-2">
+    <img src=https://pybonacci.org/images/author/kiko-correoso.jpg alt="photo" class="img-author img-rounded"/>
+  </div>
+  <div class="col-md-1"></div>
+  <div class="col-md-9 description-author">
+    <p>Kiko es doctor en ciencias físicas y esta especializado en física de la atmósfera, meteorología y climatología. Además de estar en las nubes es especialista en temas de energías renovables en Iberdrola. Ávido de seguir mejorando siempre está abierto a participar en nuevos proyectos y retos por lo que no dudes en contactarle si necesitas servicios especializados de Python o meteorología.
+</p>
+  </div>
+</div> 
+
+    </article>
+<div id="commento"></div>
+</div>
+
+<style type="text/css">
+{
+    max-width: 700px;
+}
+
+.text_cell .prompt {
+    display: none;
+}
+
+div.cell {
+    padding: 0;
+}
+
+div.text_cell_render {
+    padding: 0;
+}
+
+div.prompt {
+    font-size: 13px;
+}
+
+div.input_prompt {
+    padding: .7em 0.2em;
+}
+
+div.output_prompt {
+    padding: .4em .2em;
+}
+
+div.input_area {
+    margin: .2em 0.4em;
+    max-width: 580px;
+}
+
+table.dataframe {
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    line-height: 20px;
+}
+
+table.dataframe th, td {
+    padding: 4px;
+    text-align: left;
+}
+
+pre code {
+    background-color: inherit;
+}</style>
+
+        </div>
+
+        <footer class="disclaimer">
+          <div class="container-fluid">
+            <p>
+              © 2012-2017 Pybonacci, licencia <a href="https://github.com/Pybonacci/pybonacci.github.io/blob/sources/LICENSE.md"> CC BY-SA 4.0 + MIT</a>
+              salvo otra indicación.
+              <p>Contenido generado con <a href= "http://docs.getpelican.com/">Pelican</a>.</p>
+            </p>
+          </div>
+        </footer>
+
+    </body>
+</html>

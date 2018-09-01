@@ -1,0 +1,2356 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="author" content="Pybonacci">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+        <title>Trabajando con Python y R | Pybonacci</title>
+
+	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+	<link rel="icon" href="/favicon.ico" type="image/x-icon">
+        <link rel="alternate" type="application/atom+xml" title="Pybonacci blog atom feed" href="/feeds/all.atom.xml" />
+        <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700' rel='stylesheet' type='text/css'>
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <link rel="stylesheet" type="text/css" href="/theme/css/fontello.css"/>
+        <style>.highlight .hll { background-color: #ffffcc }
+.highlight .c { color: #60a0b0; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #007020; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #60a0b0; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #007020 } /* Comment.Preproc */
+.highlight .c1 { color: #60a0b0; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #60a0b0; background-color: #fff0f0 } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #c65d09; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #007020; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #007020; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #007020; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #007020 } /* Keyword.Pseudo */
+.highlight .kr { color: #007020; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #902000 } /* Keyword.Type */
+.highlight .m { color: #40a070 } /* Literal.Number */
+.highlight .s { color: #4070a0 } /* Literal.String */
+.highlight .na { color: #4070a0 } /* Name.Attribute */
+.highlight .nb { color: #007020 } /* Name.Builtin */
+.highlight .nc { color: #0e84b5; font-weight: bold } /* Name.Class */
+.highlight .no { color: #60add5 } /* Name.Constant */
+.highlight .nd { color: #555555; font-weight: bold } /* Name.Decorator */
+.highlight .ni { color: #d55537; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #007020 } /* Name.Exception */
+.highlight .nf { color: #06287e } /* Name.Function */
+.highlight .nl { color: #002070; font-weight: bold } /* Name.Label */
+.highlight .nn { color: #0e84b5; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #062873; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #bb60d5 } /* Name.Variable */
+.highlight .ow { color: #007020; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #40a070 } /* Literal.Number.Float */
+.highlight .mh { color: #40a070 } /* Literal.Number.Hex */
+.highlight .mi { color: #40a070 } /* Literal.Number.Integer */
+.highlight .mo { color: #40a070 } /* Literal.Number.Oct */
+.highlight .sb { color: #4070a0 } /* Literal.String.Backtick */
+.highlight .sc { color: #4070a0 } /* Literal.String.Char */
+.highlight .sd { color: #4070a0; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #4070a0 } /* Literal.String.Double */
+.highlight .se { color: #4070a0; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #4070a0 } /* Literal.String.Heredoc */
+.highlight .si { color: #70a0d0; font-style: italic } /* Literal.String.Interpol */
+.highlight .sx { color: #c65d09 } /* Literal.String.Other */
+.highlight .sr { color: #235388 } /* Literal.String.Regex */
+.highlight .s1 { color: #4070a0 } /* Literal.String.Single */
+.highlight .ss { color: #517918 } /* Literal.String.Symbol */
+.highlight .bp { color: #007020 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #bb60d5 } /* Name.Variable.Class */
+.highlight .vg { color: #bb60d5 } /* Name.Variable.Global */
+.highlight .vi { color: #bb60d5 } /* Name.Variable.Instance */
+.highlight .il { color: #40a070 } /* Literal.Number.Integer.Long */</style>
+        <style>.description-author {
+  font-size: 0.8em;
+  color: #333;
+}
+.img-author {
+  max-height: 10em;
+  max-width: 10em;
+}
+img[src$="centerme"] {
+  display: block;
+  margin: 0 auto;
+}
+body {
+  margin: 0;
+  padding: 0;
+  font: 15px 'Source Sans Pro', sans-serif;
+  line-height: 1.6em;
+  color: #222222;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+a {
+  color: #007ee5;
+  text-decoration: none;
+}
+a:hover {
+  color: #007ee5;
+  text-decoration: none;
+}
+header.main-header {
+  background: none repeat scroll 0% 0% #205F29;
+  margin-bottom: 0px;
+}
+header.main-header a {
+  color: #fff;
+}
+header.main-header .container {
+  max-width: 1000px;
+}
+header.main-header .container nav a:hover {
+  background-color: #5C881C;
+}
+header.navbar-default {
+  border-bottom: none;
+  background-color: #EFEFEF;
+}
+article {
+  margin: 0;
+}
+article header.about {
+  margin-bottom: 0px;
+  padding-bottom: 0px;
+}
+article header {
+  padding-bottom: 20px;
+}
+article header h1 {
+  margin-bottom: 2px;
+  font-weight: 700;
+  color: #000;
+}
+article header time {
+  color: #9E9E9E;
+  float: right;
+}
+article header time.left {
+  color: #9E9E9E;
+  float: left;
+}
+article div.social-links ul {
+  padding: 0px;
+}
+article div.social-links li {
+  display: inline;
+  font-size: 20px;
+}
+article div.social-links li a {
+  color: #000;
+  padding: 10px;
+}
+article div.social-links li a:hover {
+  color: #666;
+  text-decoration: none;
+}
+article p {
+  font-size: 2em;
+  margin-bottom: 20px;
+  line-height: 1.6em;
+  text-align: justify;
+}
+article p.note {
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  padding: 0.533em 0.733em;
+}
+article p.update {
+  background-color: #FEEFB3;
+  border: 1px solid #e6e68a;
+  padding: 0.533em 0.733em;
+}
+article p.alert {
+  background-color: #ffe2e2;
+  border: 1px solid #ffb2b2;
+  padding: 0.533em 0.733em;
+}
+article ul,
+article ol {
+  margin-top: 0px;
+  margin-bottom: 25px;
+}
+article li {
+  font-size: 16px;
+  line-height: 1.6em;
+}
+article a:hover {
+  text-decoration: underline;
+}
+article blockquote {
+  border-left: 2px solid #c7c7cc;
+  color: #666;
+  margin: 30px 0;
+  padding: 0 0 0 25px;
+}
+article img {
+  max-width: 100%;
+}
+article code {
+  color: #333;
+  background-color: #EEE;
+  border-radius: 0;
+  font-size: 1.1em;
+}
+article .meta {
+  margin-top: 35px;
+}
+article .meta a:hover {
+  text-decoration: none;
+}
+article .meta div {
+  display: block;
+}
+article .meta address:before,
+article .meta time:before,
+article .meta a.tag:before {
+  font-family: 'fontello';
+  margin-right: 6px;
+}
+article .meta address.author {
+  float: left;
+}
+article .meta address:before {
+  content: '\e819';
+}
+article .meta time:before {
+  content: '\f133';
+}
+article .meta div.tags {
+  clear: both;
+}
+article .meta a.tag {
+  margin: 0 10px 10px 0;
+  padding: 1px 12px;
+  display: inline-block;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.05);
+}
+article .meta a.tag:before {
+  content: '\e821';
+}
+article .meta a.tag:hover {
+  background: rgba(0, 0, 0, 0.15);
+}
+article .meta a.read_more,
+article .meta a.comments_btn {
+  font-size: 14px;
+  font-weight: 800;
+  padding: 10px 20px;
+  color: #007aa3;
+  background: #FFF;
+  border: 1px solid #007aa3;
+}
+article .meta a.read_more:hover,
+article .meta a.comments_btn:hover {
+  color: #FFF;
+  background: #007aa3;
+}
+article .meta:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+.index {
+  max-width: 700px;
+}
+.index article header h2 {
+  font-size: 36px;
+  margin-bottom: 2px;
+  font-weight: 700;
+}
+.index article header h2 a {
+  color: #333;
+}
+.index article header h2 a:hover {
+  color: #007ee5;
+  text-decoration: none;
+}
+.index .separator {
+  padding: 40px 0 0 0;
+  margin: 0 0 40px 0;
+  height: 10px;
+  border-bottom: solid 1px #CCC;
+}
+.index .pagination {
+  display: block;
+  margin-bottom: 100px;
+}
+.index .pagination .left {
+  text-align: right;
+}
+.index .pagination .right {
+  text-align: left;
+}
+.index .pagination a {
+  display: inline-block;
+  border: 2px solid #5C881C;
+  margin: 0 5px;
+  padding: 8px 20px;
+  font-weight: bold;
+  color: #5C881C;
+}
+.index .pagination a:hover {
+  color: #FFF;
+  background: #5C881C;
+}
+.post {
+  max-width: 80%;
+}
+.post h1 {
+  font-size: 42px;
+}
+.post h2:before {
+  content: "# ";
+  font-weight: bold;
+  color: #DDD;
+}
+.post h3:before {
+  content: "## ";
+  font-weight: bold;
+  color: #DDD;
+}
+.post h4:before {
+  content: "### ";
+  font-weight: bold;
+  color: #DDD;
+}
+.post p {
+  font-size: 2em;
+}
+.post li {
+  font-size: 2em;
+}
+.list {
+  max-width: 700px;
+}
+.list ul.double-list {
+  margin: 0 auto 60px;
+  padding: 0;
+  list-style-type: none;
+}
+.list ul.double-list li {
+  padding: 5px 0;
+}
+.list ul.double-list li h2 {
+  font-size: 2em;
+  display: inline;
+  font-weight: normal;
+}
+.list ul.double-list li span {
+  font-family: sans-serif;
+  text-transform: uppercase;
+  text-align: right;
+  float: right;
+  padding-top: 3px;
+  font-size: 12px;
+  color: #999;
+}
+.full-width-content {
+  padding-top: 10px;
+  padding-left: 0px;
+  padding-right: 0px;
+  margin-left: -20px;
+  margin-right: -20px;
+}
+.col-xs-1,
+.col-sm-1,
+.col-md-1,
+.col-lg-1,
+.col-xs-2,
+.col-sm-2,
+.col-md-2,
+.col-lg-2,
+.col-xs-3,
+.col-sm-3,
+.col-md-3,
+.col-lg-3,
+.col-xs-4,
+.col-sm-4,
+.col-md-4,
+.col-lg-4,
+.col-xs-5,
+.col-sm-5,
+.col-md-5,
+.col-lg-5,
+.col-xs-6,
+.col-sm-6,
+.col-md-6,
+.col-lg-6,
+.col-xs-7,
+.col-sm-7,
+.col-md-7,
+.col-lg-7,
+.col-xs-8,
+.col-sm-8,
+.col-md-8,
+.col-lg-8,
+.col-xs-9,
+.col-sm-9,
+.col-md-9,
+.col-lg-9,
+.col-xs-10,
+.col-sm-10,
+.col-md-10,
+.col-lg-10,
+.col-xs-11,
+.col-sm-11,
+.col-md-11,
+.col-lg-11,
+.col-xs-12,
+.col-sm-12,
+.col-md-12,
+.col-lg-12 {
+  padding-right: 0px;
+  padding-left: 0px;
+}
+.disclaimer {
+  text-align: center;
+  background-color: #EFEFEF;
+  border-bottom: none;
+  margin-top: 6em;
+}
+pre {
+  font-size: 1.2em;
+}</style>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+       <script src="https://comments.pybonacci.org/assets/js/commento.js" data-div="#commento"></script>
+
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+            tex2jax: {
+                inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+                processEscapes: true,
+                skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            }
+        });
+        MathJax.Hub.Queue(function() {
+            var all = MathJax.Hub.getAllJax(), i;
+            for(i=0; i < all.length; i += 1) {
+                all[i].SourceElement().parentNode.className += ' has-jax';
+            }
+        });
+    </script>
+
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/latest.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+        </script>
+
+    </head>
+
+    <body>
+        <header class="navbar navbar-default bs-docs-nav">
+            <div class="container-fluid">
+                <div class="navbar-header">
+		  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#theNavbar">
+		    <span class="icon-bar"></span>
+		    <span class="icon-bar"></span>
+		    <span class="icon-bar"></span> 
+		  </button>
+                  <a class="navbar-brand" href="/" title="Home" class="title">Pybonacci</a><!-- — Python y Ciencia-->
+                </div>
+                <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation" id="theNavbar">
+		    <ul class="nav navbar-nav navbar-right">
+                            <li><a href="/pages/acerca-de-pybonacci.html" title="About">Acerca de</a></li>
+                            <li><a href="/archives.html" title="Archive">Archivos</a></li>
+                            <li><a class="nodec icon-rss" href="/feeds/all.atom.xml" title="pybonacci.github.io RSS feed" rel="me"></a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <div id="wrap">
+<div class="container post">
+    <article>
+        <header>
+            <h1>Trabajando con Python y R</h1>
+            <div class="meta">
+                <time datetime="article.date.isoformat()" pubdate>jue 18 junio 2015</time>
+                <address class="vcard author">Por
+                    <a class="url fn" href="http://pybonacci.github.io/author/kiko-correoso.html">Kiko Correoso</a>
+                </address>
+            </div>
+        </header>
+
+        <div class="article_content">
+            <div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      <h1 id="Trabajando-de-forma-conjunta-con-Python-y-con-R.">
+        Trabajando de forma conjunta con Python y con R.<a class="anchor-link" href="#Trabajando-de-forma-conjunta-con-Python-y-con-R.">&#182;</a>
+      </h1>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      Hoy vamos a ver como podemos juntar lo bueno de <a href="http://cran.r-project.org/">R</a>, algunas de sus librerías, con Python usando <strong>rpy2</strong>.</p> </p>
+<div class="highlight"><pre><span></span>  <span class="nt">&lt;p&gt;</span>
+    Pero, lo primero de todo, ¿<span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;http://rpy.sourceforge.net/&quot;</span><span class="nt">&gt;</span>qué es rpy2<span class="nt">&lt;/a&gt;</span>? rpy2 es una interfaz que permite que podamos comunicar información entre R y Python y que podamos acceder a funcionalidad de R desde Python. Por tanto, podemos estar usando Python para todo nuestro análisis y en el caso de que necesitemos alguna librería estadística especializada de R podremos acceder a la misma usando rpy2.
+  <span class="nt">&lt;/p&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+</pre></div>
+
+
+<p></div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      Para poder usar rpy2 necesitarás tener <a href="http://rpy.sourceforge.net/rpy2/doc-2.5/html/overview.html#requirements">instalado tanto Python (CPython versión &gt;= 2.7.x) como R (versión &gt;=3)</a>, además de las librerías R a las que quieras acceder. <a href="http://continuum.io/conda-for-R">Conda permite realizar todo el proceso de instalación de los intérpretes de Python y R, además de librerías</a>, pero no he trabajado con Conda y R por lo que no puedo aportar mucho más en este aspecto. Supongo que será parecido a lo que hacemos con Conda y Python.</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      Para este microtutorial voy a hacer uso de la librería <strong><a href="http://cran.r-project.org/web/packages/extRemes/index.html">extRemes</a></strong> de R que permite hacer análisis de valores extremos usando varias de las metodologías más comúnmente aceptadas.</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      Como siempre, primero de todo, importaremos la funcionalidad que necesitamos para la ocasión.</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+    <div>
+      <div>
+        <div class=" highlight hl-ipython3">
+          <pre><span class="c"># Importamos pandas y numpy para manejar los datos que pasaremos a R</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c"># Usamos rpy2 para interactuar con R</span>
+<span class="kn">import</span> <span class="nn">rpy2.robjects</span> <span class="k">as</span> <span class="nn">ro</span>
+
+<span class="c"># Activamos la conversión automática de tipos de rpy2</span>
+<span class="kn">import</span> <span class="nn">rpy2.robjects.numpy2ri</span>
+<span class="n">rpy2</span><span class="o">.</span><span class="n">robjects</span><span class="o">.</span><span class="n">numpy2ri</span><span class="o">.</span><span class="n">activate</span><span class="p">()</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      En el anterior código podemos ver una serie de cosas nuevas que voy a explicar brevemente:</p> </p>
+<div class="highlight"><pre><span></span>  <span class="o">&lt;</span><span class="n">ul</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">li</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kn">import</span> <span class="nn">rpy2.robjects</span> <span class="kn">as</span> <span class="nn">ro</span><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">esto</span> <span class="n">lo</span> <span class="n">explicaremos</span> <span class="n">un</span> <span class="n">poquito</span> <span class="n">más</span> <span class="n">abajo</span><span class="o">.</span>
+    <span class="o">&lt;/</span><span class="n">li</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">li</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kn">import</span> <span class="nn">rpy2.robjects.numpy2ri</span><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">importamos</span> <span class="n">el</span> <span class="n">módulo</span> <span class="n">numpy2ri</span><span class="o">.</span> <span class="n">Este</span> <span class="n">módulo</span> <span class="n">permite</span> <span class="n">que</span> <span class="n">hagamos</span> <span class="n">conversión</span> <span class="n">automática</span> <span class="n">de</span> <span class="n">objetos</span> <span class="n">numpy</span> <span class="n">a</span> <span class="n">objetos</span> <span class="n">rpy2</span><span class="o">.</span>
+    <span class="o">&lt;/</span><span class="n">li</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">li</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">rpy2</span><span class="o">.</span><span class="n">robjects</span><span class="o">.</span><span class="n">numpy2ri</span><span class="o">.</span><span class="n">activate</span><span class="p">()</span><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">hacemos</span> <span class="n">uso</span> <span class="n">de</span> <span class="n">la</span> <span class="n">función</span> <span class="o">&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">activate</span><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;</span> <span class="n">que</span> <span class="n">activa</span> <span class="n">la</span> <span class="n">conversión</span> <span class="n">automática</span> <span class="n">de</span> <span class="n">objetos</span> <span class="n">que</span> <span class="n">hemos</span> <span class="n">comentado</span> <span class="n">en</span> <span class="n">la</span> <span class="n">línea</span> <span class="n">anterior</span><span class="o">.</span>
+    <span class="o">&lt;/</span><span class="n">li</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">ul</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+</pre></div>
+
+
+<p></div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      <h1 id="Brev&#237;sima-introducci&#243;n-a-algunas-de-las-cosas-m&#225;s-importantes-de-rpy2.">
+        Brev&#237;sima introducci&#243;n a algunas de las cosas m&#225;s importantes de rpy2.<a class="anchor-link" href="#Brev&#237;sima-introducci&#243;n-a-algunas-de-las-cosas-m&#225;s-importantes-de-rpy2.">&#182;</a>
+      </h1>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      Para evaluar directamente código R podemos hacerlo usando <code>rpy2.robjects.r</code> con el código R expresado como una cadena (<code>rpy2.robjects</code> lo he importado como <code>ro</code> en este caso, como podéis ver más arriba):</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+    <div>
+      <div>
+        <div class=" highlight hl-ipython3">
+          <pre><span class="n">codigo_r</span> <span class="o">=</span> <span class="s">"""</span>
+<span class="s">saluda &lt;- function(cadena) {</span>
+<span class="s">  return(paste("Hola, ", cadena))</span>
+<span class="s">}</span>
+<span class="s">"""</span>
+<span class="n">ro</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="n">codigo_r</span><span class="p">)</span>
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<p><div>
+    <div>
+      <div>
+        <div>
+        </div></p>
+<div class="highlight"><pre><span></span>    <span class="nt">&lt;div&gt;</span>
+      <span class="nt">&lt;pre&gt;</span><span class="ni">&amp;lt;</span>SignatureTranslatedFunction - Python:0x03096490 / R:0x03723E98<span class="ni">&amp;gt;</span><span class="nt">&lt;/pre&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+</pre></div>
+
+
+<p></div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      En la anterior celda hemos creado una función R llamada <code>saluda</code> y que ahora está disponible en el espacio de nombres global de R. Podemos acceder a la misma desde Python de la siguiente forma:</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+    <div>
+      <div>
+        <div class=" highlight hl-ipython3">
+          <pre><span class="n">saluda_py</span> <span class="o">=</span> <span class="n">ro</span><span class="o">.</span><span class="n">globalenv</span><span class="p">[</span><span class="s">&#39;saluda&#39;</span><span class="p">]</span>
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      Y podemos usarla de la siguiente forma:</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+    <div>
+      <div>
+        <div class=" highlight hl-ipython3">
+          <pre><span class="n">res</span> <span class="o">=</span> <span class="n">saluda_py</span><span class="p">(</span><span class="s">&#39;pepe&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi"></span><span class="p">])</span>
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<p><div>
+    <div>
+      <div>
+        <div>
+        </div></p>
+<div class="highlight"><pre><span></span>    &lt;div&gt;
+      &lt;pre&gt;Hola,  pepe
+</pre></div>
+
+
+<p></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      En la anterior celda véis que para acceder al resultado he tenido que usar <code>res[0]</code>. En realidad, lo que nos devuleve rpy2 es:</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+    <div>
+      <div>
+        <div class=" highlight hl-ipython3">
+          <pre><span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">res</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<p><div>
+    <div>
+      <div>
+        <div>
+        </div></p>
+<div class="highlight"><pre><span></span>    &lt;div&gt;
+      &lt;pre&gt;&amp;lt;class &#39;;numpy.ndarray&#39;;&amp;gt;
+</pre></div>
+
+
+<p>(1,)
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      En este caso un numpy array con diversa información del objeto rpy2. Como el objeto solo devuelve un string pues el numpy array solo tiene un elemento.</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      Podemos acceder al código R de la función de la siguiente forma:</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+    <div>
+      <div>
+        <div class=" highlight hl-ipython3">
+          <pre><span class="nb">print</span><span class="p">(</span><span class="n">saluda_py</span><span class="o">.</span><span class="n">r_repr</span><span class="p">())</span>
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<p><div>
+    <div>
+      <div>
+        <div>
+        </div></p>
+<div class="highlight"><pre><span></span>    &lt;div&gt;
+      &lt;pre&gt;function (cadena)
+</pre></div>
+
+
+<p>{
+    return(paste("Hola, ", cadena))
+}
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      Hemos visto como acceder desde Python a nombres disponibles en el entorno global de R. ¿Cómo podemos hacer para que algo que creemos en Python este accesible en R?</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+    <div>
+      <div>
+        <div class=" highlight hl-ipython3">
+          <pre><span class="n">variable_r_creada_desde_python</span> <span class="o">=</span> <span class="n">ro</span><span class="o">.</span><span class="n">FloatVector</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mf">0.1</span><span class="p">))</span>
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      Veamos como es esta <code>variable_r_creada_desde_python</code> dentro de Python</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+    <div>
+      <div>
+        <div class=" highlight hl-ipython3">
+          <pre><span class="n">variable_r_creada_desde_python</span>
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<p><div>
+    <div>
+      <div>
+        <div>
+        </div></p>
+<div class="highlight"><pre><span></span>    <span class="o">&lt;</span><span class="nt">div</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="nt">pre</span><span class="o">&gt;&amp;</span><span class="nt">lt</span><span class="o">;</span><span class="nt">FloatVector</span> <span class="nt">-</span> <span class="nt">Python</span><span class="p">:</span><span class="nd">0x09D5A7B0</span> <span class="o">/</span> <span class="nt">R</span><span class="p">:</span><span class="nd">0x07FE8900</span><span class="o">&amp;</span><span class="nt">gt</span><span class="o">;</span>
+</pre></div>
+
+
+<p>[1.000000, 1.100000, 1.200000, ..., 4.700000, 4.800000, 4.900000]</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      ¿Y lo que se tendría que ver en R?</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+    <div>
+      <div>
+        <div class=" highlight hl-ipython3">
+          <pre><span class="nb">print</span><span class="p">(</span><span class="n">variable_r_creada_desde_python</span><span class="o">.</span><span class="n">r_repr</span><span class="p">())</span>
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<p><div>
+    <div>
+      <div>
+        <div>
+        </div></p>
+<div class="highlight"><pre><span></span>    &lt;div&gt;
+      &lt;pre&gt;c(1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2, 2.1, 2.2,
+</pre></div>
+
+
+<p>2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3, 3.1, 3.2, 3.3, 3.4, 3.5, 
+3.6, 3.7, 3.8, 3.9, 4, 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.8, 
+4.9)
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      Pero ahora mismo esa variable no está disponible desde R y no la podríamos usar dentro de código R que permanece en el espacio R (vaya lío, ¿no?)</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+    <div>
+      <div>
+        <div class=" highlight hl-ipython3">
+          <pre><span class="n">ro</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="s">&#39;variable_r_creada_desde_python&#39;</span><span class="p">)</span>
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<p><div>
+    <div>
+      <div>
+        <div>
+        </div></p>
+<div class="highlight"><pre><span></span>    &lt;div&gt;
+      &lt;pre&gt;
+</pre></div>
+
+
+<p><span class="ansired">---------------------------------------------------------------------------</span>
+<span class="ansired">RRuntimeError</span>                             Traceback (most recent call last)
+<span class="ansigreen">&lt;ipython-input-10-524753a78365&gt;</span> in <span class="ansicyan">&lt;module&gt;</span><span class="ansiblue">()</span>
+<span class="ansigreen">----&gt; 1</span><span class="ansiyellow"> </span>ro<span class="ansiyellow">.</span>r<span class="ansiyellow">(</span><span class="ansiblue">';variable_r_creada_desde_python';</span><span class="ansiyellow">)</span><span class="ansiyellow"></span></p>
+<p><span class="ansigreen">d:\users\X003621\AppData\Local\Continuum\Miniconda3\lib\site-packages\rpy2\robjects__init__.py</span> in <span class="ansicyan"><strong>call</strong></span><span class="ansiblue">(self, string)</span>
+<span class="ansigreen">    251</span>     <span class="ansigreen">def</span> <strong>call</strong><span class="ansiyellow">(</span>self<span class="ansiyellow">,</span> string<span class="ansiyellow">)</span><span class="ansiyellow">:</span><span class="ansiyellow"></span>
+<span class="ansigreen">    252</span>         p <span class="ansiyellow">=</span> rinterface<span class="ansiyellow">.</span>parse<span class="ansiyellow">(</span>string<span class="ansiyellow">)</span><span class="ansiyellow"></span>
+<span class="ansigreen">--&gt; 253</span><span class="ansiyellow">         </span>res <span class="ansiyellow">=</span> self<span class="ansiyellow">.</span>eval<span class="ansiyellow">(</span>p<span class="ansiyellow">)</span><span class="ansiyellow"></span>
+<span class="ansigreen">    254</span>         <span class="ansigreen">return</span> res<span class="ansiyellow"></span>
+<span class="ansigreen">    255</span> <span class="ansiyellow"></span></p>
+<p><span class="ansigreen">d:\users\X003621\AppData\Local\Continuum\Miniconda3\lib\site-packages\rpy2\robjects\functions.py</span> in <span class="ansicyan"><strong>call</strong></span><span class="ansiblue">(self, *args, <strong>kwargs)</span>
+<span class="ansigreen">    168</span>                 v <span class="ansiyellow">=</span> kwargs<span class="ansiyellow">.</span>pop<span class="ansiyellow">(</span>k<span class="ansiyellow">)</span><span class="ansiyellow"></span>
+<span class="ansigreen">    169</span>                 kwargs<span class="ansiyellow">[</span>r_k<span class="ansiyellow">]</span> <span class="ansiyellow">=</span> v<span class="ansiyellow"></span>
+<span class="ansigreen">--&gt; 170</span><span class="ansiyellow">         </span><span class="ansigreen">return</span> super<span class="ansiyellow">(</span>SignatureTranslatedFunction<span class="ansiyellow">,</span> self<span class="ansiyellow">)</span><span class="ansiyellow">.</span><strong>call</strong><span class="ansiyellow">(</span><span class="ansiyellow">*</span>args<span class="ansiyellow">,</span> <span class="ansiyellow"></strong></span>kwargs<span class="ansiyellow">)</span><span class="ansiyellow"></span>
+<span class="ansigreen">    171</span> <span class="ansiyellow"></span>
+<span class="ansigreen">    172</span> pattern_link <span class="ansiyellow">=</span> re<span class="ansiyellow">.</span>compile<span class="ansiyellow">(</span><span class="ansiblue">r';\link{(.+?)}';</span><span class="ansiyellow">)</span><span class="ansiyellow"></span></p>
+<p><span class="ansigreen">d:\users\X003621\AppData\Local\Continuum\Miniconda3\lib\site-packages\rpy2\robjects\functions.py</span> in <span class="ansicyan"><strong>call</strong></span><span class="ansiblue">(self, *args, <strong>kwargs)</span>
+<span class="ansigreen">     98</span>         <span class="ansigreen">for</span> k<span class="ansiyellow">,</span> v <span class="ansigreen">in</span> kwargs<span class="ansiyellow">.</span>items<span class="ansiyellow">(</span><span class="ansiyellow">)</span><span class="ansiyellow">:</span><span class="ansiyellow"></span>
+<span class="ansigreen">     99</span>             new_kwargs<span class="ansiyellow">[</span>k<span class="ansiyellow">]</span> <span class="ansiyellow">=</span> conversion<span class="ansiyellow">.</span>py2ri<span class="ansiyellow">(</span>v<span class="ansiyellow">)</span><span class="ansiyellow"></span>
+<span class="ansigreen">--&gt; 100</span><span class="ansiyellow">         </span>res <span class="ansiyellow">=</span> super<span class="ansiyellow">(</span>Function<span class="ansiyellow">,</span> self<span class="ansiyellow">)</span><span class="ansiyellow">.</span><strong>call</strong><span class="ansiyellow">(</span><span class="ansiyellow">*</span>new_args<span class="ansiyellow">,</span> <span class="ansiyellow"></strong></span>new_kwargs<span class="ansiyellow">)</span><span class="ansiyellow"></span>
+<span class="ansigreen">    101</span>         res <span class="ansiyellow">=</span> conversion<span class="ansiyellow">.</span>ri2ro<span class="ansiyellow">(</span>res<span class="ansiyellow">)</span><span class="ansiyellow"></span>
+<span class="ansigreen">    102</span>         <span class="ansigreen">return</span> res<span class="ansiyellow"></span></p>
+<p><span class="ansired">RRuntimeError</span>: Error in eval(expr, envir, enclos) : 
+  object ';variable_r_creada_desde_python'; not found
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      Vale, tendremos que hacer que sea accesible desde R de la siguiente forma:</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+    <div>
+      <div>
+        <div class=" highlight hl-ipython3">
+          <pre><span class="n">ro</span><span class="o">.</span><span class="n">globalenv</span><span class="p">[</span><span class="s">"variable_ahora_en_r"</span><span class="p">]</span> <span class="o">=</span> <span class="n">variable_r_creada_desde_python</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ro</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="s">"variable_ahora_en_r"</span><span class="p">))</span>
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<p><div>
+    <div>
+      <div>
+        <div>
+        </div></p>
+<div class="highlight"><pre><span></span>    &lt;div&gt;
+      &lt;pre&gt;[ 1.   1.1  1.2  1.3  1.4  1.5  1.6  1.7  1.8  1.9  2.   2.1  2.2  2.3  2.4
+</pre></div>
+
+
+<p>2.5  2.6  2.7  2.8  2.9  3.   3.1  3.2  3.3  3.4  3.5  3.6  3.7  3.8  3.9
+  4.   4.1  4.2  4.3  4.4  4.5  4.6  4.7  4.8  4.9]
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      Ahora que ya la tenemos accesible la podemos usar desde R. Por ejemplo, vamos a usar la función <code>sum</code> en R que suma los elementos pero directamente desde R:</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+    <div>
+      <div>
+        <div class=" highlight hl-ipython3">
+          <pre><span class="nb">print</span><span class="p">(</span><span class="n">ro</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="s">&#39;sum(variable_ahora_en_r)&#39;</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">variable_r_creada_desde_python</span><span class="p">))</span>
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<p><div>
+    <div>
+      <div>
+        <div>
+        </div></p>
+<div class="highlight"><pre><span></span>    &lt;div&gt;
+      &lt;pre&gt;[ 118.]
+</pre></div>
+
+
+<p>118.0
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      Perfecto, ya sabemos, de forma muy sencilla y básica, como podemos usar R desde Python, como podemos pasar información desde R hacia Python y desde Python hacia R. ¡¡¡Esto es muy poderoso!!!, estamos juntando lo mejor de dos mundos, la solidez de las herramientas científicas de Python con la funcionalidad especializada que nos pueden aportar algunas librerías de R no disponibles en otros ámbitos.</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      <h1 id="Trabajando-de-forma-h&#237;brida-entre-Python-y-R">
+        Trabajando de forma h&#237;brida entre Python y R<a class="anchor-link" href="#Trabajando-de-forma-h&#237;brida-entre-Python-y-R">&#182;</a>
+      </h1>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      Vamos a empezar importando la librería <em>extRemes</em> de R:</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+    <div>
+      <div>
+        <div class=" highlight hl-ipython3">
+          <pre><span class="c"># Importamos la librería extRemes de R</span>
+<span class="kn">from</span> <span class="nn">rpy2.robjects.packages</span> <span class="k">import</span> <span class="n">importr</span>
+<span class="n">extremes</span> <span class="o">=</span> <span class="n">importr</span><span class="p">(</span><span class="s">&#39;extRemes&#39;</span><span class="p">)</span>
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      En la anterior celda hemos hecho lo siguiente:</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      <ul>
+        <li>
+          <code>from rpy2.robjects.packages import importr</code>, La función <code>importr</code> nos servirá para importar las librerías R
+        </li>
+        <li>
+          <code>extremes = importr('extRemes')</code>, de esta forma importamos la librería <code>extRemes</code> de R, sería equivalente a hacer en R <code>library(extRemes)</code>.
+        </li>
+      </ul>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      Leemos datos con pandas. En el mismo repo donde está este notebook está también un fichero de texto con datos que creé a priori. Supuestamente son datos horarios de velocidad del viento por lo que vamos a hacer análisis de valores extremos de velocidad del viento horaria.</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+    <div>
+      <div>
+        <div class=" highlight hl-ipython3">
+          <pre><span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">&#39;datasets/Synthetic_data.txt&#39;</span><span class="p">,</span>
+                   <span class="n">sep</span> <span class="o">=</span> <span class="s">&#39;\s*&#39;</span><span class="p">,</span> <span class="n">skiprows</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">parse_dates</span> <span class="o">=</span> <span class="p">[[</span><span class="mi"></span><span class="p">,</span> <span class="mi">1</span><span class="p">]],</span>
+                   <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;date&#39;</span><span class="p">,</span><span class="s">&#39;time&#39;</span><span class="p">,</span><span class="s">&#39;wspd&#39;</span><span class="p">],</span> <span class="n">index_col</span> <span class="o">=</span> <span class="mi"></span><span class="p">)</span>
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div>
+  <div>
+    <div>
+      <div>
+        <div class=" highlight hl-ipython3">
+          <pre><span class="n">data</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<p><div>
+    <div>
+      <div>
+        <div>
+        </div></p>
+<div class="highlight"><pre><span></span>    <span class="nt">&lt;div&gt;</span>
+      <span class="nt">&lt;div</span> <span class="na">style=</span><span class="s">&quot;max-height:1000px;max-width:1500px;overflow:auto;&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;table</span> <span class="na">border=</span><span class="s">&quot;1&quot;</span> <span class="na">class=</span><span class="s">&quot;dataframe&quot;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;tr</span> <span class="na">style=</span><span class="s">&quot;text-align: right;&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;th&gt;</span>
+            <span class="nt">&lt;/th&gt;</span>
+
+            <span class="nt">&lt;th&gt;</span>
+              wspd
+            <span class="nt">&lt;/th&gt;</span>
+          <span class="nt">&lt;/tr&gt;</span>
+
+          <span class="nt">&lt;tr&gt;</span>
+            <span class="nt">&lt;th&gt;</span>
+              date_time
+            <span class="nt">&lt;/th&gt;</span>
+
+            <span class="nt">&lt;th&gt;</span>
+            <span class="nt">&lt;/th&gt;</span>
+          <span class="nt">&lt;/tr&gt;</span>
+
+          <span class="nt">&lt;tr&gt;</span>
+            <span class="nt">&lt;th&gt;</span>
+              1983-01-01 00:00:00
+            <span class="nt">&lt;/th&gt;</span>
+
+            <span class="nt">&lt;td&gt;</span>
+              7.9
+            <span class="nt">&lt;/td&gt;</span>
+          <span class="nt">&lt;/tr&gt;</span>
+
+          <span class="nt">&lt;tr&gt;</span>
+            <span class="nt">&lt;th&gt;</span>
+              1983-01-01 01:00:00
+            <span class="nt">&lt;/th&gt;</span>
+
+            <span class="nt">&lt;td&gt;</span>
+              8.2
+            <span class="nt">&lt;/td&gt;</span>
+          <span class="nt">&lt;/tr&gt;</span>
+
+          <span class="nt">&lt;tr&gt;</span>
+            <span class="nt">&lt;th&gt;</span>
+              1983-01-01 02:00:00
+            <span class="nt">&lt;/th&gt;</span>
+
+            <span class="nt">&lt;td&gt;</span>
+              8.5
+            <span class="nt">&lt;/td&gt;</span>
+          <span class="nt">&lt;/tr&gt;</span>
+        <span class="nt">&lt;/table&gt;</span>
+      <span class="nt">&lt;/div&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+</pre></div>
+
+
+<p></div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      Extraemos los máximos anuales los cuales usaremos posteriormente dentro de R para hacer cálculo de valores extremos usando la <a href="https://en.wikipedia.org/wiki/Generalized_extreme_value_distribution">distribución generalizada de valores extremos (GEV)</a>:</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+    <div>
+      <div>
+        <div class=" highlight hl-ipython3">
+          <pre><span class="n">max_y</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">wspd</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">TimeGrouper</span><span class="p">(</span><span class="n">freq</span> <span class="o">=</span> <span class="s">&#39;A&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      Dibujamos los valores máximos anuales usando Pandas:</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+    <div>
+      <div>
+        <div class=" highlight hl-ipython3">
+          <pre><span class="n">max_y</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span> <span class="o">=</span> <span class="s">&#39;bar&#39;</span><span class="p">,</span> <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<p><div>
+    <div>
+      <div>
+        <div>
+        </div></p>
+<div class="highlight"><pre><span></span>    <span class="nt">&lt;div&gt;</span>
+      <span class="nt">&lt;pre&gt;</span><span class="ni">&amp;lt;</span>matplotlib.axes._subplots.AxesSubplot at 0x10a923d0<span class="ni">&amp;gt;</span><span class="nt">&lt;/pre&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;/div&gt;</span>
+
+  <span class="nt">&lt;div&gt;</span>
+    <span class="nt">&lt;div&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+
+    <span class="nt">&lt;div&gt;</span>
+      <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;http://new.pybonacci.org/images/2015/06/wpid-Trabajando_con_Python_y_R1.png&quot;</span>
+</pre></div>
+
+
+<p>/&gt;
+        </div>
+      </div>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      Referenciamos la funcionalidad <a href="http://cran.r-project.org/web/packages/extRemes/extRemes.pdf"><code>fevd</code> (<em>fit extreme value distribution</em>) dentro del paquete <code>extremes</code></a> de R para poder usarla directamente con los valores máximos que hemos obtenido usando Pandas y desde Python.</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+    <div>
+      <div>
+        <div class=" highlight hl-ipython3">
+          <pre><span class="n">fevd</span> <span class="o">=</span> <span class="n">extremes</span><span class="o">.</span><span class="n">fevd</span>
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      Como hemos comentado anteriormente, vamos a calcular los parámetros de la GEV usando el método de ajuste <code>GMLE</code> (<em>Generalised Maximum Lihelihood Estimation</em>) y los vamos a guardar directamente en una variable Python.</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      Veamos la ayuda antes:</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+    <div>
+      <div>
+        <div class=" highlight hl-ipython3">
+          <pre><span class="nb">print</span><span class="p">(</span><span class="n">fevd</span><span class="o">.</span><span class="n">__doc__</span><span class="p">)</span>
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<p><div>
+    <div>
+      <div>
+        <div>
+        </div></p>
+<div class="highlight"><pre><span></span>    &lt;div&gt;
+      &lt;pre&gt;Python representation of an R function.
+</pre></div>
+
+
+<h2>description</h2>
+<p>Fit a univariate extreme value distribution functions (e.g., GEV, GP, PP, Gumbel, or Exponential) to data; possibly with covariates in the parameters.</p>
+<p>fevd(
+    x,
+    data,
+    threshold = rinterface.NULL,
+    threshold_fun = ~,
+    location_fun = ~,
+    scale_fun = ~,
+    shape_fun = ~,
+    use_phi = False,
+    type = c,
+    method = c,
+    initial = rinterface.NULL,
+    span,
+    units = rinterface.NULL,
+    time_units = days,
+    period_basis = year,
+    na_action = &lt;rpy2.rinterface.SexpVector - Python:0x116D6C50 / R:0x0C4BB100&gt;,
+    optim_args = rinterface.NULL,
+    priorFun = rinterface.NULL,
+    priorParams = rinterface.NULL,
+    proposalFun = rinterface.NULL,
+    proposalParams = rinterface.NULL,
+    iter = 9999.0,
+    weights = 1.0,
+    blocks = rinterface.NULL,
+    verbose = False,
+)</p>
+<p>x :  &#96;fevd&#96;: &#96;x&#96; can be a numeric vector, the name of a column of &#96;data&#96; or a formula giving the data to which the EVD is to be fit.  In the case of the latter two, the &#96;data&#96; argument must be specified, and must have appropriately named columns.&#96;plot&#96; and &#96;print&#96; method functions: any list object returned by &#96;fevd&#96;. ,</p>
+<p>object :  A list object of class \dQuote{fevd} as returned by &#96;fevd&#96;. ,</p>
+<p>data :  A data frame object with named columns giving the data to be fit, as well as any data necessary for modeling non-stationarity through the threshold and/or any of the parameters. ,</p>
+<p>threshold :  numeric (single or vector).  If fitting a peak over threshold (POT) model (i.e., &#96;type&#96; = \dQuote{PP}, \dQuote{GP}, \dQuote{Exponential}) this is the threshold over which (non-inclusive) data (or excesses) are used to estimate the parameters of the distribution function.  If the length is greater than 1, then the length must be equal to either the length of &#96;x&#96; (or number of rows of &#96;data&#96;) or to the number of unique arguments in &#96;threshold.fun&#96;. ,</p>
+<p>threshold.fun :  formula describing a model for the thresholds using columns from &#96;data&#96;.  Any valid formula will work.  &#96;data&#96; must be supplied if this argument is anything other than ~ 1.  Not for use with &#96;method&#96; \dQuote{Lmoments}. ,</p>
+<p>location.fun :  formula describing a model for each parameter using columns from &#96;data&#96;.  &#96;data&#96; must be supplied if any of these arguments are anything other than ~ 1. ,</p>
+<p>scale.fun :  formula describing a model for each parameter using columns from &#96;data&#96;.  &#96;data&#96; must be supplied if any of these arguments are anything other than ~ 1. ,</p>
+<p>shape.fun :  formula describing a model for each parameter using columns from &#96;data&#96;.  &#96;data&#96; must be supplied if any of these arguments are anything other than ~ 1. ,</p>
+<p>use.phi :  logical; should the log of the scale parameter be used in the numerical optimization (for &#96;method&#96; \dQuote{MLE}, \dQuote{GMLE} and \dQuote{Bayesian} only)?  For the ML and GML estimation, this may make things more stable for some data. ,</p>
+<p>type :  &#96;fevd&#96;: character stating which EVD to fit.  Default is to fit the generalized extreme value (GEV) distribution function (df).&#96;plot&#96; method function: character describing which plot(s) is (are) desired.  Default is \dQuote{primary}, which makes a 2 by 2 panel of plots including the QQ plot of the data quantiles against the fitted model quantiles (&#96;type&#96; \dQuote{qq}), a QQ plot (\dQuote{qq2}) of quantiles from model-simulated data against the data, a density plot of the data along with the model fitted density (&#96;type&#96; \dQuote{density}) and a return level plot (&#96;type&#96; \dQuote{rl}). In the case of a stationary (fixed) model, the return level plot will show return levels calculated for return periods given by &#96;return.period&#96;, along with associated CIs (calculated using default &#96;method&#96; arguments depending on the estimation method used in the fit.  For non-stationary models, the data are plotted as a line along with associated effective return levels for return periods of 2, 20 and 100 years (unless &#96;return.period&#96; is specified by the user to other values.  Other possible values for &#96;type&#96; include \dQuote{hist}, which is similar to \dQuote{density}, but shows the histogram for the data and \dQuote{trace}, which is not used for L-moment fits.  In the case of MLE/GMLE, the trace yields a panel of plots that show the negative log-likelihood and gradient negative log-likelihood (note that the MLE gradient is currently used even for GMLE) for each of the estimated parameter(s); allowing one parameter to vary according to &#96;prange&#96;, while the others remain fixed at their estimated values.  In the case of Bayesian estimation, the \dQuote{trace} option creates a panel of plots showing the posterior df and MCMC trace for each parameter. ,</p>
+<p>method :  &#96;fevd&#96;: character naming which type of estimation method to use.  Default is to use maximum likelihood estimation (MLE). ,</p>
+<p>initial :  A list object with any named parameter component giving the initial value estimates for starting the numerical optimization (MLE/GMLE) or the MCMC iterations (Bayesian).  In the case of MLE/GMLE, it is best to obtain a good intial guess, and in the Bayesian case, it is perhaps better to choose poor initial estimates.  If NULL (default), then L-moments estimates and estimates based on Gumbel moments will be calculated, and whichever yields the lowest negative log-likelihood is used.  In the case of &#96;type&#96; \dQuote{PP}, an additional MLE/GMLE estimate is made for the generalized Pareto (GP) df, and parameters are converted to those of the Poisson Process (PP) model.  Again, the initial estimates yielding the lowest negative log-likelihoo value are used for the initial guess. ,</p>
+<p>span :  single numeric giving the number of years (or other desired temporal unit) in the data set.  Only used for POT models, and only important in the estimation for the PP model, but important for subsequent estimates of return levels for any POT model.  If missing, it will be calculated using information from &#96;time.units&#96;. ,</p>
+<p>units :  (optional) character giving the units of the data, which if given may be used subsequently (e.g., on plot axis labels, etc.). ,</p>
+<p>time.units :  character string that must be one of \dQuote{hours}, \dQuote{minutes}, \dQuote{seconds}, \dQuote{days}, \dQuote{months}, \dQuote{years}, \dQuote{m/hour}, \dQuote{m/minute}, \dQuote{m/second}, \dQuote{m/day}, \dQuote{m/month}, or \dQuote{m/year}; where m is a number.  If &#96;span&#96; is missing, then this argument is used in determining the value of &#96;span&#96;.  It is also returned with the output and used subsequently for plot labelling, etc. ,</p>
+<p>period.basis :  character string giving the units for the period.  Used only for plot labelling and naming output vectors from some of the method functions (e.g., for establishing what the period represents for the return period). ,</p>
+<p>rperiods :  numeric vector giving the return period(s) for which it is desired to calculate the corresponding return levels. ,</p>
+<p>period :  character string naming the units for the return period. ,</p>
+<p>burn.in :  The first &#96;burn.in&#96; values are thrown out before calculating anything from the MCMC sample. ,</p>
+<p>a :  when plotting empirical probabilies and such, the function &#96;ppoints&#96; is called, which has this argument &#96;a&#96;. ,</p>
+<p>d :  numeric determining how to scale the rate parameter for the point process.  If NULL, the function will attempt to scale based on the values of &#96;period.basis&#96; and &#96;time.units&#96;, the first of which must be \dQuote{year} and the second of which must be one of \dQuote{days}, \dQuote{months}, \dQuote{years}, \dQuote{hours}, \dQuote{minutes} or \dQuote{seconds}.  If none of these are the case, then &#96;d&#96; should be specified, otherwise, it is not necessary. ,</p>
+<p>density.args :  named list object containing arguments to the &#96;density&#96; and &#96;hist&#96; functions, respectively. ,</p>
+<p>hist.args :  named list object containing arguments to the &#96;density&#96; and &#96;hist&#96; functions, respectively. ,</p>
+<p>na.action :  function to be called to handle missing values.  Generally, this should remain at the default (na.fail), and the user should take care to impute missing values in an appropriate manner as it may have serious consequences on the results. ,</p>
+<p>optim.args :  A list with named components matching exactly any arguments that the user wishes to specify to &#96;optim&#96;, which is used only for MLE and GMLE methods.  By default, the \dQuote{BFGS} method is used along with &#96;grlevd&#96; for the gradient argument.  Generally, the &#96;grlevd&#96; function is used for the &#96;gr&#96; option unless the user specifies otherwise, or the optimization method does not take gradient information. ,</p>
+<p>priorFun :  character naming a prior df to use for methods GMLE and Bayesian.  The default for GMLE (not including Gumbel or Exponential types) is to use the one suggested by Martins and Stedinger (2000, 2001) on the shape parameter; a beta df on -0.5 to 0.5 with parameters &#96;p&#96; and &#96;q&#96;.  Must take &#96;x&#96; as its first argument for &#96;method&#96; \dQuote{GMLE}.  Optional arguments for the default function are &#96;p&#96; and &#96;q&#96; (see details section).The default for Bayesian estimation is to use normal distribution functions.  For Bayesian estimation, this function must take &#96;theta&#96; as its first argument.Note: if this argument is not NULL and &#96;method&#96; is set to \dQuote{MLE}, it will be changed to \dQuote{GMLE}. ,</p>
+<p>priorParams :  named list containing any prior df parameters (where the list names are the same as the function argument names).  Default for GMLE (assuming the default function is used) is to use &#96;q&#96; = 6 and &#96;p&#96; = 9.  Note that in the Martins and Stedinger (2000, 2001) papers, they use a different EVD parametrization than is used here such that a positive shape parameter gives the upper bounded distribution instead of the heavy-tail one (as emloyed here).  To be consistent with these papers, &#96;p&#96; and &#96;q&#96; are reversed inside the code so that they have the same interpretation as in the papers.Default for Bayesian estimation is to use ML estimates for the means of each parameter (may be changed using &#96;m&#96;, which must be a vector of same length as the number of parameters to be estimated (i.e., if using the default prior df)) and a standard deviation of 10 for all other parameters (again, if using the default prior df, may be changed using &#96;v&#96;, which must be a vector of length equal to the number of parameters). ,</p>
+<p>proposalFun :  For Bayesian estimation only, this is a character naming a function used to generate proposal parameters at each iteration of the MCMC.  If NULL (default), a random walk chain is used whereby if theta.i is the current value of the parameter, the proposed new parameter theta.star is given by theta.i + z, where z is drawn at random from a normal df. ,</p>
+<p>proposalParams :  A named list object describing any optional arguments to the &#96;proposalFun&#96; function.  All functions must take argument &#96;p&#96;, which must be a vector of the parameters, and &#96;ind&#96;, which is used to identify which parameter is to be proposed.  The default &#96;proposalFun&#96; function takes additional arguments &#96;mean&#96; and &#96;sd&#96;, which must be vectors of length equal to the number of parameters in the model (default is to use zero for the mean of z for every parameter and 0.1 for its standard deviation). ,</p>
+<p>iter :  Used only for Bayesian estimation, this is the number of MCMC iterations to do. ,</p>
+<p>weights :  numeric of length 1 or n giving weights to be applied     in the likelihood calculations (e.g., if there are data points to     be weighted more/less heavily than others). ,</p>
+<p>blocks :  An optional list containing information required to fit point process models in a computationally-efficient manner by using only the exceedances and not the observations below the threshold(s). See details for further information.       ,</p>
+<p>FUN :  character string naming a function to use to estimate the parameters from the MCMC sample.  The function is applied to each column of the &#96;results&#96; component of the returned &#96;fevd&#96; object. ,</p>
+<p>verbose :  logical; should progress information be printed to the screen?  If TRUE, for MLE/GMLE, the argument &#96;trace&#96; will be set to 6 in the call to &#96;optim&#96;. ,</p>
+<p>prange :  matrix whose columns are numeric vectors of length two for each parameter in the model giving the parameter range over which trace plots should be made.  Default is to use either +/- 2 * std. err. of the parameter (first choice) or, if the standard error cannot be calculated, then +/- 2 * log2(abs(parameter)).  Typically, these values seem to work very well for these plots. ,</p>
+<p>... :  Not used by most functions here.  Optional arguments to &#96;plot&#96; for the various &#96;plot&#96; method functions.In the case of the &#96;summary&#96; method functions, the logical argument &#96;silent&#96; may be passed to suppress (if TRUE) printing any information to the screen. ,</p>
+<p></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      Y ahora vamos a hacer un cálculo sin meternos mucho en todas las opciones posibles.</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+    <div>
+      <div>
+        <div class=" highlight hl-ipython3">
+          <pre><span class="n">res</span> <span class="o">=</span> <span class="n">fevd</span><span class="p">(</span><span class="n">max_y</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="nb">type</span> <span class="o">=</span> <span class="s">"GEV"</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="s">"GMLE"</span><span class="p">)</span>
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      ¿Qué estructura tiene la variable <code>res</code> que acabamos de crear y que tiene los resultados del ajuste?</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+    <div>
+      <div>
+        <div class=" highlight hl-ipython3">
+          <pre><span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">res</span><span class="p">))</span>
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<p><div>
+    <div>
+      <div>
+        <div>
+        </div></p>
+<div class="highlight"><pre><span></span>    &lt;div&gt;
+      &lt;pre&gt;&amp;lt;class &#39;;rpy2.robjects.vectors.ListVector&#39;;&amp;gt;
+</pre></div>
+
+
+<p></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+    <div>
+      <div>
+        <div class=" highlight hl-ipython3">
+          <pre><span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">r_repr</span><span class="p">)</span>
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<p><div>
+    <div>
+      <div>
+        <div>
+        </div></p>
+<div class="highlight"><pre><span></span>    <span class="o">&lt;</span><span class="nt">div</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="nt">pre</span><span class="o">&gt;&amp;</span><span class="nt">lt</span><span class="o">;</span><span class="nt">bound</span> <span class="nt">method</span> <span class="nt">ListVector</span><span class="p">.</span><span class="nc">r_repr</span> <span class="nt">of</span> <span class="o">&amp;</span><span class="nt">lt</span><span class="o">;</span><span class="nt">ListVector</span> <span class="nt">-</span> <span class="nt">Python</span><span class="p">:</span><span class="nd">0x10AB8878</span> <span class="o">/</span> <span class="nt">R</span><span class="p">:</span><span class="nd">0x0CA9B458</span><span class="o">&amp;</span><span class="nt">gt</span><span class="o">;</span>
+</pre></div>
+
+
+<p>[Vector, ndarray, ndarray, ..., ndarray, ListV..., ListV...]
+  call: &lt;class ';rpy2.robjects.vectors.Vector';&gt;
+  &lt;Vector - Python:0x10AB8418 / R:0x0CB2FFB4&gt;
+[RNULLType, Vector, Vector, Vector]
+  data.name: &lt;class ';numpy.ndarray';&gt;
+  array([';structure(c(22.2, 25.5, 21.5, 22.5, 23.7, 22.5, 21.7, 29.7, 24.2, ';,
+       ';23.8, 28.1, 23.4, 23.7, 25.6, 23.2, 24.9, 22.8, 24.6, 22.3, 25.5, ';,
+       ';22.6, 24, 20.8, 23.5, 24.4, 24.1, 25.1, 19.4, 22.8, 24.2, 25, ';,
+       ';25.3), .Dim = 32L)';, ';';], 
+      dtype=';&lt;U66';)
+  weights: &lt;class ';numpy.ndarray';&gt;
+  array([ 1.])
+  ...
+  call: &lt;class ';numpy.ndarray';&gt;
+  array([';location';, ';scale';, ';shape';], 
+      dtype=';&lt;U8';)
+&lt;ListVector - Python:0x10AB8878 / R:0x0CA9B458&gt;
+[Vector, ndarray, ndarray, ..., ndarray, ListV..., ListV...]
+&lt;ListVector - Python:0x10AB8878 / R:0x0CA9B458&gt;
+[Vector, ndarray, ndarray, ..., ndarray, ListV..., ListV...]&gt;
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      Según nos indica lo anterior, ahora <code>res</code> es un vector que está compuesto de diferentes elementos. Los vectores pueden tener un nombre para todos o algunos de los elementos. Para acceder a estor nombres podemos hacer:</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+    <div>
+      <div>
+        <div class=" highlight hl-ipython3">
+          <pre><span class="n">res</span><span class="o">.</span><span class="n">names</span>
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<p><div>
+    <div>
+      <div>
+        <div>
+        </div></p>
+<div class="highlight"><pre><span></span>    <span class="nt">&lt;div&gt;</span>
+      <span class="nt">&lt;pre&gt;</span>array([&#39;;call&#39;;, &#39;;data.name&#39;;, &#39;;weights&#39;;, &#39;;in.data&#39;;, &#39;;x&#39;;, &#39;;priorFun&#39;;,
+   &#39;;priorParams&#39;;, &#39;;method&#39;;, &#39;;type&#39;;, &#39;;period.basis&#39;;, &#39;;par.models&#39;;,
+   &#39;;const.loc&#39;;, &#39;;const.scale&#39;;, &#39;;const.shape&#39;;, &#39;;n&#39;;, &#39;;na.action&#39;;,
+   &#39;;parnames&#39;;, &#39;;results&#39;;, &#39;;initial.results&#39;;], 
+  dtype=&#39;;<span class="ni">&amp;lt;</span>U15&#39;;)<span class="nt">&lt;/pre&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+</pre></div>
+
+
+<p></div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      Según el output anterior, parece que hay un nombre <code>results</code>, ahí es donde se guardan los valores del ajuste, los estimadores. Para acceder al mismo podemos hacerlo de diferentes formas. Con Python tendriamos que saber el índice y acceder de forma normal (<code><strong>getitem</strong>()</code>). Existe una forma alternativa usando el método <code>rx</code> que nos permite acceder directamente con el nombre:</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+    <div>
+      <div>
+        <div class=" highlight hl-ipython3">
+          <pre><span class="n">results</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">rx</span><span class="p">(</span><span class="s">&#39;results&#39;</span><span class="p">)</span>
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div>
+  <div>
+    <div>
+      <div>
+        <div class=" highlight hl-ipython3">
+          <pre><span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">r_repr</span><span class="p">)</span>
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<p><div>
+    <div>
+      <div>
+        <div>
+        </div></p>
+<div class="highlight"><pre><span></span>    <span class="o">&lt;</span><span class="nt">div</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="nt">pre</span><span class="o">&gt;&amp;</span><span class="nt">lt</span><span class="o">;</span><span class="nt">bound</span> <span class="nt">method</span> <span class="nt">ListVector</span><span class="p">.</span><span class="nc">r_repr</span> <span class="nt">of</span> <span class="o">&amp;</span><span class="nt">lt</span><span class="o">;</span><span class="nt">ListVector</span> <span class="nt">-</span> <span class="nt">Python</span><span class="p">:</span><span class="nd">0x10ABBCB0</span> <span class="o">/</span> <span class="nt">R</span><span class="p">:</span><span class="nd">0x0CBFBC40</span><span class="o">&amp;</span><span class="nt">gt</span><span class="o">;</span>
+</pre></div>
+
+
+<p>[ListVector]
+&lt;ListVector - Python:0x10ABBCB0 / R:0x0CBFBC40&gt;
+[ListVector]&gt;
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      Parece que tenemos un único elemento:</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+    <div>
+      <div>
+        <div class=" highlight hl-ipython3">
+          <pre><span class="n">results</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="mi"></span><span class="p">]</span>
+<span class="n">results</span><span class="o">.</span><span class="n">r_repr</span>
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<p><div>
+    <div>
+      <div>
+        <div>
+        </div></p>
+<div class="highlight"><pre><span></span>    <span class="o">&lt;</span><span class="nt">div</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="nt">pre</span><span class="o">&gt;&amp;</span><span class="nt">lt</span><span class="o">;</span><span class="nt">bound</span> <span class="nt">method</span> <span class="nt">ListVector</span><span class="p">.</span><span class="nc">r_repr</span> <span class="nt">of</span> <span class="o">&amp;</span><span class="nt">lt</span><span class="o">;</span><span class="nt">ListVector</span> <span class="nt">-</span> <span class="nt">Python</span><span class="p">:</span><span class="nd">0x10ABF490</span> <span class="o">/</span> <span class="nt">R</span><span class="p">:</span><span class="nd">0x0C851BA0</span><span class="o">&amp;</span><span class="nt">gt</span><span class="o">;</span>
+</pre></div>
+
+
+<p>[ndarray, ndarray, ndarray, ..., RNULL..., ndarray, ListV...]
+  par: &lt;class ';numpy.ndarray';&gt;
+  array([ 23.06394152,   1.75769129,  -0.16288164])
+  value: &lt;class ';numpy.ndarray';&gt;
+  array([  1.00000000e+16])
+  counts: &lt;class ';numpy.ndarray';&gt;
+  array([1, 1], dtype=int32)
+  ...
+  par: &lt;class ';rpy2.rinterface.RNULLType';&gt;
+  rpy2.rinterface.NULL
+  value: &lt;class ';numpy.ndarray';&gt;
+  array([[ 0.,  0.,  0.],
+       [ 0.,  0.,  0.],
+       [ 0.,  0.,  0.]])
+&lt;ListVector - Python:0x10ABF490 / R:0x0C851BA0&gt;
+[ndarray, ndarray, ndarray, ..., RNULL..., ndarray, ListV...]&gt;</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      Vemos ahora que <code>results</code> tiene un elemento con nombre <code>par</code> donde se guardan los valores de los estimadores del ajuste a la GEV que hemos obtenido usando GMLE. Vamos a obtener finalmente los valores de los estimadores:</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+    <div>
+      <div>
+        <div class=" highlight hl-ipython3">
+          <pre><span class="n">location</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">shape</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">rx</span><span class="p">(</span><span class="s">&#39;par&#39;</span><span class="p">)[</span><span class="mi"></span><span class="p">][:]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">location</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span>
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<p><div>
+    <div>
+      <div>
+        <div>
+        </div></p>
+<div class="highlight"><pre><span></span>    &lt;div&gt;
+      &lt;pre&gt;23.0639415199 1.75769128743 -0.162881636772
+</pre></div>
+
+
+<p></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      <h1 id="Funcion-m&#225;gica-para-R-(antigua-rmagic)">
+        Funcion m&#225;gica para R (antigua <code>rmagic</code>)<a class="anchor-link" href="#Funcion-m&#225;gica-para-R-(antigua-rmagic)">&#182;</a>
+      </h1>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      Usamos la antigua función mágica <code>rmagic</code> que ahora se activará en el notebook de la siguiente forma:</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+    <div>
+      <div>
+        <div class=" highlight hl-ipython3">
+          <pre><span class="o">%</span><span class="k">load_ext</span> rpy2.ipython
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      Veamos como funciona la functión mágica de R:</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+    <div>
+      <div>
+        <div class=" highlight hl-ipython3">
+          <pre><span class="n">help</span><span class="p">(</span><span class="n">rpy2</span><span class="o">.</span><span class="n">ipython</span><span class="o">.</span><span class="n">rmagic</span><span class="o">.</span><span class="n">RMagics</span><span class="o">.</span><span class="n">R</span><span class="p">)</span>
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<p><div>
+    <div>
+      <div>
+        <div>
+        </div></p>
+<div class="highlight"><pre><span></span>    &lt;div&gt;
+      &lt;pre&gt;Help on function R in module rpy2.ipython.rmagic:
+</pre></div>
+
+
+<p>R(self, line, cell=None, local_ns=None)
+    ::</p>
+<div class="highlight"><pre><span></span>  <span class="c">%R [-i INPUT] [-o OUTPUT] [-n] [-w WIDTH] [-h HEIGHT] [-p POINTSIZE]</span>
+         <span class="p">[</span><span class="o">-</span><span class="n">b</span> <span class="n">BG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">noisolation</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">u</span> <span class="p">{</span><span class="n">px</span><span class="p">,</span><span class="n">in</span><span class="p">,</span><span class="n">cm</span><span class="p">,</span><span class="n">mm</span><span class="p">}]</span> <span class="p">[</span><span class="o">-</span><span class="n">r</span> <span class="n">RES</span><span class="p">]</span>
+
+
+<span class="p">:::[]</span>
+<span class="p">]</span>
+
+<span class="n">Execute</span> <span class="n">code</span> <span class="n">in</span> <span class="n">R</span><span class="p">,</span> <span class="n">optionally</span> <span class="n">returning</span> <span class="n">results</span> <span class="n">to</span> <span class="n">the</span> <span class="n">Python</span> <span class="n">runtime</span><span class="p">.</span>
+
+<span class="n">In</span> <span class="n">line</span> <span class="n">mode</span><span class="p">,</span> <span class="n">this</span> <span class="n">will</span> <span class="n">evaluate</span> <span class="n">an</span> <span class="n">expression</span> <span class="n">and</span> <span class="n">convert</span> <span class="n">the</span> <span class="n">returned</span>
+<span class="n">value</span> <span class="n">to</span> <span class="n">a</span> <span class="n">Python</span> <span class="n">object</span><span class="p">.</span>  <span class="n">The</span> <span class="k">return</span> <span class="n">value</span> <span class="n">is</span> <span class="n">determined</span> <span class="n">by</span> <span class="n">rpy2</span><span class="o">&#39;</span><span class="p">;</span><span class="n">s</span>
+<span class="n">behaviour</span> <span class="n">of</span> <span class="n">returning</span> <span class="n">the</span> <span class="n">result</span> <span class="n">of</span> <span class="n">evaluating</span> <span class="n">the</span> <span class="n">final</span> <span class="n">expression</span><span class="p">.</span>
+
+<span class="n">Multiple</span> <span class="n">R</span> <span class="n">expressions</span> <span class="n">can</span> <span class="n">be</span> <span class="n">executed</span> <span class="n">by</span> <span class="n">joining</span> <span class="n">them</span> <span class="n">with</span> <span class="n">semicolons</span><span class="p">::</span>
+
+    <span class="n">In</span> <span class="p">[</span><span class="mi">9</span><span class="p">]:</span> <span class="c">%R X=c(1,4,5,7); sd(X); mean(X)</span>
+    <span class="n">Out</span><span class="p">[</span><span class="mi">9</span><span class="p">]:</span> <span class="n">array</span><span class="p">([</span> <span class="mf">4.25</span><span class="p">])</span>
+
+<span class="n">In</span> <span class="n">cell</span> <span class="n">mode</span><span class="p">,</span> <span class="n">this</span> <span class="n">will</span> <span class="n">run</span> <span class="n">a</span> <span class="n">block</span> <span class="n">of</span> <span class="n">R</span> <span class="n">code</span><span class="p">.</span> <span class="n">The</span> <span class="n">resulting</span> <span class="n">value</span>
+<span class="n">is</span> <span class="n">printed</span> <span class="k">if</span> <span class="n">it</span> <span class="n">would</span> <span class="n">printed</span> <span class="n">be</span> <span class="n">when</span> <span class="n">evaluating</span> <span class="n">the</span> <span class="n">same</span> <span class="n">code</span>
+<span class="n">within</span> <span class="n">a</span> <span class="n">standard</span> <span class="n">R</span> <span class="n">REPL</span><span class="p">.</span>
+
+<span class="n">Nothing</span> <span class="n">is</span> <span class="n">returned</span> <span class="n">to</span> <span class="n">python</span> <span class="n">by</span> <span class="n">default</span> <span class="n">in</span> <span class="n">cell</span> <span class="n">mode</span><span class="p">::</span>
+
+    <span class="n">In</span> <span class="p">[</span><span class="mi">10</span><span class="p">]:</span> <span class="c">%%R</span>
+       <span class="c">....: Y = c(2,4,3,9)</span>
+       <span class="c">....: summary(lm(Y~X))</span>
+
+    <span class="n">Call</span><span class="p">:</span>
+    <span class="n">lm</span><span class="p">(</span><span class="n">formula</span> <span class="p">=</span> <span class="n">Y</span> <span class="o">~</span> <span class="n">X</span><span class="p">)</span>
+
+    <span class="n">Residuals</span><span class="p">:</span>
+        <span class="mi">1</span>     <span class="mi">2</span>     <span class="mi">3</span>     <span class="mi">4</span>
+     <span class="mf">0.88</span> <span class="o">-</span><span class="mf">0.24</span> <span class="o">-</span><span class="mf">2.28</span>  <span class="mf">1.64</span>
+
+    <span class="n">Coefficients</span><span class="p">:</span>
+                <span class="n">Estimate</span> <span class="n">Std</span><span class="p">.</span> <span class="n">Error</span> <span class="n">t</span> <span class="n">value</span> <span class="n">Pr</span><span class="p">(</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span><span class="o">|</span><span class="n">t</span><span class="o">|</span><span class="p">)</span>
+    <span class="p">(</span><span class="n">Intercept</span><span class="p">)</span>   <span class="mf">0.0800</span>     <span class="mf">2.3000</span>   <span class="mf">0.035</span>    <span class="mf">0.975</span>
+    <span class="n">X</span>             <span class="mf">1.0400</span>     <span class="mf">0.4822</span>   <span class="mf">2.157</span>    <span class="mf">0.164</span>
+
+    <span class="n">Residual</span> <span class="n">standard</span> <span class="n">error</span><span class="p">:</span> <span class="mf">2.088</span> <span class="n">on</span> <span class="mi">2</span> <span class="n">degrees</span> <span class="n">of</span> <span class="n">freedom</span>
+    <span class="n">Multiple</span> <span class="n">R</span><span class="o">-</span><span class="n">squared</span><span class="p">:</span> <span class="mf">0.6993</span><span class="p">,</span><span class="n">Adjusted</span> <span class="n">R</span><span class="o">-</span><span class="n">squared</span><span class="p">:</span> <span class="mf">0.549</span>
+    <span class="n">F</span><span class="o">-</span><span class="n">statistic</span><span class="p">:</span> <span class="mf">4.651</span> <span class="n">on</span> <span class="mi">1</span> <span class="n">and</span> <span class="mi">2</span> <span class="n">DF</span><span class="p">,</span>  <span class="n">p</span><span class="o">-</span><span class="n">value</span><span class="p">:</span> <span class="mf">0.1638</span>
+
+<span class="n">In</span> <span class="n">the</span> <span class="n">notebook</span><span class="p">,</span> <span class="n">plots</span> <span class="n">are</span> <span class="n">published</span> <span class="n">as</span> <span class="n">the</span> <span class="n">output</span> <span class="n">of</span> <span class="n">the</span> <span class="n">cell</span><span class="p">::</span>
+
+    <span class="c">%R plot(X, Y)</span>
+
+<span class="n">will</span> <span class="n">create</span> <span class="n">a</span> <span class="n">scatter</span> <span class="n">plot</span> <span class="n">of</span> <span class="n">X</span> <span class="n">bs</span> <span class="n">Y</span><span class="p">.</span>
+
+<span class="n">If</span> <span class="n">cell</span> <span class="n">is</span> <span class="n">not</span> <span class="n">None</span> <span class="n">and</span> <span class="n">line</span> <span class="n">has</span> <span class="n">some</span> <span class="n">R</span> <span class="n">code</span><span class="p">,</span> <span class="n">it</span> <span class="n">is</span> <span class="n">prepended</span> <span class="n">to</span>
+<span class="n">the</span> <span class="n">R</span> <span class="n">code</span> <span class="n">in</span> <span class="n">cell</span><span class="p">.</span>
+
+<span class="n">Objects</span> <span class="n">can</span> <span class="n">be</span> <span class="n">passed</span> <span class="n">back</span> <span class="n">and</span> <span class="n">forth</span> <span class="n">between</span> <span class="n">rpy2</span> <span class="n">and</span> <span class="n">python</span> <span class="n">via</span> <span class="n">the</span> <span class="o">-</span><span class="nb">i</span> <span class="o">-</span><span class="n">o</span> <span class="n">flags</span> <span class="n">in</span> <span class="n">line</span><span class="p">::</span>
+
+    <span class="n">In</span> <span class="p">[</span><span class="mi">14</span><span class="p">]:</span> <span class="n">Z</span> <span class="p">=</span> <span class="n">np</span><span class="p">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">])</span>
+
+    <span class="n">In</span> <span class="p">[</span><span class="mi">15</span><span class="p">]:</span> <span class="c">%R -i Z mean(Z)</span>
+    <span class="n">Out</span><span class="p">[</span><span class="mi">15</span><span class="p">]:</span> <span class="n">array</span><span class="p">([</span> <span class="mf">5.</span><span class="p">])</span>
+
+    <span class="n">In</span> <span class="p">[</span><span class="mi">16</span><span class="p">]:</span> <span class="c">%R -o W W=Z*mean(Z)</span>
+    <span class="n">Out</span><span class="p">[</span><span class="mi">16</span><span class="p">]:</span> <span class="n">array</span><span class="p">([</span>  <span class="mf">5.</span><span class="p">,</span>  <span class="mf">20.</span><span class="p">,</span>  <span class="mf">25.</span><span class="p">,</span>  <span class="mf">50.</span><span class="p">])</span>
+
+    <span class="n">In</span> <span class="p">[</span><span class="mi">17</span><span class="p">]:</span> <span class="n">W</span>
+    <span class="n">Out</span><span class="p">[</span><span class="mi">17</span><span class="p">]:</span> <span class="n">array</span><span class="p">([</span>  <span class="mf">5.</span><span class="p">,</span>  <span class="mf">20.</span><span class="p">,</span>  <span class="mf">25.</span><span class="p">,</span>  <span class="mf">50.</span><span class="p">])</span>
+
+<span class="n">The</span> <span class="k">return</span> <span class="n">value</span> <span class="n">is</span> <span class="n">determined</span> <span class="n">by</span> <span class="n">these</span> <span class="n">rules</span><span class="p">:</span>
+
+<span class="o">*</span> <span class="n">If</span> <span class="n">the</span> <span class="n">cell</span> <span class="n">is</span> <span class="n">not</span> <span class="n">None</span> <span class="p">(</span><span class="nb">i</span><span class="p">.</span><span class="n">e</span><span class="p">.,</span> <span class="n">has</span> <span class="n">contents</span><span class="p">),</span> <span class="n">the</span> <span class="nb">magic</span> <span class="n">returns</span> <span class="n">None</span><span class="p">.</span>
+
+<span class="o">*</span> <span class="n">If</span> <span class="n">the</span> <span class="n">final</span> <span class="n">line</span> <span class="n">results</span> <span class="n">in</span> <span class="n">a</span> <span class="n">NULL</span> <span class="n">value</span> <span class="n">when</span> <span class="n">evaluated</span>
+  <span class="n">by</span> <span class="n">rpy2</span><span class="p">,</span> <span class="n">then</span> <span class="n">None</span> <span class="n">is</span> <span class="n">returned</span><span class="p">.</span>
+
+<span class="o">*</span> <span class="n">No</span> <span class="n">attempt</span> <span class="n">is</span> <span class="n">made</span> <span class="n">to</span> <span class="n">convert</span> <span class="n">the</span> <span class="n">final</span> <span class="n">value</span> <span class="n">to</span> <span class="n">a</span> <span class="n">structured</span> <span class="n">array</span><span class="p">.</span>
+  <span class="n">Use</span> <span class="c">%Rget to push a structured array.</span>
+
+<span class="o">*</span> <span class="n">If</span> <span class="n">the</span> <span class="o">-</span><span class="n">n</span> <span class="n">flag</span> <span class="n">is</span> <span class="n">present</span><span class="p">,</span> <span class="n">there</span> <span class="n">is</span> <span class="n">no</span> <span class="k">return</span> <span class="n">value</span><span class="p">.</span>
+
+<span class="o">*</span> <span class="n">A</span> <span class="n">trailing</span> <span class="s">&#39;;;&#39;</span><span class="p">;</span> <span class="n">will</span> <span class="n">also</span> <span class="n">result</span> <span class="n">in</span> <span class="n">no</span> <span class="k">return</span> <span class="n">value</span> <span class="n">as</span> <span class="n">the</span> <span class="n">last</span>
+  <span class="n">value</span> <span class="n">in</span> <span class="n">the</span> <span class="n">line</span> <span class="n">is</span> <span class="n">an</span> <span class="n">empty</span> <span class="n">string</span><span class="p">.</span>
+
+<span class="n">optional</span> <span class="n">arguments</span><span class="p">:</span>
+  <span class="o">-</span><span class="nb">i</span> <span class="n">INPUT</span><span class="p">,</span> <span class="o">--</span><span class="n">input</span> <span class="n">INPUT</span>
+                        <span class="n">Names</span> <span class="n">of</span> <span class="n">input</span> <span class="n">variable</span> <span class="n">from</span> <span class="n">shell</span><span class="p">.</span><span class="n">user_ns</span> <span class="n">to</span> <span class="n">be</span>
+                        <span class="n">assigned</span> <span class="n">to</span> <span class="n">R</span> <span class="n">variables</span> <span class="n">of</span> <span class="n">the</span> <span class="n">same</span> <span class="n">names</span> <span class="n">after</span>
+                        <span class="n">calling</span> <span class="n">self</span><span class="p">.</span><span class="n">pyconverter</span><span class="p">.</span> <span class="n">Multiple</span> <span class="n">names</span> <span class="n">can</span> <span class="n">be</span> <span class="n">passed</span>
+                        <span class="n">separated</span> <span class="n">only</span> <span class="n">by</span> <span class="n">commas</span> <span class="n">with</span> <span class="n">no</span> <span class="n">whitespace</span><span class="p">.</span>
+  <span class="o">-</span><span class="n">o</span> <span class="n">OUTPUT</span><span class="p">,</span> <span class="o">--</span><span class="n">output</span> <span class="n">OUTPUT</span>
+                        <span class="n">Names</span> <span class="n">of</span> <span class="n">variables</span> <span class="n">to</span> <span class="n">be</span> <span class="n">pushed</span> <span class="n">from</span> <span class="n">rpy2</span> <span class="n">to</span>
+                        <span class="n">shell</span><span class="p">.</span><span class="n">user_ns</span> <span class="n">after</span> <span class="n">executing</span> <span class="n">cell</span> <span class="n">body</span> <span class="p">(</span><span class="n">rpy2</span><span class="o">&#39;</span><span class="p">;</span><span class="n">s</span>
+                        <span class="n">internal</span> <span class="n">facilities</span> <span class="n">will</span> <span class="n">apply</span> <span class="n">ri2ro</span> <span class="n">as</span> <span class="n">appropriate</span><span class="p">).</span>
+                        <span class="n">Multiple</span> <span class="n">names</span> <span class="n">can</span> <span class="n">be</span> <span class="n">passed</span> <span class="n">separated</span> <span class="n">only</span> <span class="n">by</span> <span class="n">commas</span>
+                        <span class="n">with</span> <span class="n">no</span> <span class="n">whitespace</span><span class="p">.</span>
+  <span class="o">-</span><span class="n">n</span><span class="p">,</span> <span class="o">--</span><span class="n">noreturn</span>        <span class="n">Force</span> <span class="n">the</span> <span class="nb">magic</span> <span class="n">to</span> <span class="n">not</span> <span class="k">return</span> <span class="n">anything</span><span class="p">.</span>
+
+<span class="n">Plot</span><span class="p">:</span>
+  <span class="n">Arguments</span> <span class="n">to</span> <span class="n">plotting</span> <span class="n">device</span>
+
+  <span class="o">-</span><span class="n">w</span> <span class="n">WIDTH</span><span class="p">,</span> <span class="o">--</span><span class="n">width</span> <span class="n">WIDTH</span>
+                        <span class="n">Width</span> <span class="n">of</span> <span class="n">plotting</span> <span class="n">device</span> <span class="n">in</span> <span class="n">R</span><span class="p">.</span>
+  <span class="o">-</span><span class="n">h</span> <span class="n">HEIGHT</span><span class="p">,</span> <span class="o">--</span><span class="n">height</span> <span class="n">HEIGHT</span>
+                        <span class="n">Height</span> <span class="n">of</span> <span class="n">plotting</span> <span class="n">device</span> <span class="n">in</span> <span class="n">R</span><span class="p">.</span>
+  <span class="o">-</span><span class="n">p</span> <span class="n">POINTSIZE</span><span class="p">,</span> <span class="o">--</span><span class="n">pointsize</span> <span class="n">POINTSIZE</span>
+                        <span class="n">Pointsize</span> <span class="n">of</span> <span class="n">plotting</span> <span class="n">device</span> <span class="n">in</span> <span class="n">R</span><span class="p">.</span>
+  <span class="o">-</span><span class="n">b</span> <span class="n">BG</span><span class="p">,</span> <span class="o">--</span><span class="n">bg</span> <span class="n">BG</span>        <span class="n">Background</span> <span class="n">of</span> <span class="n">plotting</span> <span class="n">device</span> <span class="n">in</span> <span class="n">R</span><span class="p">.</span>
+
+<span class="n">SVG</span><span class="p">:</span>
+  <span class="n">SVG</span> <span class="n">specific</span> <span class="n">arguments</span>
+
+  <span class="o">--</span><span class="n">noisolation</span>         <span class="n">Disable</span> <span class="n">SVG</span> <span class="n">isolation</span> <span class="n">in</span> <span class="n">the</span> <span class="n">Notebook</span><span class="p">.</span> <span class="n">By</span> <span class="n">default</span><span class="p">,</span>
+                        <span class="n">SVGs</span> <span class="n">are</span> <span class="n">isolated</span> <span class="n">to</span> <span class="n">avoid</span> <span class="n">namespace</span> <span class="n">collisions</span>
+                        <span class="n">between</span> <span class="n">figures</span><span class="p">.</span><span class="n">Disabling</span> <span class="n">SVG</span> <span class="n">isolation</span> <span class="n">allows</span> <span class="n">to</span>
+                        <span class="n">reference</span> <span class="n">previous</span> <span class="n">figures</span> <span class="n">or</span> <span class="n">share</span> <span class="n">CSS</span> <span class="n">rules</span> <span class="n">across</span> <span class="n">a</span>
+                        <span class="n">set</span> <span class="n">of</span> <span class="n">SVGs</span><span class="p">.</span>
+
+<span class="n">PNG</span><span class="p">:</span>
+  <span class="n">PNG</span> <span class="n">specific</span> <span class="n">arguments</span>
+
+  <span class="o">-</span><span class="n">u</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;{</span><span class="n">px</span><span class="p">,</span><span class="n">in</span><span class="p">,</span><span class="n">cm</span><span class="p">,</span><span class="n">mm</span><span class="p">}</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;,</span> <span class="o">--</span><span class="n">units</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;{</span><span class="n">px</span><span class="p">,</span><span class="n">in</span><span class="p">,</span><span class="n">cm</span><span class="p">,</span><span class="n">mm</span><span class="p">}</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span>
+                        <span class="n">Units</span> <span class="n">of</span> <span class="n">png</span> <span class="n">plotting</span> <span class="n">device</span> <span class="n">sent</span> <span class="n">as</span> <span class="n">an</span> <span class="n">argument</span> <span class="n">to</span>
+                        <span class="o">*</span><span class="n">png</span><span class="o">*</span> <span class="n">in</span> <span class="n">R</span><span class="p">.</span> <span class="n">One</span> <span class="n">of</span> <span class="p">[</span>&quot;<span class="n">px</span>&quot;<span class="p">,</span> &quot;<span class="n">in</span>&quot;<span class="p">,</span> &quot;<span class="n">cm</span>&quot;<span class="p">,</span> &quot;<span class="n">mm</span>&quot;<span class="p">].</span>
+  <span class="o">-</span><span class="n">r</span> <span class="n">RES</span><span class="p">,</span> <span class="o">--</span><span class="n">res</span> <span class="n">RES</span>     <span class="n">Resolution</span> <span class="n">of</span> <span class="n">png</span> <span class="n">plotting</span> <span class="n">device</span> <span class="n">sent</span> <span class="n">as</span> <span class="n">an</span> <span class="n">argument</span>
+                        <span class="n">to</span> <span class="o">*</span><span class="n">png</span><span class="o">*</span> <span class="n">in</span> <span class="n">R</span><span class="p">.</span> <span class="n">Defaults</span> <span class="n">to</span> <span class="mi">72</span> <span class="k">if</span> <span class="o">*</span><span class="n">units</span><span class="o">*</span> <span class="n">is</span> <span class="n">one</span> <span class="n">of</span>
+                        <span class="p">[</span>&quot;<span class="n">in</span>&quot;<span class="p">,</span> &quot;<span class="n">cm</span>&quot;<span class="p">,</span> &quot;<span class="n">mm</span>&quot;<span class="p">].</span>
+  <span class="n">code</span>
+</pre></div>
+
+
+<p></pre>
+</div>
+</div>
+</div>
+</div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      A veces, será más simple usar la función mágica para interactuar con R. Veamos un ejemplo donde le pasamos a R el valor obtenido de la función <code>fevd</code> del paquete <code>extRemes</code> de R que he usado anteriormente y corremos cierto código directamente desde R sin tener que usar <code>ro.r</code>.</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+    <div>
+      <div>
+        <div class=" highlight hl-ipython3">
+          <pre><span class="o">%</span><span class="k">R</span> -i res plot.fevd(res)
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<p><div>
+    <div>
+      <div>
+        <div>
+        </div></p>
+<div class="highlight"><pre><span></span>    &lt;div&gt;
+      &lt;img src=&quot;http://new.pybonacci.org/images/2015/06/wpid-Trabajando_con_Python_y_R2.png&quot;
+</pre></div>
+
+
+<p>/&gt;
+        </div>
+      </div>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      En la anterior celda de código le he pasado como parámetro de entrada (<code>- i res</code>) la variable <code>res</code> que había obtenido anteriormente para que esté disponible desde R. y he ejecutado código R puro (<code>plot.fevd(res)</code>).</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      Si lo anterior lo quiero hacer con rpy2 puedo hacer lo siquiente:</p> </p>
+<div class="highlight"><pre><span></span>  <span class="nt">&lt;p</span> <span class="na">class=</span><span class="s">&quot;alert alert-info&quot;</span><span class="nt">&gt;</span>
+    CUIDADO, la siguiente celda de código puede provocar que se reinicialice el notebook y se rompa la sesión. Si has hecho cambios en el notebook guárdalos antes de ejecutar la celda, por lo que pueda pasar...
+  <span class="nt">&lt;/p&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+</pre></div>
+
+
+<p></div>
+</div></p>
+<div>
+  <div>
+    <div>
+      <div>
+        <div class=" highlight hl-ipython3">
+          <pre><span class="n">ro</span><span class="o">.</span><span class="n">globalenv</span><span class="p">[</span><span class="s">&#39;res&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span>
+<span class="n">ro</span><span class="o">.</span><span class="n">r</span><span class="p">(</span><span class="s">"plot.fevd(res)"</span><span class="p">)</span>
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<p><div>
+    <div>
+      <div>
+        <div>
+        </div></p>
+<div class="highlight"><pre><span></span>    <span class="nt">&lt;div&gt;</span>
+      <span class="nt">&lt;pre&gt;</span>rpy2.rinterface.NULL<span class="nt">&lt;/pre&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+</pre></div>
+
+
+<p></div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      Lo anterior me bloquea el notebook y me 'rompe' la sesión (<a href="https://bitbucket.org/rpy2/rpy2/issues?q=windows">en windows, al menos</a>) ya que la ventana de gráficos se abre de forma externa... Por tanto, una buena opción para trabajar de forma interactiva con Python y R de forma conjunta y que no se 'rompa' nada es usar tanto rpy2 como su extensión para el notebook de Jupyter (dejaremos de llamarlo IPython poco a poco).</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      <h1 id="Usando-Python-y-R-combinando-rpy2-y-la-funci&#243;n-m&#225;gica">
+        Usando Python y R combinando rpy2 y la funci&#243;n m&#225;gica<a class="anchor-link" href="#Usando-Python-y-R-combinando-rpy2-y-la-funci&#243;n-m&#225;gica">&#182;</a>
+      </h1>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      Vamos a combinar las dos formas de trabajar con rpy2 en el siguiente ejemplo:</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+    <div>
+      <div>
+        <div class=" highlight hl-ipython3">
+          <pre><span class="n">metodos</span> <span class="o">=</span> <span class="p">[</span><span class="s">"MLE"</span><span class="p">,</span> <span class="s">"GMLE"</span><span class="p">]</span>
+<span class="n">tipos</span> <span class="o">=</span> <span class="p">[</span><span class="s">"GEV"</span><span class="p">,</span> <span class="s">"Gumbel"</span><span class="p">]</span>
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      Lo que vamos a hacer es calcular los parámetros del ajuste usando la distribución GEV y Gumbel, que es un caso especial de la GEV. El ajuste lo calculamos usando tanto MLE como GMLE. Además de mostrar los valores resultantes del ajuste para los estimadores vamos a mostrar el dibujo de cada uno de los ajustes y algunos test de bondad. Usamos Python para toda la maquinaria de los bucles, usamos rpy2 para obtener los estimadores y usamos la función mágica de rpy2 para mostrar los gráficos del resultado.</p>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+    <div>
+      <div>
+        <div class=" highlight hl-ipython3">
+          <pre><span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tipos</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">metodos</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s">&#39;tipo de ajuste: &#39;</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s">&#39;método de ajuste: &#39;</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">fevd</span><span class="p">(</span><span class="n">max_y</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">m</span><span class="p">,</span> <span class="nb">type</span> <span class="o">=</span> <span class="n">t</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">m</span> <span class="o">==</span> <span class="s">"Bayesian"</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">rx</span><span class="p">(</span><span class="s">&#39;results&#39;</span><span class="p">)[</span><span class="mi"></span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi"></span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">m</span> <span class="o">==</span> <span class="s">"Lmoments"</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">rx</span><span class="p">(</span><span class="s">&#39;results&#39;</span><span class="p">)[</span><span class="mi"></span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">rx</span><span class="p">(</span><span class="s">&#39;results&#39;</span><span class="p">)[</span><span class="mi"></span><span class="p">]</span><span class="o">.</span><span class="n">rx</span><span class="p">(</span><span class="s">&#39;par&#39;</span><span class="p">)[</span><span class="mi"></span><span class="p">][:])</span>
+        <span class="o">%</span><span class="k">R</span> -i res plot.fevd(res)
+</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<p><div>
+    <div>
+      <div>
+        <div>
+        </div></p>
+<div class="highlight"><pre><span></span>    &lt;div&gt;
+      &lt;pre&gt;tipo de ajuste:  GEV
+</pre></div>
+
+
+<p>método de ajuste:  MLE
+[ 23.05170779   1.80858528  -0.14979836]
+</pre>
+        </div>
+      </div></p>
+<div class="highlight"><pre><span></span>  <span class="nt">&lt;div&gt;</span>
+    <span class="nt">&lt;div&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+
+    <span class="nt">&lt;div&gt;</span>
+      <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;http://new.pybonacci.org/images/2015/06/wpid-Trabajando_con_Python_y_R3.png&quot;</span>
+</pre></div>
+
+
+<p>/&gt;
+        </div>
+      </div></p>
+<div class="highlight"><pre><span></span>  <span class="nt">&lt;div&gt;</span>
+    <span class="nt">&lt;div&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+
+    <span class="nt">&lt;div&gt;</span>
+      <span class="nt">&lt;pre&gt;</span>tipo de ajuste:  GEV
+</pre></div>
+
+
+<p>método de ajuste:  GMLE
+[ 23.06394152   1.75769129  -0.16288164]
+</pre>
+        </div>
+      </div></p>
+<div class="highlight"><pre><span></span>  <span class="nt">&lt;div&gt;</span>
+    <span class="nt">&lt;div&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+
+    <span class="nt">&lt;div&gt;</span>
+      <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;http://new.pybonacci.org/images/2015/06/wpid-Trabajando_con_Python_y_R4.png&quot;</span>
+</pre></div>
+
+
+<p>/&gt;
+        </div>
+      </div></p>
+<div class="highlight"><pre><span></span>  <span class="nt">&lt;div&gt;</span>
+    <span class="nt">&lt;div&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+
+    <span class="nt">&lt;div&gt;</span>
+      <span class="nt">&lt;pre&gt;</span>tipo de ajuste:  Gumbel
+</pre></div>
+
+
+<p>método de ajuste:  MLE
+[ 22.90587606   1.81445179]
+</pre>
+        </div>
+      </div></p>
+<div class="highlight"><pre><span></span>  <span class="nt">&lt;div&gt;</span>
+    <span class="nt">&lt;div&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+
+    <span class="nt">&lt;div&gt;</span>
+      <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;http://new.pybonacci.org/images/2015/06/wpid-Trabajando_con_Python_y_R5.png&quot;</span>
+</pre></div>
+
+
+<p>/&gt;
+        </div>
+      </div></p>
+<div class="highlight"><pre><span></span>  <span class="nt">&lt;div&gt;</span>
+    <span class="nt">&lt;div&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+
+    <span class="nt">&lt;div&gt;</span>
+      <span class="nt">&lt;pre&gt;</span>tipo de ajuste:  Gumbel
+</pre></div>
+
+
+<p>método de ajuste:  GMLE
+[ 22.90587606   1.81445179]
+</pre>
+        </div>
+      </div></p>
+<div class="highlight"><pre><span></span>  <span class="nt">&lt;div&gt;</span>
+    <span class="nt">&lt;div&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+
+    <span class="nt">&lt;div&gt;</span>
+      <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;http://new.pybonacci.org/images/2015/06/wpid-Trabajando_con_Python_y_R6.png&quot;</span>
+</pre></div>
+
+
+<p>/&gt;
+        </div>
+      </div>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      <h1 id="Comentarios-finales">
+        Comentarios finales<a class="anchor-link" href="#Comentarios-finales">&#182;</a>
+      </h1>
+    </div>
+  </div>
+</div></p>
+<div>
+  <div>
+  </div>
+
+<p><div>
+    <div>
+      Espero que este microtutorial os valga, al menos, para conocer rpy2 y la potencia que os puede llegar a aportar a vuestros análisis 'pythónicos'. Como resumen:</p> </p>
+<div class="highlight"><pre><span></span>  <span class="nt">&lt;ul&gt;</span>
+    <span class="nt">&lt;li&gt;</span>
+      Tenemos en nuestras manos una herramienta muy poderosa.
+    <span class="nt">&lt;/li&gt;</span>
+    <span class="nt">&lt;li&gt;</span>
+      Rpy2 puede estar poco madura en algún aspecto aunque ha mejorado bastante con respecto a alguna versión de rpy2 que usé anteriormente.
+    <span class="nt">&lt;/li&gt;</span>
+    <span class="nt">&lt;li&gt;</span>
+      También podéis usar directamente <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;https://github.com/IRkernel/IRkernel&quot;</span><span class="nt">&gt;</span>R como kernel<span class="nt">&lt;/a&gt;</span>, aunque perdéis la interacción con Python. También puede ocurrir que la instalación os haga perder mucho el tiempo <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;https://github.com/IRkernel/IRkernel/issues/54&quot;</span><span class="nt">&gt;</span>para poder hacerlo funcionar<span class="nt">&lt;/a&gt;</span> si os veis obligados a usarlo desde windows.
+    <span class="nt">&lt;/li&gt;</span>
+    <span class="nt">&lt;li&gt;</span>
+      En la elaboración de este microtutorial la consola de R donde iba haciendo algunas pruebas simples se me ha &#39;roto&#39; muchísimas más veces de las que consideraría aceptables. No se puede quedar colgada, cerrar,..., seis o siete veces en media hora una consola haciendo cosas simples. Eso hace que si quieres usar R de forma interactiva debas usar alternativas como Jupyter, RStudio u otros que desconozco ya que la consola oficial no está &#39;ni pa pipas&#39; (por lo menos en Windows, el sistema operativo con más usuarios potenciales, mal que me pese).
+    <span class="nt">&lt;/li&gt;</span>
+    <span class="nt">&lt;li&gt;</span>
+      Sigo manteniendo muchas reservas respecto a R como Lenguaje de Programación (en mayúsculas) por lo que si puedo limitar su uso a alguna librería especializada que necesito y a la que pueda acceder con rpy2 es lo que seguiré haciendo (<span class="nt">&lt;em&gt;&lt;a</span> <span class="na">href=</span><span class="s">&quot;http://www.burns-stat.com/pages/Tutor/R_inferno.pdf&quot;</span><span class="nt">&gt;</span>If you are using R and you think you&#39;re in hell, this is a map for you<span class="nt">&lt;/a&gt;</span>.<span class="nt">&lt;/em&gt;</span>)
+    <span class="nt">&lt;/li&gt;</span>
+  <span class="nt">&lt;/ul&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+</pre></div>
+
+
+<p></div>
+</div></p>
+<h1 id="y-el-notebook">Y el notebook...<a class="anchor-link" href="#y-el-notebook">&#182;</a></h1>
+<p>En el caso de que queráis trastear con el notebook lo podéis descargar desde <a href="http://nbviewer.ipython.org/github/Pybonacci/notebooks/tree/master/Trabajando_con_R_Python/">aquí</a>.</p>
+<p>También podéis <a href="https://github.com/Pybonacci/notebooks">descargar todos los notebooks desde nuestro repo oficial de notebooks</a>.</p>
+        </div>
+
+        <div class="meta">
+            <div class="tags">
+                    <a href="http://pybonacci.github.io/tag/cran.html" class="tag">cran</a>
+                    <a href="http://pybonacci.github.io/tag/eva.html" class="tag">EVA</a>
+                    <a href="http://pybonacci.github.io/tag/evt.html" class="tag">EVT</a>
+                    <a href="http://pybonacci.github.io/tag/extremes.html" class="tag">extremes</a>
+                    <a href="http://pybonacci.github.io/tag/extremos.html" class="tag">extremos</a>
+                    <a href="http://pybonacci.github.io/tag/ipython.html" class="tag">ipython</a>
+                    <a href="http://pybonacci.github.io/tag/r.html" class="tag">R</a>
+                    <a href="http://pybonacci.github.io/tag/rpy2.html" class="tag">rpy2</a>
+            </div>
+        </div>
+
+  
+<hr>    
+<div class="row">
+  <div class="col-md-2">
+    <img src=https://pybonacci.org/images/author/kiko-correoso.jpg alt="photo" class="img-author img-rounded"/>
+  </div>
+  <div class="col-md-1"></div>
+  <div class="col-md-9 description-author">
+    <p>Kiko es doctor en ciencias físicas y esta especializado en física de la atmósfera, meteorología y climatología. Además de estar en las nubes es especialista en temas de energías renovables en Iberdrola. Ávido de seguir mejorando siempre está abierto a participar en nuevos proyectos y retos por lo que no dudes en contactarle si necesitas servicios especializados de Python o meteorología.
+</p>
+  </div>
+</div> 
+
+    </article>
+<div id="commento"></div>
+</div>
+
+<style type="text/css">
+{
+    max-width: 700px;
+}
+
+.text_cell .prompt {
+    display: none;
+}
+
+div.cell {
+    padding: 0;
+}
+
+div.text_cell_render {
+    padding: 0;
+}
+
+div.prompt {
+    font-size: 13px;
+}
+
+div.input_prompt {
+    padding: .7em 0.2em;
+}
+
+div.output_prompt {
+    padding: .4em .2em;
+}
+
+div.input_area {
+    margin: .2em 0.4em;
+    max-width: 580px;
+}
+
+table.dataframe {
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    line-height: 20px;
+}
+
+table.dataframe th, td {
+    padding: 4px;
+    text-align: left;
+}
+
+pre code {
+    background-color: inherit;
+}</style>
+
+        </div>
+
+        <footer class="disclaimer">
+          <div class="container-fluid">
+            <p>
+              © 2012-2017 Pybonacci, licencia <a href="https://github.com/Pybonacci/pybonacci.github.io/blob/sources/LICENSE.md"> CC BY-SA 4.0 + MIT</a>
+              salvo otra indicación.
+              <p>Contenido generado con <a href= "http://docs.getpelican.com/">Pelican</a>.</p>
+            </p>
+          </div>
+        </footer>
+
+    </body>
+</html>
